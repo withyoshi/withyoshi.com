@@ -1,0 +1,28 @@
+@layer components {
+  /* Cloud gradient background utility */
+  .fx-cloud-gradient-bg {
+    @apply relative;
+  }
+
+  .fx-cloud-gradient-bg::before {
+    @apply absolute inset-0 z-1 scale-110 rotate-12 blur-2xl;
+    content: "";
+    background: radial-gradient(
+      circle,
+      transparent 0%,
+      var(--fx-gradient-color, rgba(0, 175, 185, 0.2)) 50%,
+      var(--fx-gradient-color, rgba(0, 175, 185, 0.4)) 100%
+    );
+  }
+
+  .fx-cloud-gradient-bg::after {
+    @apply absolute inset-0 z-2 scale-125 -rotate-6 blur-3xl;
+    content: "";
+    background: radial-gradient(
+      circle,
+      transparent 0%,
+      var(--fx-gradient-color, rgba(0, 175, 185, 0.15)) 50%,
+      var(--fx-gradient-color, rgba(0, 175, 185, 0.25)) 100%
+    );
+  }
+}

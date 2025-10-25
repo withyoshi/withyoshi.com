@@ -1,0 +1,17 @@
+@layer components {
+  /* Reusable mask classes */
+  .mask-fade-bottom {
+    mask-image: linear-gradient(
+      to bottom,
+      white 0%,
+      white 20%,
+      transparent 75%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      white 0%,
+      white 20%,
+      transparent 75%
+    );
+  }
+}
