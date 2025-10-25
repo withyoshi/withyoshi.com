@@ -70,7 +70,7 @@ const engineeringExperience = [
   </>,
   <>
     Developed core <ExperienceKeyword>product</ExperienceKeyword> features for
-    social networking and blogging platform EasySocial, EasyBlog & JomSocial.
+    social networking and blogging platforms EasySocial, EasyBlog & JomSocial.
   </>,
   <>
     <ExperienceKeyword>Open-source</ExperienceKeyword> contributor for

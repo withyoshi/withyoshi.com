@@ -4,7 +4,7 @@ import type { Metadata, Viewport } from "next";
 // CV page constants for reusability
 const title = "Yan Sern's Resume";
 const description =
-  "Principal software engineer with 20+ years of experience spanning product development, AI integration, systems scaling, and data engineering.";
+  "Full-stack software engineer with 20+ years of experience spanning product development, AI integration, systems scaling, and data engineering.";
 
 export const metadata: Metadata = {
   title,

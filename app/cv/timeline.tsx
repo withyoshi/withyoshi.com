@@ -120,7 +120,7 @@ const Timeline = ({ className }: TimelineProps) => (
         <ul>
           <li>
             Added AI features that leverage LLM + RAG, e.g. chatbot, semantic
-            search, and predictive investment analysis.
+            search, and predictive analysis.
           </li>
           <li>
             Created NLP workflows to categorize and structure raw data into
@@ -148,8 +148,8 @@ const Timeline = ({ className }: TimelineProps) => (
           <li>Scaled to serve over 100 million blog subscribers.</li>
           <li>Built paid tiers and monetization features.</li>
           <li>
-            Built email tracking analytics that handle millions of real-time
-            events daily.
+            Built tracking analytics that handle millions of real-time events
+            daily.
           </li>
           <li>
             Complete overhaul of management dashboard and email notifications.

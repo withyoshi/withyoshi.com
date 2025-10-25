@@ -228,10 +228,9 @@ export default function PhoneRequestModal({
             <div className="flex flex-1 flex-col gap-2">
               <h4 className="text-2xl font-bold">Request a Call</h4>
               <p className="text-sm text-gray-600">
-                My phone number is not displayed publicly on the internet for
-                privacy reasons. If you prefer having a conversation over the
-                phone, please share your contact number and I will reach out to
-                you.
+                My phone number is not displayed publicly for privacy reasons.
+                Prefer phone conversations? Share your phone number and I will
+                reach out to you.
               </p>
             </div>
             <button

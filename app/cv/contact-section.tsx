@@ -75,9 +75,8 @@ function ContactSectionContent() {
             Get in touch
           </h2>
           <p>
-            Found the right person for the role? Interested in collaborating on
-            a project? Or just want to say hi? Here are ways you can reach out
-            to me.
+            Am I the right person for the role? Want to collaborate on a
+            project? Here's how to reach me.
           </p>
         </div>
 
