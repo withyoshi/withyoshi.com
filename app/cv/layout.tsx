@@ -2,9 +2,9 @@ import React from "react";
 import type { Metadata, Viewport } from "next";
 
 // CV page constants for reusability
-const title = "Yan Sern's CV";
+const title = "Yan Sern's Resume";
 const description =
-  "Principal software engineer with 20+ years of experience spanning product development, AI integration, systems scaling, and data engineering. Led 3 global teams of 12 engineers across Europe and Asia, with formal training in leadership development. Outside of work, I enjoy photography, piano, and buiding things in my homelab.";
+  "Principal software engineer with 20+ years of experience spanning product development, AI integration, systems scaling, and data engineering.";
 
 export const metadata: Metadata = {
   title,
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     description,
     images: [
       {
-        url: "/meta/root/og-image-yansern-cv.jpg",
+        url: "/meta/cv/og-image-yansern-cv.jpg",
         width: 1200,
         height: 630,
         alt: "Yan Sern - Full-Stack Software Engineer",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title,
     description,
-    images: ["/meta/root/og-image-yansern-cv.jpg"],
+    images: ["/meta/cv/og-image-yansern-cv.jpg"],
   },
   robots: {
     index: false,
