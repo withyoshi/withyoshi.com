@@ -5,12 +5,11 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
 const PDFDownload = () => (
   <div className="px-10 py-5 text-center text-sm tracking-tight">
-    You can also{" "}
     <a href="/cv-yansern.pdf" download="Yan-Sern-CV.pdf">
-      <FontAwesomeIcon icon={faDownload} className="h-1 w-1" />
-      Download my CV
-    </a>{" "}
-    in PDF format.
+      <FontAwesomeIcon icon={faDownload} className="-mt-1 h-1 w-1" />{" "}
+      <span className="font-semibold">Download</span>{" "}
+      <span className="text-black">this resume in PDF format.</span>
+    </a>
   </div>
 );
 

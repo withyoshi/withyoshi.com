@@ -25,7 +25,7 @@ const SummaryCard = ({
           {headingTitle}
         </span>
       </h3>
-      <div className="">{children}</div>
+      <div className="text-pretty">{children}</div>
     </div>
   );
 };
@@ -98,7 +98,7 @@ const PersonalNote = ({ className = "" }: PersonalNoteProps) => {
         <h4 className="text-sm font-semibold text-mint-600">
           Traits & passions
         </h4>
-        <p className="text-sm text-gray-700">
+        <p className="text-sm text-balance text-gray-700">
           Friendly and curious. I&apos;m into photography, piano, and building
           things in my homelab.
         </p>

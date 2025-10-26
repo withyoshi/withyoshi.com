@@ -82,7 +82,7 @@ const TimelineItem = ({
         })()}
       </div>
       <div
-        className={`description mt-2 overflow-hidden text-sm tracking-tight text-gray-700 transition-all duration-300 ease-in-out [&>*+p]:mt-2 [&>*+ul]:mt-1 [&>ul]:list-outside [&>ul]:list-disc [&>ul]:space-y-1 [&>ul]:pl-4 [&>ul>li]:leading-snug [&>ul>li::marker]:text-mint-600 ${
+        className={`description mt-2 overflow-hidden text-sm tracking-tight text-pretty text-gray-700 transition-all duration-300 ease-in-out [&>*+p]:mt-2 [&>*+ul]:mt-1 [&>ul]:list-outside [&>ul]:list-disc [&>ul]:space-y-1 [&>ul]:pl-4 [&>ul>li]:leading-snug [&>ul>li::marker]:text-mint-600 ${
           isExpanded
             ? "max-h-screen opacity-100"
             : "max-h-0 opacity-0 md:max-h-screen md:opacity-100"
