@@ -7,12 +7,12 @@ import { useState } from "react";
 
 // Extend HTMLAnchorElement to include startY property
 declare global {
-  interface HTMLAnchorElement {
+  type HTMLAnchorElement = {
     startY?: number;
-  }
+  };
 }
 
-interface LaunchItemProps {
+type LaunchItemProps = {
   state: "ready" | "upcoming";
   icon?: IconDefinition;
   title?: string;
@@ -22,7 +22,7 @@ interface LaunchItemProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   onClick?: () => void;
-}
+};
 
 export default function LaunchItem({
   state,
@@ -60,8 +60,12 @@ export default function LaunchItem({
 
     // Focus the element to trigger focus styles on mobile
     e.currentTarget.focus();
-    if (onClick) onClick();
-    if (!href) return;
+    if (onClick) {
+      onClick();
+    }
+    if (!href) {
+      return;
+    }
     e.preventDefault();
 
     // Start loading state
@@ -75,9 +79,13 @@ export default function LaunchItem({
   };
 
   const handleAnchorClick = () => {
-    if (onClick) onClick();
+    if (onClick) {
+      onClick();
+    }
 
-    if (!href) return;
+    if (!href) {
+      return;
+    }
 
     // Desktop clicks proceed immediately without loading state
   };
@@ -113,23 +121,23 @@ export default function LaunchItem({
         <a
           className={combinedClasses}
           href={href}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
+          onClick={handleAnchorClick}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
-          onClick={handleAnchorClick}
+          onTouchEnd={handleTouchEnd}
+          onTouchStart={handleTouchStart}
         >
           <div>
             {icon && (
               <div className="text-3xl">
                 {isLoading ? (
                   <FontAwesomeIcon
-                    icon={faSpinner}
                     className={`${iconClasses[state]} animate-spin`}
+                    icon={faSpinner}
                     style={{ animationDuration: "4s" }}
                   />
                 ) : (
-                  <FontAwesomeIcon icon={icon} className={iconClasses[state]} />
+                  <FontAwesomeIcon className={iconClasses[state]} icon={icon} />
                 )}
               </div>
             )}
@@ -144,7 +152,7 @@ export default function LaunchItem({
           <div>
             {icon && (
               <div className="text-3xl">
-                <FontAwesomeIcon icon={icon} className={iconClasses[state]} />
+                <FontAwesomeIcon className={iconClasses[state]} icon={icon} />
               </div>
             )}
             {title && <h4 className={titleClasses[state]}>{title}</h4>}

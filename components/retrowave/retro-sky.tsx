@@ -1,9 +1,9 @@
 "use client";
 
-interface RetroSkyProps {
+type RetroSkyProps = {
   activePreset: string;
   className?: string;
-}
+};
 
 // Default gradient presets - just 2 colors each
 const defaultPresets: { [key: string]: [string, string] } = {

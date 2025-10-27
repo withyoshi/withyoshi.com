@@ -11,13 +11,13 @@ import {
 } from "./contexts/phone-modal-context";
 import PhoneRequestModal from "./phone-request-modal";
 
-interface ContactOptionProps {
+type ContactOptionProps = {
   icon: IconDefinition;
   label: string;
   description: string;
   action: string;
   href: string;
-}
+};
 
 const ContactOption = ({
   icon,
@@ -27,15 +27,15 @@ const ContactOption = ({
   href,
 }: ContactOptionProps) => (
   <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
     className="group block rounded-lg border border-gray-200 p-4 hover:border-mint-600/50 hover:bg-green-50"
+    href={href}
+    rel="noopener noreferrer"
+    target="_blank"
   >
     <div className="flex items-start gap-3">
       <FontAwesomeIcon
-        icon={icon}
         className="mt-1 h-6 w-6 flex-shrink-0 text-mint-600"
+        icon={icon}
       />
       <div className="flex-1">
         <h3 className="font-semibold text-black">{label}</h3>
@@ -83,12 +83,12 @@ function ContactSectionContent() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {contactOptions.map((option) => (
             <ContactOption
-              key={option.label}
-              icon={option.icon}
-              label={option.label}
-              description={option.description}
               action={option.action}
+              description={option.description}
               href={option.href}
+              icon={option.icon}
+              key={option.label}
+              label={option.label}
             />
           ))}
         </div>
@@ -97,8 +97,8 @@ function ContactSectionContent() {
         <div className="space-y-2">
           <h3 className="font-bold">Other ways to connect</h3>
           <ContactCard
-            items={["linkedin", "github", "phone"]}
             className="inline-grid grid-cols-[auto_auto_auto] gap-0"
+            items={["linkedin", "github", "phone"]}
           />
         </div>
       </div>

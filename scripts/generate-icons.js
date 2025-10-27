@@ -39,7 +39,7 @@ async function generateIcons() {
       const outputPath = path.join(outputDir, config.name);
 
       console.log(
-        `Generating ${config.name} (${config.size}x${config.size})...`,
+        `Generating ${config.name} (${config.size}x${config.size})...`
       );
 
       const sharpInstance = sharp(sourceImage).resize(
@@ -48,7 +48,7 @@ async function generateIcons() {
         {
           fit: "contain",
           background: { r: 0, g: 0, b: 0, alpha: 0 },
-        },
+        }
       );
 
       if (config.format === "ico") {

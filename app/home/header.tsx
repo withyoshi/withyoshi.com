@@ -37,7 +37,7 @@ export default function Header() {
     setImagesLoaded((prev) => ({ ...prev, [imageType]: true }));
   };
 
-  const updateMask = useCallback((x: number, y: number, alpha: number = 0) => {
+  const updateMask = useCallback((x: number, y: number, alpha = 0) => {
     if (sentientImageRef.current) {
       const maskGradient = `radial-gradient(circle at ${x}px ${y}px, rgba(0,0,0,1) 10%, rgba(0,0,0,${alpha}) 25%, rgba(0,0,0,1) 75%)`;
       sentientImageRef.current.style.mask = maskGradient;
@@ -76,6 +76,7 @@ export default function Header() {
         const fadeDuration = 1000; // 1 second for alpha fade
         const totalDuration = sweepDuration + fadeDuration;
 
+        // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Animation logic requires multiple conditions
         const animate = (currentTime: number) => {
           const elapsed = currentTime - startTime;
           const progress = Math.min(elapsed / totalDuration, 1);
@@ -341,23 +342,25 @@ export default function Header() {
       `}</style>
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Header has visual-only mouse tracking effects */}
       <header
-        ref={headerRef}
-        onMouseMove={handleMouseMove}
-        onTouchMove={handleTouchMove}
+        className={
+          "fx-vignette group is-loading @container relative overflow-hidden bg-[#a8a8a8]"
+        }
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`fx-vignette group is-loading @container relative overflow-hidden bg-[#a8a8a8]`}
+        onMouseMove={handleMouseMove}
+        onTouchMove={handleTouchMove}
+        ref={headerRef}
       >
         {/* Cursor circle */}
         <div
-          ref={cursorCircleRef}
           className="background-white/10 -translate-x-1/2 -translate-y-1/2 pointer-events-none absolute inset-shadow-[0px_0px_24px_rgba(0,0,0,0.75)] z-50 cursor-circle rounded-full opacity-0 outline-1 outline-teal-600 backdrop-hue-rotate-145 transition-opacity duration-500 group-hover:opacity-100"
+          ref={cursorCircleRef}
         />
         <section className="relative z-20 bg-gradient-to-b from-white/65 to-transparent py-12">
           <ShadowSlit
-            fill="#fff"
             className="absolute top-0 left-0 z-20 h-[240px] w-full opacity-50"
             direction="top"
+            fill="#fff"
           />
           <div className="mx-auto max-w-screen-md">
             <h1 className="">
@@ -385,32 +388,32 @@ export default function Header() {
         <section className="-mt-12 relative z-10">
           <div className="@container relative mx-auto max-w-screen-md">
             <div
-              ref={sentientRef}
               className="sentient-man sentient -mt-[46cqw] relative z-10 aspect-square w-full select-none"
+              ref={sentientRef}
             >
               <Image
-                ref={sentientImageRef}
-                src="/images/yoshi-sentient-overlay.jpg"
                 alt="Sentient after"
-                width={2048}
-                height={2048}
                 className="absolute inset-0 z-10 select-none object-cover"
                 draggable={false}
+                height={2048}
                 onLoad={() => handleImageLoad("after")}
+                ref={sentientImageRef}
+                src="/images/yoshi-sentient-overlay.jpg"
+                width={2048}
               />
               <Image
-                src="/images/yoshi-sentient.jpg"
                 alt="Sentient before"
-                width={2048}
-                height={2048}
                 className="absolute inset-0 select-none object-cover"
                 draggable={false}
+                height={2048}
                 onLoad={() => handleImageLoad("before")}
+                src="/images/yoshi-sentient.jpg"
+                width={2048}
               />
             </div>
             <ShadowSlit
-              fill="#00afb9"
               className="absolute bottom-0 left-[-20%] z-20 h-[80px] w-[140%] border-[#ffffffcc] border-b-1"
+              fill="#00afb9"
             />
           </div>
         </section>

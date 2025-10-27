@@ -68,8 +68,7 @@ export async function getUserCountry(): Promise<string> {
   try {
     cachedCountry = await countryDetectionPromise;
     return cachedCountry;
-  } catch (error) {
-    console.warn("Failed to detect country from IP:", error);
+  } catch (_error) {
     return "DEFAULT";
   } finally {
     countryDetectionPromise = null;
@@ -95,8 +94,7 @@ async function detectCountryFromIP(): Promise<string> {
 
     const data = await response.json();
     return data.country || "DEFAULT";
-  } catch (error) {
-    console.warn("IP geolocation failed:", error);
+  } catch (_error) {
     return "DEFAULT";
   }
 }
@@ -108,8 +106,7 @@ export async function getPhonePlaceholder(): Promise<string> {
   try {
     const country = await getUserCountry();
     return phoneFormats[country] || phoneFormats.DEFAULT;
-  } catch (error) {
-    console.warn("Failed to get phone placeholder:", error);
+  } catch (_error) {
     return phoneFormats.DEFAULT;
   }
 }

@@ -1,9 +1,8 @@
 "use client";
 import Image from "next/image";
-import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-interface LivePhotoProps {
+type LivePhotoProps = {
   className?: string;
   imageSrc: string;
   imageAlt: string;
@@ -12,7 +11,7 @@ interface LivePhotoProps {
   videoSrc: string;
   videoSrcWebm?: string;
   autoPlay?: boolean;
-}
+};
 
 const LivePhoto = ({
   className = "",
@@ -44,14 +43,13 @@ const LivePhoto = ({
             .then(() => {
               setIsVideoVisible(true);
             })
-            .catch((error) => {
-              console.log("Play interrupted:", error);
+            .catch((_error) => {
               setIsPlaying(false);
             });
         }
       }
     },
-    [isVideoLoaded, isImageLoaded],
+    [isVideoLoaded, isImageLoaded]
   );
 
   const restartVideo = () => {
@@ -67,20 +65,16 @@ const LivePhoto = ({
   };
 
   const toggleVideo = () => {
-    if (!isVideoVisible) {
-      playVideo();
-    } else {
+    if (isVideoVisible) {
       pauseVideo();
+    } else {
+      playVideo();
     }
   };
 
   const handleVideoEnded = () => {
     setIsVideoVisible(false);
     setIsPlaying(false);
-  };
-
-  const handleVideoError = (event: React.SyntheticEvent<HTMLVideoElement>) => {
-    console.error("Video error:", event);
   };
 
   const handleImageLoaded = () => {
@@ -100,7 +94,9 @@ const LivePhoto = ({
 
   // Monitor video readyState with timeout
   useEffect(() => {
-    if (isVideoLoaded) return;
+    if (isVideoLoaded) {
+      return;
+    }
 
     let attempts = 0;
     const maxAttempts = 10;
@@ -122,27 +118,26 @@ const LivePhoto = ({
   return (
     <div className={`relative ${className}`}>
       <Image
-        src={imageSrc}
-        width={imageWidth}
-        height={imageHeight}
         alt={imageAlt}
         className="absolute inset-0 z-10 h-full w-full object-cover object-bottom"
+        height={imageHeight}
         onLoad={handleImageLoaded}
+        src={imageSrc}
+        width={imageWidth}
       />
       <video
-        ref={videoRef}
-        src={videoSrc}
         className={`absolute inset-0 z-20 h-full w-full object-cover object-bottom transition-opacity duration-700 ease-in-out ${
           isVideoVisible ? "opacity-100" : "opacity-0"
         }`}
+        muted
         onClick={toggleVideo}
+        onEnded={handleVideoEnded}
         onMouseEnter={restartVideo}
         onMouseLeave={pauseVideo}
-        onEnded={handleVideoEnded}
-        onError={handleVideoError}
-        muted
         playsInline
         preload="auto"
+        ref={videoRef}
+        src={videoSrc}
       />
     </div>
   );

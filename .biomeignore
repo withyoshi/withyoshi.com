@@ -1,9 +1,0 @@
-node_modules/
-.next/
-out/
-build/
-internal/
-experiments/
-*.lock
-pnpm-lock.yaml
-next-env.d.ts

@@ -83,9 +83,9 @@ export default function Footer() {
     <footer className="relative bg-black">
       <div className="relative z-30 mx-auto max-w-screen-md p-8 pt-24 pb-32 sm:p-10 md:p-16 md:pb-48">
         <ShadowSlit
-          fill="#00afb9"
           className="pointer-events-none absolute top-0 left-[-20%] z-20 h-[80px] w-[140%] border-[#ffffffcc] border-t-1"
           direction="top"
+          fill="#00afb9"
         />
         <h2 className="mt-12 mb-6 text-center">
           <span className="-mb-1.5 block whitespace-nowrap font-lexend font-thin text-3xl text-teal-600 sm:text-4xl">
@@ -100,16 +100,16 @@ export default function Footer() {
         <div className="my-12 grid grid-cols-2 gap-4 text-center sm:gap-6">
           {launchItems.map((item) => (
             <LaunchItem
-              key={item.title}
-              state={item.state}
-              icon={item.icon}
-              title={item.title}
+              className={item.className}
               description={item.description}
               href={item.href}
-              className={item.className}
+              icon={item.icon}
+              key={item.title}
+              onClick={() => setActivePresetName(item.preset)}
               onMouseEnter={() => setActivePresetName(item.preset)}
               onMouseLeave={() => setActivePresetName("dark-space")}
-              onClick={() => setActivePresetName(item.preset)}
+              state={item.state}
+              title={item.title}
             />
           ))}
         </div>

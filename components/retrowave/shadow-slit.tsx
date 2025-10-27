@@ -1,8 +1,8 @@
-interface ShadowSlitProps {
+type ShadowSlitProps = {
   fill?: string;
   className?: string;
   direction?: "top" | "bottom";
-}
+};
 
 export default function ShadowSlit({
   fill = "#00afb9",
@@ -20,8 +20,8 @@ export default function ShadowSlit({
       <svg
         aria-hidden="true"
         className={`relative h-full w-full opacity-75 blur-md ${directionClasses}`}
-        viewBox="0 0 100 40"
         preserveAspectRatio="none"
+        viewBox="0 0 100 40"
       >
         <path d="M0,40 Q50,10 100,40 Z" fill={fill} />
       </svg>

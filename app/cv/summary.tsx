@@ -4,56 +4,50 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type React from "react";
 import LivePhoto from "./live-photo";
 
-interface SummaryCardProps {
+type SummaryCardProps = {
   headingCaption: string;
   headingTitle: string;
   children: React.ReactNode;
-}
+};
 
 const SummaryCard = ({
   headingCaption,
   headingTitle,
   children,
-}: SummaryCardProps) => {
-  return (
-    <div className="px-10">
-      <h3 className="mb-3 text-left font-medium text-xl">
-        <span className="-mb-1 block font-bold text-base">
-          {headingCaption}
-        </span>
-        <span className="block font-medium text-2xl text-mint-600 tracking-tight">
-          {headingTitle}
-        </span>
-      </h3>
-      <div className="text-pretty">{children}</div>
-    </div>
-  );
-};
+}: SummaryCardProps) => (
+  <div className="px-10">
+    <h3 className="mb-3 text-left font-medium text-xl">
+      <span className="-mb-1 block font-bold text-base">{headingCaption}</span>
+      <span className="block font-medium text-2xl text-mint-600 tracking-tight">
+        {headingTitle}
+      </span>
+    </h3>
+    <div className="text-pretty">{children}</div>
+  </div>
+);
 
-interface ExperienceItem {
+type ExperienceItem = {
   key: string;
   content: React.ReactElement;
-}
-
-interface ExperienceListProps {
-  experiences: ExperienceItem[];
-}
-
-const ExperienceList = ({ experiences }: ExperienceListProps) => {
-  return (
-    <ul className="space-y-3">
-      {experiences.map((experience) => (
-        <li key={experience.key} className="flex items-start gap-2 leading-5">
-          <FontAwesomeIcon
-            icon={faCheck}
-            className="mt-1 h-3 w-3 flex-shrink-0 text-mint-600"
-          />
-          <span>{experience.content}</span>
-        </li>
-      ))}
-    </ul>
-  );
 };
+
+type ExperienceListProps = {
+  experiences: ExperienceItem[];
+};
+
+const ExperienceList = ({ experiences }: ExperienceListProps) => (
+  <ul className="space-y-3">
+    {experiences.map((experience) => (
+      <li className="flex items-start gap-2 leading-5" key={experience.key}>
+        <FontAwesomeIcon
+          className="mt-1 h-3 w-3 flex-shrink-0 text-mint-600"
+          icon={faCheck}
+        />
+        <span>{experience.content}</span>
+      </li>
+    ))}
+  </ul>
+);
 
 const ExperienceKeyword = ({ children }: { children: React.ReactNode }) => (
   <span className="font-semibold text-mint-600">{children}</span>
@@ -132,39 +126,35 @@ const leadershipExperience: ExperienceItem[] = [
   },
 ];
 
-interface PersonalNoteProps {
+type PersonalNoteProps = {
   className?: string;
-}
-
-const PersonalNote = ({ className = "" }: PersonalNoteProps) => {
-  return (
-    <section className={`${className}`}>
-      <div
-        className={`md:after:-bottom-[1rem] relative rounded-sm bg-green-50 p-6 pt-4 pb-5 md:ml-3 md:translate-x-4 md:rounded-br-none md:border-l-4 md:border-l-mint-600 md:shadow-sm md:after:absolute md:after:right-0 md:after:h-0 md:after:w-0 md:after:border-t-[1rem] md:after:border-t-mint-600 md:after:border-r-[1rem] md:after:border-r-transparent md:after:content-['']`}
-      >
-        <h4 className="font-semibold text-mint-600 text-sm">
-          Traits & passions
-        </h4>
-        <p className="text-balance text-gray-700 text-sm">
-          Friendly and curious. I&apos;m into photography, piano, and building
-          things in my homelab.
-        </p>
-      </div>
-    </section>
-  );
 };
+
+const PersonalNote = ({ className = "" }: PersonalNoteProps) => (
+  <section className={`${className}`}>
+    <div
+      className={`md:after:-bottom-[1rem] relative rounded-sm bg-green-50 p-6 pt-4 pb-5 md:ml-3 md:translate-x-4 md:rounded-br-none md:border-l-4 md:border-l-mint-600 md:shadow-sm md:after:absolute md:after:right-0 md:after:h-0 md:after:w-0 md:after:border-t-[1rem] md:after:border-t-mint-600 md:after:border-r-[1rem] md:after:border-r-transparent md:after:content-['']`}
+    >
+      <h4 className="font-semibold text-mint-600 text-sm">Traits & passions</h4>
+      <p className="text-balance text-gray-700 text-sm">
+        Friendly and curious. I&apos;m into photography, piano, and building
+        things in my homelab.
+      </p>
+    </div>
+  </section>
+);
 
 const Summary = ({ className }: { className?: string }) => (
   <div className="flex flex-col md:flex-row">
     <div className="relative hidden min-h-10 min-w-[30%] overflow-hidden lg:block">
       <LivePhoto
-        className="h-full w-full"
-        imageSrc="/images/cv-hero.jpg"
-        imageAlt="CV background"
-        imageWidth={1080}
-        imageHeight={1800}
-        videoSrc="/images/cv-hero.mp4"
         autoPlay={true}
+        className="h-full w-full"
+        imageAlt="CV background"
+        imageHeight={1800}
+        imageSrc="/images/cv-hero.jpg"
+        imageWidth={1080}
+        videoSrc="/images/cv-hero.mp4"
       />
     </div>
     <div className={`width-full flex-1 ${className || ""}`}>

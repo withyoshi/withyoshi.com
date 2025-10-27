@@ -1,21 +1,21 @@
 import type React from "react";
 
-interface SunConfig {
+type SunPreset = {
   sunColorPrimary: string;
   sunColorSecondary: string;
   glowColor: string;
   size: string;
   posX: string;
   posY: string;
-}
+};
 
-interface RetroSunProps {
+type RetroSunProps = {
   className?: string;
   preset?: "white" | "pink" | "none";
-}
+};
 
 // Preset configurations
-const SUN_PRESETS: Record<string, SunConfig> = {
+const SUN_PRESETS: Record<string, SunPreset> = {
   white: {
     sunColorPrimary: "#8adcd3",
     sunColorSecondary: "#0f172a",
@@ -46,24 +46,24 @@ const RetroSun: React.FC<RetroSunProps> = ({
   className = "",
   preset = "none",
 }) => {
-  const sunConfig = SUN_PRESETS[preset];
+  const currentSunPreset = SUN_PRESETS[preset];
 
-  const getSunStyles = (sunConfig: SunConfig) => {
-    const shadow = `0 0 100px ${sunConfig.glowColor}`;
+  const getSunStyles = (sunPreset: SunPreset) => {
+    const shadow = `0 0 100px ${sunPreset.glowColor}`;
 
     return {
-      backgroundColor: sunConfig.sunColorPrimary,
+      backgroundColor: sunPreset.sunColorPrimary,
       boxShadow: shadow,
       height: "100%",
       bottom: 0,
       left: "50%",
-      transform: `translate(${sunConfig.posX}, ${sunConfig.posY}) scale(${sunConfig.size})`,
+      transform: `translate(${sunPreset.posX}, ${sunPreset.posY}) scale(${sunPreset.size})`,
       transformOrigin: "center",
-      "--secondary-color": sunConfig.sunColorSecondary,
+      "--secondary-color": sunPreset.sunColorSecondary,
     };
   };
 
-  const currentStyles = getSunStyles(sunConfig);
+  const currentStyles = getSunStyles(currentSunPreset);
 
   return (
     <>

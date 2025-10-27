@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
         { error: "Too many requests. Please try again later." },
-        { status: 429 },
+        { status: 429 }
       );
     }
 
@@ -71,14 +71,12 @@ export async function POST(request: NextRequest) {
 
     // Honeypot check - if website field is filled, it's likely a bot
     if (website && website.trim() !== "") {
-      console.log("Bot detected via honeypot");
       return NextResponse.json({ success: true }, { status: 200 }); // Silent success
     }
 
     // Spam detection
     const fullText = `${name} ${phone} ${message}`.toLowerCase();
     if (isSpam(fullText)) {
-      console.log("Spam detected:", { name, phone });
       return NextResponse.json({ success: true }, { status: 200 }); // Silent success
     }
 
@@ -91,11 +89,10 @@ export async function POST(request: NextRequest) {
     const chatId = process.env.TELEGRAM_CHAT_ID;
     const topicId = process.env.TELEGRAM_TOPIC_ID; // Optional topic ID for groups
 
-    if (!botToken || !chatId) {
-      console.error("Telegram bot configuration missing");
+    if (!(botToken && chatId)) {
       return NextResponse.json(
         { error: "Bot configuration error" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -137,24 +134,22 @@ ${sanitizedMessage}
           "Content-Type": "application/json",
         },
         body: JSON.stringify(messagePayload),
-      },
+      }
     );
 
     if (!telegramResponse.ok) {
-      const errorData = await telegramResponse.json();
-      console.error("Telegram API error:", errorData);
+      const _errorData = await telegramResponse.json();
       return NextResponse.json(
         { error: "Failed to send message" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
-    console.error("Error sending Telegram message:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Failed to send message" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

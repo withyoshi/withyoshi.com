@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -37,27 +37,28 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-interface PhoneRequestModalProps {
+type PhoneRequestModalProps = {
   isOpen: boolean;
   onClose: () => void;
-}
+};
 
-interface SuccessModalProps {
+type SuccessModalProps = {
   isOpen: boolean;
   onClose: () => void;
   submittedData: ContactFormData;
-}
+};
 
 function SuccessModal({ isOpen, onClose, submittedData }: SuccessModalProps) {
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       {/* biome-ignore lint/a11y/useSemanticElements: Backdrop should be a div, not a button */}
       <div
-        role="button"
-        tabIndex={0}
+        aria-label="Close modal"
         className="absolute inset-0 bg-black opacity-50 transition-opacity duration-300 ease-in-out"
         onClick={onClose}
         onKeyDown={(e) => {
@@ -66,7 +67,8 @@ function SuccessModal({ isOpen, onClose, submittedData }: SuccessModalProps) {
             onClose();
           }
         }}
-        aria-label="Close modal"
+        role="button"
+        tabIndex={0}
       />
 
       {/* Modal */}
@@ -83,12 +85,12 @@ function SuccessModal({ isOpen, onClose, submittedData }: SuccessModalProps) {
             </p>
           </div>
           <button
-            type="button"
-            onClick={onClose}
-            className="flex-shrink-0 cursor-pointer text-gray-400 transition-colors duration-200 hover:text-gray-600"
             aria-label="Close modal"
+            className="flex-shrink-0 cursor-pointer text-gray-400 transition-colors duration-200 hover:text-gray-600"
+            onClick={onClose}
+            type="button"
           >
-            <FontAwesomeIcon icon={faTimes} className="h-6 w-6" />
+            <FontAwesomeIcon className="h-6 w-6" icon={faTimes} />
           </button>
         </div>
 
@@ -98,7 +100,7 @@ function SuccessModal({ isOpen, onClose, submittedData }: SuccessModalProps) {
 
           <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <FontAwesomeIcon icon={faUser} className="mt-1.5 text-xs" />
+              <FontAwesomeIcon className="mt-1.5 text-xs" icon={faUser} />
               <div>
                 <span className="font-semibold text-sm">Name</span>
                 <p className="text-gray-800 text-sm">{submittedData.name}</p>
@@ -106,7 +108,7 @@ function SuccessModal({ isOpen, onClose, submittedData }: SuccessModalProps) {
             </div>
 
             <div className="flex items-start gap-3">
-              <FontAwesomeIcon icon={faPhone} className="mt-1.5 text-xs" />
+              <FontAwesomeIcon className="mt-1.5 text-xs" icon={faPhone} />
               <div>
                 <span className="font-semibold text-sm">Phone</span>
                 <p className="text-gray-800 text-sm">{submittedData.phone}</p>
@@ -114,7 +116,7 @@ function SuccessModal({ isOpen, onClose, submittedData }: SuccessModalProps) {
             </div>
 
             <div className="flex items-start gap-2">
-              <FontAwesomeIcon icon={faMessage} className="mt-1.5 text-xs" />
+              <FontAwesomeIcon className="mt-1.5 text-xs" icon={faMessage} />
               <div className="flex-1">
                 <span className="font-semibold text-sm">Message</span>
                 <p className="break-words text-sm">{submittedData.message}</p>
@@ -125,8 +127,8 @@ function SuccessModal({ isOpen, onClose, submittedData }: SuccessModalProps) {
 
         {/* Action Button */}
         <Button
-          onClick={onClose}
           className="w-full bg-mint-600 py-6 hover:bg-mint-500"
+          onClick={onClose}
         >
           Close
         </Button>
@@ -145,10 +147,10 @@ export default function PhoneRequestModal({
   >("idle");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [submittedData, setSubmittedData] = useState<ContactFormData | null>(
-    null,
+    null
   );
   const [phonePlaceholder, setPhonePlaceholder] = useState(
-    getPhonePlaceholderSync(),
+    getPhonePlaceholderSync()
   );
 
   // Load dynamic phone placeholder on component mount
@@ -157,8 +159,7 @@ export default function PhoneRequestModal({
       try {
         const placeholder = await getPhonePlaceholder();
         setPhonePlaceholder(placeholder);
-      } catch (error) {
-        console.warn("Failed to load dynamic phone placeholder:", error);
+      } catch (_error) {
         // Keep the default placeholder from getPhonePlaceholderSync()
       }
     };
@@ -180,7 +181,6 @@ export default function PhoneRequestModal({
   const onSubmit = async (data: ContactFormData) => {
     // Honeypot check - if website field is filled, it's likely a bot
     if (data.website && data.website.trim() !== "") {
-      console.log("Bot detected via honeypot");
       return; // Silently reject
     }
 
@@ -204,8 +204,7 @@ export default function PhoneRequestModal({
       } else {
         setSubmitStatus("error");
       }
-    } catch (error) {
-      console.error("Error submitting form:", error);
+    } catch (_error) {
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
@@ -219,7 +218,9 @@ export default function PhoneRequestModal({
     onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   return (
     <>
@@ -229,8 +230,7 @@ export default function PhoneRequestModal({
         {/* Backdrop */}
         {/* biome-ignore lint/a11y/useSemanticElements: Backdrop should be a div, not a button */}
         <div
-          role="button"
-          tabIndex={0}
+          aria-label="Close modal"
           className="absolute inset-0 bg-black opacity-50 transition-opacity duration-300 ease-in-out"
           onClick={onClose}
           onKeyDown={(e) => {
@@ -239,7 +239,8 @@ export default function PhoneRequestModal({
               onClose();
             }
           }}
-          aria-label="Close modal"
+          role="button"
+          tabIndex={0}
         />
 
         {/* Modal */}
@@ -255,18 +256,18 @@ export default function PhoneRequestModal({
               </p>
             </div>
             <button
-              type="button"
-              onClick={onClose}
-              className="flex-shrink-0 cursor-pointer text-gray-400 transition-colors duration-200 hover:text-gray-600"
               aria-label="Close modal"
+              className="flex-shrink-0 cursor-pointer text-gray-400 transition-colors duration-200 hover:text-gray-600"
+              onClick={onClose}
+              type="button"
             >
-              <FontAwesomeIcon icon={faTimes} className="h-6 w-6" />
+              <FontAwesomeIcon className="h-6 w-6" icon={faTimes} />
             </button>
           </div>
 
           {/* Form */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
                 name="name"
@@ -275,8 +276,8 @@ export default function PhoneRequestModal({
                     <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Your name"
                         className="placeholder:text-gray-400"
+                        placeholder="Your name"
                         {...field}
                       />
                     </FormControl>
@@ -296,8 +297,6 @@ export default function PhoneRequestModal({
                       <FormLabel>Phone Number</FormLabel>
                       <FormControl>
                         <Input
-                          type="tel"
-                          placeholder={phonePlaceholder}
                           className={`placeholder:text-gray-400 ${
                             isValid
                               ? "focus:border-green-500 focus:ring-0"
@@ -305,6 +304,8 @@ export default function PhoneRequestModal({
                                 ? "border-red-500 focus:border-red-500 focus:ring-0"
                                 : "focus:ring-0"
                           }`}
+                          placeholder={phonePlaceholder}
+                          type="tel"
                           {...field}
                         />
                       </FormControl>
@@ -322,8 +323,8 @@ export default function PhoneRequestModal({
                     <FormLabel>Message</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Your message, e.g. introduction, reason for calling, preferred calling hours, etc."
                         className="min-h-[120px] placeholder:text-gray-400"
+                        placeholder="Your message, e.g. introduction, reason for calling, preferred calling hours, etc."
                         {...field}
                       />
                     </FormControl>
@@ -341,9 +342,9 @@ export default function PhoneRequestModal({
                     <FormLabel>Website (leave empty)</FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
-                        tabIndex={-1}
                         autoComplete="off"
+                        tabIndex={-1}
+                        type="text"
                         {...field}
                       />
                     </FormControl>
@@ -360,9 +361,9 @@ export default function PhoneRequestModal({
               )}
 
               <Button
-                type="submit"
                 className="w-full py-6"
                 disabled={isSubmitting}
+                type="submit"
               >
                 {isSubmitting ? "Sending..." : "Request a Call"}
               </Button>

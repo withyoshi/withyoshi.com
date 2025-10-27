@@ -2,19 +2,19 @@
 
 import { createContext, type ReactNode, useContext, useState } from "react";
 
-interface PhoneModalContextType {
+type PhoneModalContextType = {
   isOpen: boolean;
   openModal: () => void;
   closeModal: () => void;
-}
+};
 
 const PhoneModalContext = createContext<PhoneModalContextType | undefined>(
-  undefined,
+  undefined
 );
 
-interface PhoneModalProviderProps {
+type PhoneModalProviderProps = {
   children: ReactNode;
-}
+};
 
 export function PhoneModalProvider({ children }: PhoneModalProviderProps) {
   const [isOpen, setIsOpen] = useState(false);

@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ReactNode } from "react";
 import { useContactData } from "./hooks/use-contact-data";
 
-interface ContactItemProps {
+type ContactItemProps = {
   icon: IconDefinition;
   label: string;
   value: string | ReactNode;
   href?: string;
   action?: () => void;
-}
+};
 
 const ContactItem = ({
   icon,
@@ -23,8 +23,8 @@ const ContactItem = ({
   const content = (
     <div className="flex items-start gap-1 whitespace-nowrap rounded px-2 py-2 pr-2.5 text-left sm:gap-1.5">
       <FontAwesomeIcon
-        icon={icon}
         className="mt-0.5 h-4 w-4 flex-shrink-0 text-mint-600"
+        icon={icon}
       />
       <span className="block">
         <span className="block font-medium text-black text-sm">{label}</span>
@@ -36,11 +36,11 @@ const ContactItem = ({
   if (href) {
     return (
       <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block rounded border-1 border-transparent hover:border-mint-600/50 hover:bg-green-50"
         aria-label={`${label}: ${value} (opens in new tab)`}
+        className="block rounded border-1 border-transparent hover:border-mint-600/50 hover:bg-green-50"
+        href={href}
+        rel="noopener noreferrer"
+        target="_blank"
         title={`Visit ${label} - ${value}`}
       >
         {content}
@@ -51,11 +51,11 @@ const ContactItem = ({
   if (action) {
     return (
       <button
-        type="button"
-        onClick={action}
-        className="block w-full cursor-pointer rounded border-1 border-transparent hover:border-mint-600/50 hover:bg-green-50"
         aria-label={`${label}: ${value}`}
+        className="block w-full cursor-pointer rounded border-1 border-transparent hover:border-mint-600/50 hover:bg-green-50"
+        onClick={action}
         title={`${label} - ${value}`}
+        type="button"
       >
         {content}
       </button>
@@ -65,10 +65,10 @@ const ContactItem = ({
   return content;
 };
 
-interface ContactCardProps {
+type ContactCardProps = {
   className?: string;
   items?: string[];
-}
+};
 
 const ContactCard = ({ className, items }: ContactCardProps) => {
   const contactData = useContactData();
@@ -92,12 +92,12 @@ const ContactCard = ({ className, items }: ContactCardProps) => {
     >
       {itemsToShow.map((item) => (
         <ContactItem
-          key={item.key}
+          action={item.data.action}
+          href={item.data.href}
           icon={item.data.icon}
+          key={item.key}
           label={item.data.label}
           value={item.data.value}
-          href={item.data.href}
-          action={item.data.action}
         />
       ))}
     </div>

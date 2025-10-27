@@ -5,14 +5,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type React from "react";
 import { useState } from "react";
 
-interface TimelineItemProps {
+type TimelineItemProps = {
   date: string;
   title: string;
   mode?: string;
   company: string;
   location?: string;
   children: React.ReactNode;
-}
+};
 
 const TimelineItem = ({
   date,
@@ -52,10 +52,10 @@ const TimelineItem = ({
           const chevron = (
             <div className="ml-2 flex items-center text-mint-600">
               <FontAwesomeIcon
-                icon={faSortDown}
                 className={`h-4 w-4 transition-transform duration-200 ${
                   isExpanded ? "rotate-180" : ""
                 }`}
+                icon={faSortDown}
               />
             </div>
           );
@@ -64,12 +64,12 @@ const TimelineItem = ({
             <>
               {/* Mobile/Tablet: Interactive button */}
               <button
-                type="button"
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="flex w-full cursor-pointer items-center text-left md:hidden"
                 aria-label={
                   isExpanded ? "Collapse description" : "Expand description"
                 }
+                className="flex w-full cursor-pointer items-center text-left md:hidden"
+                onClick={() => setIsExpanded(!isExpanded)}
+                type="button"
               >
                 <div className="min-w-0 flex-1">{headerContent}</div>
                 <div className="ml-2 flex-shrink-0">{chevron}</div>
@@ -96,9 +96,9 @@ const TimelineItem = ({
   );
 };
 
-interface TimelineProps {
+type TimelineProps = {
   className?: string;
-}
+};
 
 const Timeline = ({ className }: TimelineProps) => (
   <div className={className}>
@@ -109,11 +109,11 @@ const Timeline = ({ className }: TimelineProps) => (
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-[auto_auto] md:gap-6 lg:grid-cols-[32%_34%_auto] xl:grid-cols-[auto_25%_auto_auto]">
       <TimelineItem
-        date="Nov 2024 - Oct 2025"
-        title="AI Engineer"
-        mode="Remote"
         company="Arcohub"
+        date="Nov 2024 - Oct 2025"
         location="Global"
+        mode="Remote"
+        title="AI Engineer"
       >
         <p>
           Built AI features and workflows for a business intelligence platform
@@ -136,11 +136,11 @@ const Timeline = ({ className }: TimelineProps) => (
       </TimelineItem>
 
       <TimelineItem
-        date="Jul 2020 - Oct 2024"
-        title="Engineering Team Lead"
-        mode="Remote"
         company="Automattic"
+        date="Jul 2020 - Oct 2024"
         location="San Francisco, US"
+        mode="Remote"
+        title="Engineering Team Lead"
       >
         <p>
           Led a 6-engineer team in modernizing Subscription Management on
@@ -170,11 +170,11 @@ const Timeline = ({ className }: TimelineProps) => (
       </TimelineItem>
 
       <TimelineItem
-        date="Jan 2020 - Jun 2020"
-        title="Senior Software Engineer"
-        mode="Remote"
         company="Automattic"
+        date="Jan 2020 - Jun 2020"
         location="San Francisco, US"
+        mode="Remote"
+        title="Senior Software Engineer"
       >
         <ul>
           <li>
@@ -194,11 +194,11 @@ const Timeline = ({ className }: TimelineProps) => (
       </TimelineItem>
 
       <TimelineItem
-        date="May 2015 - Dec 2019"
-        title="BI & Data Engineer"
-        mode="Hybrid"
         company="T-Systems NL"
+        date="May 2015 - Dec 2019"
         location="The Hague, NL"
+        mode="Hybrid"
+        title="BI & Data Engineer"
       >
         <p>
           Developed a suite of internal web-based tools for a terabyte-scale
@@ -226,11 +226,11 @@ const Timeline = ({ className }: TimelineProps) => (
       </TimelineItem>
 
       <TimelineItem
-        date="Feb 2013 - Oct 2013"
-        title="JavaScript Engineer (Mentor)"
-        mode="Remote"
         company="Google"
+        date="Feb 2013 - Oct 2013"
         location="Global"
+        mode="Remote"
+        title="JavaScript Engineer (Mentor)"
       >
         <p>
           Served as a JavaScript mentor on Google Summer of Code (GSoC) 2013
@@ -248,10 +248,10 @@ const Timeline = ({ className }: TimelineProps) => (
       </TimelineItem>
 
       <TimelineItem
-        date="Mar 2011 - Apr 2015"
-        title="Senior JavaScript Developer"
         company="StackIdeas"
+        date="Mar 2011 - Apr 2015"
         location="Kuala Lumpur, MY"
+        title="Senior JavaScript Developer"
       >
         <p>
           Developed core product features for EasyBlog & EasySocial, e.g. drag &
@@ -268,10 +268,10 @@ const Timeline = ({ className }: TimelineProps) => (
       </TimelineItem>
 
       <TimelineItem
-        date="Nov 2008 - Feb 2011"
-        title="Front End Developer"
         company="Slashes & Dots"
+        date="Nov 2008 - Feb 2011"
         location="Kuala Lumpur, MY"
+        title="Front End Developer"
       >
         <ul>
           <li>
@@ -287,9 +287,9 @@ const Timeline = ({ className }: TimelineProps) => (
       </TimelineItem>
 
       <TimelineItem
+        company="Self-Employed"
         date="2004 - 2008"
         title="Freelance Coder & Designer"
-        company="Self-Employed"
       >
         <p>
           Worked on various freelance coding and design work in my high school &
@@ -305,12 +305,12 @@ const Timeline = ({ className }: TimelineProps) => (
           My old design portfolio can be viewed at:
           <br />
           <a
-            href="https://behance.net/yansern"
-            target="_blank"
-            rel="noopener noreferrer"
             className="inline-flex items-center gap-1 underline-offset-3 hover:underline"
+            href="https://behance.net/yansern"
+            rel="noopener noreferrer"
+            target="_blank"
           >
-            <FontAwesomeIcon icon={faBehanceSquare} className="h-4 w-4" />
+            <FontAwesomeIcon className="h-4 w-4" icon={faBehanceSquare} />
             <span>behance.net/yansern</span>
           </a>
         </p>

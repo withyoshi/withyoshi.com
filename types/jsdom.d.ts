@@ -1,5 +1,5 @@
 declare module "jsdom" {
-  export interface ConstructorOptions {
+  export type ConstructorOptions = {
     url?: string;
     contentType?: string;
     includeNodeLocations?: boolean;
@@ -10,7 +10,7 @@ declare module "jsdom" {
     cookieJar?: unknown;
     pretendToBeVisual?: boolean;
     beforeParse?: (window: DOMWindow) => void;
-  }
+  };
 
   export interface DOMWindow extends Window {
     document: Document;

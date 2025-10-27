@@ -3,14 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useIsYoshiTheme } from "../../lib/site-context";
 
-interface RolodexTextProps {
+type RolodexTextProps = {
   items: string[];
   prefix?: string;
   className?: string;
   interval?: number;
   visibleItems?: number;
   bufferSize?: number;
-}
+};
 
 export default function RolodexText({
   items,
@@ -101,16 +101,16 @@ export default function RolodexText({
 
                 return (
                   <span
-                    key={`rolodex-${index}-${item}`}
                     className={`h-18 whitespace-nowrap px-5 font-lexend font-light text-3xl text-white/90 tracking-tight sm:text-4xl ${
                       isTransitioning
                         ? "transition-opacity duration-500 ease-in-out"
                         : ""
                     }`}
+                    key={`rolodex-${index}-${item}`}
                     style={{
                       display: "flex",
                       alignItems: "center",
-                      opacity: opacity,
+                      opacity,
                     }}
                   >
                     {item}

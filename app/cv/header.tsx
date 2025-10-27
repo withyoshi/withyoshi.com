@@ -7,14 +7,14 @@ export default function Header({ className }: { className?: string }) {
     <div
       className={cn(
         "flex flex-col items-center gap-7 lg:flex-row lg:flex-wrap lg:items-start lg:justify-between lg:gap-4",
-        className,
+        className
       )}
     >
       <div className="flex w-full flex-col items-center justify-center gap-1 lg:w-auto lg:flex-row lg:items-center lg:justify-start">
         <div className="flex w-full justify-center lg:hidden">
           <ProfilePic
-            imageSrc="/images/cv-profile-pic.jpg"
             imageAlt="Profile picture"
+            imageSrc="/images/cv-profile-pic.jpg"
             videoSrc="/images/cv-hero.mp4"
           />
         </div>

@@ -1,12 +1,14 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.0/schema.json",
+  "extends": ["ultracite/core", "ultracite/next"],
   "vcs": {
     "enabled": true,
     "clientKind": "git",
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "includes": ["**", "!**/*.jsonc"]
   },
   "formatter": {
     "enabled": true,
@@ -17,8 +19,15 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "style": {
+        "noMagicNumbers": "off",
+        "noNestedTernary": "off"
+      },
       "nursery": {
         "useSortedClasses": "error"
+      },
+      "suspicious": {
+        "useAwait": "off"
       }
     },
     "domains": {

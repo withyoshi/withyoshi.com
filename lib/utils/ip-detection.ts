@@ -10,7 +10,9 @@ import type { NextRequest } from "next/server";
 export function getClientIP(request: NextRequest): string {
   // Check various headers in order of preference
   const cfConnectingIP = request.headers.get("cf-connecting-ip");
-  if (cfConnectingIP) return cfConnectingIP;
+  if (cfConnectingIP) {
+    return cfConnectingIP;
+  }
 
   const xForwardedFor = request.headers.get("x-forwarded-for");
   if (xForwardedFor) {
@@ -19,10 +21,14 @@ export function getClientIP(request: NextRequest): string {
   }
 
   const xRealIP = request.headers.get("x-real-ip");
-  if (xRealIP) return xRealIP;
+  if (xRealIP) {
+    return xRealIP;
+  }
 
   const xClientIP = request.headers.get("x-client-ip");
-  if (xClientIP) return xClientIP;
+  if (xClientIP) {
+    return xClientIP;
+  }
 
   return "unknown";
 }

@@ -2,13 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-interface RetroStarsProps {
+type RetroStarsProps = {
   className?: string;
   densityCount?: number; // number of stars
   movementRange?: number; // pixels of movement range
-}
+};
 
-interface Star {
+type Star = {
   id: string;
   x: number;
   y: number;
@@ -17,7 +17,7 @@ interface Star {
   animationDelay: number;
   glowDelay: number;
   movementDelay: number;
-}
+};
 
 export default function RetroStars({
   className = "",
@@ -29,13 +29,13 @@ export default function RetroStars({
   const [isClient, setIsClient] = useState(false);
 
   const generateStars = useCallback((): Star[] => {
-    const stars: Star[] = [];
+    const generatedStars: Star[] = [];
 
     for (let i = 0; i < densityCount; i++) {
       const size = Math.random() * (2 - 1) + 1; // 1-2 pixels
       const opacity = Math.random() * (0.8 - 0.2) + 0.2;
 
-      stars.push({
+      generatedStars.push({
         id: `star-${i}`,
         x: Math.random() * 100, // percentage
         y: Math.random() * 100, // percentage
@@ -47,7 +47,7 @@ export default function RetroStars({
       });
     }
 
-    return stars;
+    return generatedStars;
   }, [densityCount]);
 
   // Only generate stars on client side to avoid hydration mismatch
@@ -58,14 +58,14 @@ export default function RetroStars({
 
   return (
     <div
-      ref={containerRef}
       className={`absolute inset-0 overflow-hidden ${className}`}
+      ref={containerRef}
     >
       {isClient &&
         stars.map((star) => (
           <div
-            key={star.id}
             className="retro-star pointer-events-none absolute"
+            key={star.id}
             style={
               {
                 left: `${star.x}%`,

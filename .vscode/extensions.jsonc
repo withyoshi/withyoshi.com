@@ -10,6 +10,6 @@
     "wix.vscode-import-cost",
 
     // Error Lens - Improve highlighting of errors, warnings
-    "usernamehw.errorlens",
+    "usernamehw.errorlens"
   ]
 }

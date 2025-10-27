@@ -103,10 +103,10 @@ export default function Main() {
         <section className="relative z-10 grid gap-6 pb-28 sm:grid-cols-2">
           {cards.map((card) => (
             <GlassmorphismCard
-              key={card.title}
-              icon={card.icon}
-              title={card.title}
               description={card.description}
+              icon={card.icon}
+              key={card.title}
+              title={card.title}
             />
           ))}
         </section>
@@ -126,7 +126,7 @@ export default function Main() {
             "--fx-gradient-color": "rgba(0, 175, 185, 0.2)",
           } as React.CSSProperties
         }
-      ></div>
+      />
     </main>
   );
 }

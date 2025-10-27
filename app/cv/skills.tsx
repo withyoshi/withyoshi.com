@@ -31,9 +31,9 @@ const skills = [
   },
 ];
 
-interface SkillsProps {
+type SkillsProps = {
   className?: string;
-}
+};
 
 export default function Skills({ className }: SkillsProps) {
   return (
@@ -41,12 +41,15 @@ export default function Skills({ className }: SkillsProps) {
       className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 ${className || ""}`}
     >
       {skills.map((skill) => (
-        <div key={skill.category} className="p-2 px-6">
+        <div className="p-2 px-6" key={skill.category}>
           <h5 className="font-bold text-sm text-white">{skill.category}</h5>
           <ul className="columns-3 gap-3 text-white/90 text-xs">
-            {skill.skills.map((skill) => (
-              <li key={skill} className="break-inside-avoid whitespace-nowrap">
-                {skill}
+            {skill.skills.map((skillName) => (
+              <li
+                className="break-inside-avoid whitespace-nowrap"
+                key={skillName}
+              >
+                {skillName}
               </li>
             ))}
           </ul>
