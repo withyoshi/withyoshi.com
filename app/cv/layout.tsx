@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import type React from "react";
 import { PhoneModalProvider } from "./contexts/phone-modal-context";
 
 // CV page constants for reusability

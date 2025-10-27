@@ -2,13 +2,12 @@
 
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ReactNode } from "react";
 import { useContactData } from "./hooks/use-contact-data";
 
 type ContactItemProps = {
   icon: IconDefinition;
   label: string;
-  value: string | ReactNode;
+  value: string | React.ReactNode;
   href?: string;
   action?: () => void;
 };

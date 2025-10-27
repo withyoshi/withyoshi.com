@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, type ReactNode, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 type PhoneModalContextType = {
   isOpen: boolean;
@@ -13,7 +13,7 @@ const PhoneModalContext = createContext<PhoneModalContextType | undefined>(
 );
 
 type PhoneModalProviderProps = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 export function PhoneModalProvider({ children }: PhoneModalProviderProps) {

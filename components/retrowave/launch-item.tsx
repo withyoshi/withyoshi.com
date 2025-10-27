@@ -7,9 +7,10 @@ import { useState } from "react";
 
 // Extend HTMLAnchorElement to include startY property
 declare global {
-  type HTMLAnchorElement = {
+  // biome-ignore lint/style/useConsistentTypeDefinitions: interface required for global augmentation
+  interface HTMLAnchorElement {
     startY?: number;
-  };
+  }
 }
 
 type LaunchItemProps = {

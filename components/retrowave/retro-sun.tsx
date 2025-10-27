@@ -1,5 +1,3 @@
-import type React from "react";
-
 type SunPreset = {
   sunColorPrimary: string;
   sunColorSecondary: string;

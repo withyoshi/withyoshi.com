@@ -1,7 +1,6 @@
 "use client";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type React from "react";
 import LivePhoto from "./live-photo";
 
 type SummaryCardProps = {

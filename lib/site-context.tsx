@@ -1,10 +1,10 @@
 "use client";
-import { createContext, type ReactNode, useContext } from "react";
+import { createContext, useContext } from "react";
 import { getSiteConfig, type SiteConfig } from "./config";
 
 const SiteContext = createContext<SiteConfig | null>(null);
 
-export function SiteProvider({ children }: { children: ReactNode }) {
+export function SiteProvider({ children }: { children: React.ReactNode }) {
   const siteConfig = getSiteConfig();
 
   return (
