@@ -1,9 +1,9 @@
 "use client";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContactData } from "./hooks/use-contact-data";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ReactNode } from "react";
+import { useContactData } from "./hooks/use-contact-data";
 
 interface ContactItemProps {
   icon: IconDefinition;
@@ -21,14 +21,14 @@ const ContactItem = ({
   action,
 }: ContactItemProps) => {
   const content = (
-    <div className="flex items-start gap-1 rounded px-2 py-2 pr-2.5 text-left whitespace-nowrap sm:gap-1.5">
+    <div className="flex items-start gap-1 whitespace-nowrap rounded px-2 py-2 pr-2.5 text-left sm:gap-1.5">
       <FontAwesomeIcon
         icon={icon}
         className="mt-0.5 h-4 w-4 flex-shrink-0 text-mint-600"
       />
       <span className="block">
-        <span className="block text-sm font-medium text-black">{label}</span>
-        <span className="-mt-0.5 block text-sm text-gray-500">{value}</span>
+        <span className="block font-medium text-black text-sm">{label}</span>
+        <span className="-mt-0.5 block text-gray-500 text-sm">{value}</span>
       </span>
     </div>
   );
@@ -51,6 +51,7 @@ const ContactItem = ({
   if (action) {
     return (
       <button
+        type="button"
         onClick={action}
         className="block w-full cursor-pointer rounded border-1 border-transparent hover:border-mint-600/50 hover:bg-green-50"
         aria-label={`${label}: ${value}`}
@@ -75,9 +76,12 @@ const ContactCard = ({ className, items }: ContactCardProps) => {
   // If no items provided, show all contact items
   const itemsToShow = items
     ? items
-        .map((item) => contactData[item as keyof typeof contactData])
-        .filter(Boolean)
-    : Object.values(contactData);
+        .map((key) => ({
+          key,
+          data: contactData[key as keyof typeof contactData],
+        }))
+        .filter((item) => item.data)
+    : Object.entries(contactData).map(([key, data]) => ({ key, data }));
 
   return (
     <div
@@ -86,14 +90,14 @@ const ContactCard = ({ className, items }: ContactCardProps) => {
         "inline-grid grid-cols-[auto_auto] sm:grid-flow-col sm:grid-cols-[auto_auto_auto] sm:grid-rows-2"
       }
     >
-      {itemsToShow.map((item, index) => (
+      {itemsToShow.map((item) => (
         <ContactItem
-          key={index}
-          icon={item.icon}
-          label={item.label}
-          value={item.value}
-          href={item.href}
-          action={item.action}
+          key={item.key}
+          icon={item.data.icon}
+          label={item.data.label}
+          value={item.data.value}
+          href={item.data.href}
+          action={item.data.action}
         />
       ))}
     </div>

@@ -42,8 +42,8 @@ export default function Skills({ className }: SkillsProps) {
     >
       {skills.map((skill) => (
         <div key={skill.category} className="p-2 px-6">
-          <h5 className="text-sm font-bold text-white">{skill.category}</h5>
-          <ul className="columns-3 gap-3 text-xs text-white/90">
+          <h5 className="font-bold text-sm text-white">{skill.category}</h5>
+          <ul className="columns-3 gap-3 text-white/90 text-xs">
             {skill.skills.map((skill) => (
               <li key={skill} className="break-inside-avoid whitespace-nowrap">
                 {skill}

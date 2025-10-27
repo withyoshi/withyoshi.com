@@ -1,16 +1,15 @@
 "use client";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { faTelegram as faTelegramBrand } from "@fortawesome/free-brands-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ContactCard from "./contact-card";
-import PhoneRequestModal from "./phone-request-modal";
 import {
   PhoneModalProvider,
   usePhoneModal,
 } from "./contexts/phone-modal-context";
-
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import PhoneRequestModal from "./phone-request-modal";
 
 interface ContactOptionProps {
   icon: IconDefinition;
@@ -40,8 +39,8 @@ const ContactOption = ({
       />
       <div className="flex-1">
         <h3 className="font-semibold text-black">{label}</h3>
-        <p className="text-sm text-gray-500">{description}</p>
-        <p className="mt-2 text-sm font-medium text-mint-600">{action} →</p>
+        <p className="text-gray-500 text-sm">{description}</p>
+        <p className="mt-2 font-medium text-mint-600 text-sm">{action} →</p>
       </div>
     </div>
   </a>
@@ -71,7 +70,7 @@ function ContactSectionContent() {
     <>
       <div className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-3xl font-bold text-mint-600 sm:text-4xl">
+          <h2 className="font-bold text-3xl text-mint-600 sm:text-4xl">
             Get in touch
           </h2>
           <p>
@@ -82,9 +81,9 @@ function ContactSectionContent() {
 
         {/* Contact Options */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {contactOptions.map((option, index) => (
+          {contactOptions.map((option) => (
             <ContactOption
-              key={index}
+              key={option.label}
               icon={option.icon}
               label={option.label}
               description={option.description}

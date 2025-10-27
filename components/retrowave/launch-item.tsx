@@ -1,6 +1,8 @@
+import {
+  faSpinner,
+  type IconDefinition,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
 // Extend HTMLAnchorElement to include startY property
@@ -138,12 +140,7 @@ export default function LaunchItem({
           </div>
         </a>
       ) : (
-        <div
-          className={combinedClasses}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          onClick={onClick}
-        >
+        <div className={combinedClasses}>
           <div>
             {icon && (
               <div className="text-3xl">

@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import {
+  faMessage,
+  faPhone,
+  faTimes,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -15,13 +20,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTimes,
-  faPhone,
-  faUser,
-  faMessage,
-} from "@fortawesome/free-solid-svg-icons";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   getPhonePlaceholder,
   getPhonePlaceholderSync,
@@ -54,25 +54,36 @@ function SuccessModal({ isOpen, onClose, submittedData }: SuccessModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
+      {/* biome-ignore lint/a11y/useSemanticElements: Backdrop should be a div, not a button */}
       <div
+        role="button"
+        tabIndex={0}
         className="absolute inset-0 bg-black opacity-50 transition-opacity duration-300 ease-in-out"
         onClick={onClose}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onClose();
+          }
+        }}
+        aria-label="Close modal"
       />
 
       {/* Modal */}
-      <div className="relative mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl transition-all duration-300 ease-in-out animate-in fade-in-0 slide-in-from-bottom-2 zoom-in-95">
+      <div className="fade-in-0 slide-in-from-bottom-2 zoom-in-95 relative mx-4 w-full max-w-md animate-in rounded-lg bg-white p-6 shadow-xl transition-all duration-300 ease-in-out">
         {/* Success Icon and Header */}
         <div className="mb-6 flex items-start justify-between">
           <div className="flex flex-1 flex-col gap-1">
-            <h4 className="text-2xl font-bold text-mint-600">
+            <h4 className="font-bold text-2xl text-mint-600">
               Call Request Sent!
             </h4>
-            <p className="text-sm text-gray-600">
+            <p className="text-gray-600 text-sm">
               Your call request has been sent and I will get back to you as soon
               as possible.
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="flex-shrink-0 cursor-pointer text-gray-400 transition-colors duration-200 hover:text-gray-600"
             aria-label="Close modal"
@@ -89,24 +100,24 @@ function SuccessModal({ isOpen, onClose, submittedData }: SuccessModalProps) {
             <div className="flex items-start gap-3">
               <FontAwesomeIcon icon={faUser} className="mt-1.5 text-xs" />
               <div>
-                <span className="text-sm font-semibold">Name</span>
-                <p className="text-sm text-gray-800">{submittedData.name}</p>
+                <span className="font-semibold text-sm">Name</span>
+                <p className="text-gray-800 text-sm">{submittedData.name}</p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
               <FontAwesomeIcon icon={faPhone} className="mt-1.5 text-xs" />
               <div>
-                <span className="text-sm font-semibold">Phone</span>
-                <p className="text-sm text-gray-800">{submittedData.phone}</p>
+                <span className="font-semibold text-sm">Phone</span>
+                <p className="text-gray-800 text-sm">{submittedData.phone}</p>
               </div>
             </div>
 
             <div className="flex items-start gap-2">
               <FontAwesomeIcon icon={faMessage} className="mt-1.5 text-xs" />
               <div className="flex-1">
-                <span className="text-sm font-semibold">Message</span>
-                <p className="text-sm break-words">{submittedData.message}</p>
+                <span className="font-semibold text-sm">Message</span>
+                <p className="break-words text-sm">{submittedData.message}</p>
               </div>
             </div>
           </div>
@@ -216,24 +227,35 @@ export default function PhoneRequestModal({
         className={`fixed inset-0 z-50 flex items-center justify-center ${showSuccessModal ? "hidden" : ""}`}
       >
         {/* Backdrop */}
+        {/* biome-ignore lint/a11y/useSemanticElements: Backdrop should be a div, not a button */}
         <div
+          role="button"
+          tabIndex={0}
           className="absolute inset-0 bg-black opacity-50 transition-opacity duration-300 ease-in-out"
           onClick={onClose}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onClose();
+            }
+          }}
+          aria-label="Close modal"
         />
 
         {/* Modal */}
-        <div className="relative mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl transition-all duration-300 ease-in-out animate-in fade-in-0 slide-in-from-bottom-2 zoom-in-95">
+        <div className="fade-in-0 slide-in-from-bottom-2 zoom-in-95 relative mx-4 w-full max-w-md animate-in rounded-lg bg-white p-6 shadow-xl transition-all duration-300 ease-in-out">
           {/* Header with Close button */}
           <div className="mb-6 flex items-start justify-between gap-4">
             <div className="flex flex-1 flex-col gap-2">
-              <h4 className="text-2xl font-bold">Request a Call</h4>
-              <p className="text-sm text-gray-600">
+              <h4 className="font-bold text-2xl">Request a Call</h4>
+              <p className="text-gray-600 text-sm">
                 My phone number is not displayed publicly for privacy reasons.
                 Prefer phone conversations? Share your phone number and I will
                 reach out to you.
               </p>
             </div>
             <button
+              type="button"
               onClick={onClose}
               className="flex-shrink-0 cursor-pointer text-gray-400 transition-colors duration-200 hover:text-gray-600"
               aria-label="Close modal"
@@ -331,7 +353,7 @@ export default function PhoneRequestModal({
 
               {/* Error Message */}
               {submitStatus === "error" && (
-                <div className="mt-4 rounded border border-red-400 bg-red-100 p-3 text-sm text-red-700 duration-300 animate-in fade-in-0 slide-in-from-top-2">
+                <div className="fade-in-0 slide-in-from-top-2 mt-4 animate-in rounded border border-red-400 bg-red-100 p-3 text-red-700 text-sm duration-300">
                   Sorry, there was an error sending your call request. Please
                   try again.
                 </div>

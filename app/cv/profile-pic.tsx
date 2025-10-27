@@ -1,7 +1,7 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useRef, useState } from "react";
 
 interface ProfilePicProps {
   className?: string;
@@ -86,17 +86,21 @@ const ProfilePic = ({
   }, []);
 
   return (
-    <div
+    <button
+      type="button"
       className={`group relative aspect-square cursor-pointer overflow-hidden rounded-full bg-gray-100 transition-all duration-500 ease-in-out ${
         isExpanded ? "mb-6 w-[70%]" : "w-28"
       } ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={handleMouseEnter}
     >
       <div className="absolute inset-0">
         {/* Live pic - pauses on last frame for 8 seconds before looping */}
+        {/* biome-ignore lint/performance/noImgElement: Using img instead of Next.js Image for special animation requirements */}
         <img
-          src="/images/cv-profile-pic-live.webp"
+          src={imageSrc}
+          alt={imageAlt}
           width={256}
           height={256}
           className={`absolute inset-0 z-10 h-full w-full object-cover object-center ${
@@ -122,18 +126,18 @@ const ProfilePic = ({
 
         {/* Play icon overlay - appears on hover, hidden when expanded */}
         <div
-          className={`pointer-events-none absolute top-1/2 left-1/2 z-30 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-0 items-center justify-center rounded-full bg-mint-600 opacity-0 transition-all duration-200 ${
+          className={`-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 z-30 flex h-7 w-7 scale-0 items-center justify-center rounded-full bg-mint-600 opacity-0 transition-all duration-200 ${
             !isTouchDevice && !preventHover
               ? "group-hover:scale-100 group-hover:opacity-100"
               : ""
           } ${isExpanded ? "hidden" : ""}`}
         >
-          <FontAwesomeIcon icon={faPlay} className="text-xs text-white" />
+          <FontAwesomeIcon icon={faPlay} className="text-white text-xs" />
         </div>
 
         {/* Loading indicator - appears when video is loading */}
         <div
-          className={`pointer-events-none absolute top-1/2 left-1/2 z-30 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 ${
+          className={`-translate-x-1/2 -translate-y-1/2 pointer-events-none absolute top-1/2 left-1/2 z-30 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 opacity-0 transition-all duration-200 ${
             isVideoLoading && isExpanded ? "opacity-100" : ""
           }`}
         >
@@ -145,7 +149,7 @@ const ProfilePic = ({
 
         <div className="pointer-events-none absolute inset-0 z-30 h-full w-full rounded-full shadow-[inset_0px_2px_3px_rgba(0,0,0,0.2)]" />
       </div>
-    </div>
+    </button>
   );
 };
 
