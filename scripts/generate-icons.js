@@ -1,6 +1,6 @@
 const sharp = require("sharp");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const toIco = require("to-ico");
 
 // Get source image from command line argument or use default
@@ -42,10 +42,14 @@ async function generateIcons() {
         `Generating ${config.name} (${config.size}x${config.size})...`,
       );
 
-      let sharpInstance = sharp(sourceImage).resize(config.size, config.size, {
-        fit: "contain",
-        background: { r: 0, g: 0, b: 0, alpha: 0 },
-      });
+      const sharpInstance = sharp(sourceImage).resize(
+        config.size,
+        config.size,
+        {
+          fit: "contain",
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
+        },
+      );
 
       if (config.format === "ico") {
         // For ICO files, create multiple PNG sizes and convert to ICO

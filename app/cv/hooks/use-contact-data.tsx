@@ -1,28 +1,22 @@
 "use client";
 
 import {
+  faGithub,
+  faLinkedin,
+  faTelegram,
+} from "@fortawesome/free-brands-svg-icons";
+import {
   faEnvelope,
   faLocationDot,
   faPassport,
   faPhone,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  faLinkedin,
-  faGithub,
-  faTelegram,
-} from "@fortawesome/free-brands-svg-icons";
 import { usePhoneModal } from "../contexts/phone-modal-context";
 
 export function useContactData() {
-  // Try to get the phone modal context, but don't fail if it's not available
-  let openModal: (() => void) | undefined;
-  try {
-    const phoneModal = usePhoneModal();
-    openModal = phoneModal.openModal;
-  } catch {
-    // Context not available, phone functionality will be disabled
-    openModal = undefined;
-  }
+  // Always call the hook, but handle the case where context might not be available
+  const phoneModal = usePhoneModal();
+  const openModal = phoneModal?.openModal;
 
   return {
     email: {

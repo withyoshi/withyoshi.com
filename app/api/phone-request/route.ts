@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import DOMPurify from "dompurify";
 import { JSDOM } from "jsdom";
+import { type NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { getClientIP } from "@/lib/utils/ip-detection";
 
 // Create DOMPurify instance for server-side sanitization
 const window = new JSDOM("").window;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: jsdom window object needs any cast for DOMPurify compatibility
 const purify = DOMPurify(window as any);
 
 const contactSchema = z.object({

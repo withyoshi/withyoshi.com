@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 interface SunConfig {
   sunColorPrimary: string;
@@ -88,7 +88,7 @@ const RetroSun: React.FC<RetroSunProps> = ({
       `}</style>
       <div className={`absolute inset-0 overflow-hidden ${className}`}>
         <div
-          className="sun-container absolute rounded-full aspect-square transition-all duration-1000 opacity-90"
+          className="sun-container absolute aspect-square rounded-full opacity-90 transition-all duration-1000"
           style={{
             ...currentStyles,
             transitionTimingFunction: "ease-in-out",

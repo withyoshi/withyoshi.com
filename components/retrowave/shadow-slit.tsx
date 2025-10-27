@@ -15,11 +15,11 @@ export default function ShadowSlit({
 
   return (
     <div
-      className={`overflow-hidden pointer-events-none [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)] ${className}`}
+      className={`pointer-events-none overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,black_10%,black_90%,transparent_100%)] ${className}`}
     >
       <svg
         aria-hidden="true"
-        className={`w-full h-full blur-md relative opacity-75 ${directionClasses}`}
+        className={`relative h-full w-full opacity-75 blur-md ${directionClasses}`}
         viewBox="0 0 100 40"
         preserveAspectRatio="none"
       >

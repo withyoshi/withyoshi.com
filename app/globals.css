@@ -184,10 +184,13 @@ svg[data-icon] svg {
   }
 }
 
+/* biome-ignore lint/suspicious/noEmptyBlock: Empty @layer components block reserved for future use */
 @layer components {
 }
 
-/* Lib styles */
+/* biome-ignore lint/correctness/noInvalidPositionAtImportRule: These imports need to be after Tailwind to access CSS variables */
 @import "../lib/styles/utils/mask.css";
+/* biome-ignore lint/correctness/noInvalidPositionAtImportRule: These imports need to be after Tailwind to access CSS variables */
 @import "../lib/styles/fx/fx-vignette.css";
+/* biome-ignore lint/correctness/noInvalidPositionAtImportRule: These imports need to be after Tailwind to access CSS variables */
 @import "../lib/styles/fx/fx-cloud-gradient.css";

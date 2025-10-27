@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBehanceSquare } from "@fortawesome/free-brands-svg-icons";
 import { faSortDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type React from "react";
+import { useState } from "react";
 
 interface TimelineItemProps {
   date: string;
@@ -24,16 +25,16 @@ const TimelineItem = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <div className="relative -mx-3 pb-4 pl-6 before:absolute before:top-[4px] before:left-0 before:z-10 before:h-2 before:w-2 before:rounded-full before:bg-mint-600 before:content-[''] after:absolute after:top-[8px] after:left-[3px] after:z-0 after:h-full after:w-px after:bg-gray-300 after:content-[''] last:pb-0 last:after:hidden md:mx-0 md:pl-0 md:before:hidden md:after:hidden">
+    <div className="-mx-3 relative pb-4 pl-6 before:absolute before:top-[4px] before:left-0 before:z-10 before:h-2 before:w-2 before:rounded-full before:bg-mint-600 before:content-[''] after:absolute after:top-[8px] after:left-[3px] after:z-0 after:h-full after:w-px after:bg-gray-300 after:content-[''] last:pb-0 last:after:hidden md:mx-0 md:pl-0 md:after:hidden md:before:hidden">
       <div className="sm:mr-0">
         {(() => {
           const headerContent = (
             <div className="flex-1">
-              <div className="text-xs tracking-tight text-gray-500">{date}</div>
-              <h3 className="text-lg font-semibold tracking-tight whitespace-nowrap text-mint-600 sm:text-xl">
+              <div className="text-gray-500 text-xs tracking-tight">{date}</div>
+              <h3 className="whitespace-nowrap font-semibold text-lg text-mint-600 tracking-tight sm:text-xl">
                 {title}
               </h3>
-              <div className="-mt-0.5 text-sm tracking-tight whitespace-nowrap">
+              <div className="-mt-0.5 whitespace-nowrap text-sm tracking-tight">
                 <span className="font-medium text-gray-800">{company}</span>
 
                 {(location || mode) && (
@@ -63,6 +64,7 @@ const TimelineItem = ({
             <>
               {/* Mobile/Tablet: Interactive button */}
               <button
+                type="button"
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="flex w-full cursor-pointer items-center text-left md:hidden"
                 aria-label={
@@ -82,7 +84,7 @@ const TimelineItem = ({
         })()}
       </div>
       <div
-        className={`description mt-2 overflow-hidden text-sm tracking-tight text-pretty text-gray-700 transition-all duration-300 ease-in-out [&>*+p]:mt-2 [&>*+ul]:mt-1 [&>ul]:list-outside [&>ul]:list-disc [&>ul]:space-y-1 [&>ul]:pl-4 [&>ul>li]:leading-snug [&>ul>li::marker]:text-mint-600 ${
+        className={`description mt-2 overflow-hidden text-pretty text-gray-700 text-sm tracking-tight transition-all duration-300 ease-in-out [&>*+p]:mt-2 [&>*+ul]:mt-1 [&>ul>li::marker]:text-mint-600 [&>ul>li]:leading-snug [&>ul]:list-outside [&>ul]:list-disc [&>ul]:space-y-1 [&>ul]:pl-4 ${
           isExpanded
             ? "max-h-screen opacity-100"
             : "max-h-0 opacity-0 md:max-h-screen md:opacity-100"
@@ -101,7 +103,7 @@ interface TimelineProps {
 const Timeline = ({ className }: TimelineProps) => (
   <div className={className}>
     <h2 className="mb-8 text-left">
-      <span className="text-3xl font-semibold tracking-tight text-mint-600 sm:text-4xl">
+      <span className="font-semibold text-3xl text-mint-600 tracking-tight sm:text-4xl">
         Career timeline & achievements
       </span>
     </h2>

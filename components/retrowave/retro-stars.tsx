@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface RetroStarsProps {
   className?: string;
@@ -54,7 +54,7 @@ export default function RetroStars({
   useEffect(() => {
     setIsClient(true);
     setStars(generateStars());
-  }, [densityCount, generateStars]);
+  }, [generateStars]);
 
   return (
     <div

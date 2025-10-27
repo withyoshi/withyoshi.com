@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIsYoshiTheme } from "../../lib/site-context";
 
 interface RolodexTextProps {
@@ -76,13 +76,13 @@ export default function RolodexText({
           <span className="-mr-1">Y</span>
           <span className="-mr-0.5">O</span>SHI
         </span>
-        <span className="relative -top-1 font-lexend text-3xl font-thin tracking-tight whitespace-nowrap sm:text-4xl md:top-0">
+        <span className="-top-1 relative whitespace-nowrap font-lexend font-thin text-3xl tracking-tight sm:text-4xl md:top-0">
           {isYoshiTheme ? "is a" : "is my"}
         </span>
       </span>
       <span className="relative h-54 w-full overflow-hidden before:absolute before:top-0 before:left-0 before:h-18 before:w-full before:rounded-md before:border-1 before:border-teal-600/40 before:content-[''] md:block md:h-18 md:overflow-visible">
         <div className="absolute top-0 left-0 h-full w-full">
-          <div className="relative mt-[2.25em] h-90 w-full -translate-y-1/2 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent_5%,black_40%,black_60%,transparent_95%)] [--tw-mask-image:linear-gradient(to_bottom,transparent_5%,black_40%,black_60%,transparent_95%)]">
+          <div className="-translate-y-1/2 relative mt-[2.25em] h-90 w-full overflow-hidden [--tw-mask-image:linear-gradient(to_bottom,transparent_5%,black_40%,black_60%,transparent_95%)] [mask-image:linear-gradient(to_bottom,transparent_5%,black_40%,black_60%,transparent_95%)]">
             <div
               className={`${
                 isTransitioning
@@ -101,8 +101,8 @@ export default function RolodexText({
 
                 return (
                   <span
-                    key={`${item}-${index}`}
-                    className={`h-18 px-5 font-lexend text-3xl font-light tracking-tight whitespace-nowrap text-white/90 sm:text-4xl ${
+                    key={`rolodex-${index}-${item}`}
+                    className={`h-18 whitespace-nowrap px-5 font-lexend font-light text-3xl text-white/90 tracking-tight sm:text-4xl ${
                       isTransitioning
                         ? "transition-opacity duration-500 ease-in-out"
                         : ""

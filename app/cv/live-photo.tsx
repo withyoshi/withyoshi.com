@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface LivePhotoProps {
   className?: string;
@@ -116,7 +117,7 @@ const LivePhoto = ({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [videoSrc, isVideoLoaded]);
+  }, [isVideoLoaded]);
 
   return (
     <div className={`relative ${className}`}>

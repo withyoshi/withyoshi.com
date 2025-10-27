@@ -1,18 +1,18 @@
 "use client";
 import {
-  faPersonWalkingDashedLineArrowRight,
-  faWandMagicSparkles,
-  faFaceLaughBeam,
-  faPersonShelter,
-  faMusic,
-  faKeyboard,
   faBrush,
   faCompass,
+  faFaceLaughBeam,
+  faKeyboard,
+  faMusic,
+  faPersonShelter,
+  faPersonWalkingDashedLineArrowRight,
+  faWandMagicSparkles,
 } from "@fortawesome/free-solid-svg-icons";
-import RolodexText from "../../components/retrowave/rolodex-text";
 import GlassmorphismCard from "../../components/retrowave/glassmorphism-card";
-import MoonMesh from "./images/moon-mesh.svg";
+import RolodexText from "../../components/retrowave/rolodex-text";
 import { useIsYoshiTheme } from "../../lib/site-context";
+import MoonMesh from "./images/moon-mesh.svg";
 
 const roleItems = [
   "maker",
@@ -101,9 +101,9 @@ export default function Main() {
 
         {/* Identity reasons */}
         <section className="relative z-10 grid gap-6 pb-28 sm:grid-cols-2">
-          {cards.map((card, index) => (
+          {cards.map((card) => (
             <GlassmorphismCard
-              key={index}
+              key={card.title}
               icon={card.icon}
               title={card.title}
               description={card.description}

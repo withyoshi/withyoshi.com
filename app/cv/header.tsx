@@ -1,6 +1,6 @@
+import { cn } from "@/lib/utils";
 import ContactCard from "./contact-card";
 import ProfilePic from "./profile-pic";
-import { cn } from "@/lib/utils";
 
 export default function Header({ className }: { className?: string }) {
   return (
@@ -19,10 +19,10 @@ export default function Header({ className }: { className?: string }) {
           />
         </div>
         <div>
-          <h1 className="text-center text-[2.6rem] leading-[1] font-semibold tracking-tight text-gray-800 lg:mb-0 lg:text-left lg:text-5xl">
+          <h1 className="text-center font-semibold text-[2.6rem] text-gray-800 leading-[1] tracking-tight lg:mb-0 lg:text-left lg:text-5xl">
             Yan Sern
           </h1>
-          <p className="text-center text-xl font-medium tracking-tight whitespace-nowrap text-mint-600 lg:text-left">
+          <p className="whitespace-nowrap text-center font-medium text-mint-600 text-xl tracking-tight lg:text-left">
             Full-Stack Software Engineer
           </p>
         </div>

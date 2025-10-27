@@ -23,14 +23,14 @@ export default function Header() {
   const isYoshiTheme = useIsYoshiTheme();
 
   // Function to update circle size based on header height
-  const updateCircleSize = () => {
+  const updateCircleSize = useCallback(() => {
     if (headerRef.current && cursorCircleRef.current) {
       const headerHeight = headerRef.current.offsetHeight;
       const circleSize = headerHeight * 0.15;
       cursorCircleRef.current.style.width = `${circleSize}px`;
       cursorCircleRef.current.style.height = `${circleSize}px`;
     }
-  };
+  }, []);
 
   // Handle individual image load events
   const handleImageLoad = (imageType: "after" | "before") => {
@@ -50,8 +50,8 @@ export default function Header() {
     const initialCssAnimationDuration = 1000;
 
     // Add is-loading to header to trigger CSS animations
-    headerRef.current!.classList.add("is-loading");
-    headerRef.current!.classList.remove("is-running");
+    headerRef.current?.classList.add("is-loading");
+    headerRef.current?.classList.remove("is-running");
 
     // Mask out everything on the sentient image
     if (sentientImageRef.current) {
@@ -60,8 +60,8 @@ export default function Header() {
     }
 
     animationRef.current = requestAnimationFrame(() => {
-      headerRef.current!.classList.remove("is-loading");
-      headerRef.current!.classList.add("is-running");
+      headerRef.current?.classList.remove("is-loading");
+      headerRef.current?.classList.add("is-running");
 
       setTimeout(() => {
         const startTime = performance.now();
@@ -83,7 +83,7 @@ export default function Header() {
           // Phase 1: Top-to-bottom sweep
           if (elapsed > 0) {
             const sweepProgress = elapsed / sweepDuration;
-            const easeOut = 1 - Math.pow(1 - sweepProgress, 3);
+            const easeOut = 1 - (1 - sweepProgress) ** 3;
             const currentY = startY + (endY - startY) * easeOut;
             updateMask(centerX, currentY, 0);
           }
@@ -91,7 +91,7 @@ export default function Header() {
           // Phase 2: Alpha fade from 0 to 1
           if (elapsed > sweepDuration) {
             const fadeProgress = (elapsed - sweepDuration) / fadeDuration;
-            const easeOut = 1 - Math.pow(1 - fadeProgress, 3);
+            const easeOut = 1 - (1 - fadeProgress) ** 3;
             const alpha = Math.round(easeOut * 100) / 100;
             updateMask(centerX, endY, alpha);
           }
@@ -100,7 +100,7 @@ export default function Header() {
             animationRef.current = requestAnimationFrame(animate);
           } else {
             // Animation complete, reset styles and enable mouse interactions
-            headerRef.current!.classList.remove("is-running");
+            headerRef.current?.classList.remove("is-running");
             setIsRunningFirstTimeAnimation(false);
             animationRef.current = null;
           }
@@ -122,7 +122,7 @@ export default function Header() {
         const progress = Math.min(elapsed / duration, 1);
 
         // Ease out function for smooth animation
-        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const easeOut = 1 - (1 - progress) ** 3;
         const alpha = Math.round(easeOut * 100) / 100; // Goes from 0 to 1
 
         updateMask(x, y, alpha);
@@ -152,7 +152,7 @@ export default function Header() {
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [updateCircleSize]);
 
   // Update allImagesLoaded when both images are loaded
   useEffect(() => {
@@ -339,6 +339,7 @@ export default function Header() {
           opacity: 0;
         }
       `}</style>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: Header has visual-only mouse tracking effects */}
       <header
         ref={headerRef}
         onMouseMove={handleMouseMove}
@@ -350,7 +351,7 @@ export default function Header() {
         {/* Cursor circle */}
         <div
           ref={cursorCircleRef}
-          className="cursor-circle background-white/10 pointer-events-none absolute z-50 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 inset-shadow-[0px_0px_24px_rgba(0,0,0,0.75)] outline-1 outline-teal-600 backdrop-hue-rotate-145 transition-opacity duration-500 group-hover:opacity-100"
+          className="background-white/10 -translate-x-1/2 -translate-y-1/2 pointer-events-none absolute inset-shadow-[0px_0px_24px_rgba(0,0,0,0.75)] z-50 cursor-circle rounded-full opacity-0 outline-1 outline-teal-600 backdrop-hue-rotate-145 transition-opacity duration-500 group-hover:opacity-100"
         />
         <section className="relative z-20 bg-gradient-to-b from-white/65 to-transparent py-12">
           <ShadowSlit
@@ -361,10 +362,10 @@ export default function Header() {
           <div className="mx-auto max-w-screen-md">
             <h1 className="">
               {" "}
-              <span className="relative z-60 -mb-4 block text-center leading-[1] sm:-mb-5">
-                <span className="caption-title block font-lexend text-3xl font-extralight tracking-tighter text-teal-600 uppercase sm:text-4xl">
+              <span className="-mb-4 sm:-mb-5 relative z-60 block text-center leading-[1]">
+                <span className="caption-title block font-extralight font-lexend text-3xl text-teal-600 uppercase tracking-tighter sm:text-4xl">
                   {isYoshiTheme ? "A NEW ERA" : "YAN SERN"}{" "}
-                  <span className="text-lg tracking-normal text-gray-500 lowercase sm:text-2xl">
+                  <span className="text-gray-500 text-lg lowercase tracking-normal sm:text-2xl">
                     {isYoshiTheme ? (
                       <>begins with</>
                     ) : (
@@ -375,17 +376,17 @@ export default function Header() {
                   </span>
                 </span>
               </span>
-              <span className="display-title tk-futura-pt-bold mask-fade-bottom relative z-40 block text-center text-[7rem] leading-[1] tracking-tighter text-white uppercase text-shadow-xs sm:text-[12rem]">
+              <span className="display-title tk-futura-pt-bold mask-fade-bottom relative z-40 block text-center text-[7rem] text-shadow-xs text-white uppercase leading-[1] tracking-tighter sm:text-[12rem]">
                 <span className="-mr-1 sm:-mr-2">Y</span>OSHI
               </span>
             </h1>
           </div>
         </section>
-        <section className="relative z-10 -mt-12">
+        <section className="-mt-12 relative z-10">
           <div className="@container relative mx-auto max-w-screen-md">
             <div
               ref={sentientRef}
-              className="sentient-man sentient relative z-10 -mt-[46cqw] aspect-square w-full select-none"
+              className="sentient-man sentient -mt-[46cqw] relative z-10 aspect-square w-full select-none"
             >
               <Image
                 ref={sentientImageRef}
@@ -393,7 +394,7 @@ export default function Header() {
                 alt="Sentient after"
                 width={2048}
                 height={2048}
-                className="absolute inset-0 z-10 object-cover select-none"
+                className="absolute inset-0 z-10 select-none object-cover"
                 draggable={false}
                 onLoad={() => handleImageLoad("after")}
               />
@@ -402,14 +403,14 @@ export default function Header() {
                 alt="Sentient before"
                 width={2048}
                 height={2048}
-                className="absolute inset-0 object-cover select-none"
+                className="absolute inset-0 select-none object-cover"
                 draggable={false}
                 onLoad={() => handleImageLoad("before")}
               />
             </div>
             <ShadowSlit
               fill="#00afb9"
-              className="absolute bottom-0 left-[-20%] z-20 h-[80px] w-[140%] border-b-1 border-[#ffffffcc]"
+              className="absolute bottom-0 left-[-20%] z-20 h-[80px] w-[140%] border-[#ffffffcc] border-b-1"
             />
           </div>
         </section>

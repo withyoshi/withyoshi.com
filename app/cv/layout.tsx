@@ -1,5 +1,5 @@
-import React from "react";
 import type { Metadata, Viewport } from "next";
+import type React from "react";
 
 // CV page constants for reusability
 const title = "Yan Sern's Resume";

@@ -1,20 +1,20 @@
 "use client";
-import { useState } from "react";
 import {
-  faPlay,
   faCamera,
-  faCode,
   faCircleNodes,
-  faWaveSquare,
+  faCode,
   faPersonRunning,
+  faPlay,
+  faWaveSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import ShadowSlit from "../../components/retrowave/shadow-slit";
+import { useState } from "react";
 import LaunchItem from "../../components/retrowave/launch-item";
 import RetroSky from "../../components/retrowave/retro-sky";
 import RetroStars from "../../components/retrowave/retro-stars";
 import RetroSun from "../../components/retrowave/retro-sun";
-import LandscapeMesh from "./images/landscape-mesh.svg";
+import ShadowSlit from "../../components/retrowave/shadow-slit";
 import { useIsYoshiTheme } from "../../lib/site-context";
+import LandscapeMesh from "./images/landscape-mesh.svg";
 
 export default function Footer() {
   const [activePresetName, setActivePresetName] = useState("dark-space");
@@ -84,23 +84,23 @@ export default function Footer() {
       <div className="relative z-30 mx-auto max-w-screen-md p-8 pt-24 pb-32 sm:p-10 md:p-16 md:pb-48">
         <ShadowSlit
           fill="#00afb9"
-          className="pointer-events-none absolute top-0 left-[-20%] z-20 h-[80px] w-[140%] border-t-1 border-[#ffffffcc]"
+          className="pointer-events-none absolute top-0 left-[-20%] z-20 h-[80px] w-[140%] border-[#ffffffcc] border-t-1"
           direction="top"
         />
         <h2 className="mt-12 mb-6 text-center">
-          <span className="-mb-1.5 block font-lexend text-3xl font-thin whitespace-nowrap text-teal-600 sm:text-4xl">
+          <span className="-mb-1.5 block whitespace-nowrap font-lexend font-thin text-3xl text-teal-600 sm:text-4xl">
             Enter the universe of
           </span>
-          <span className="tk-futura-pt-bold block text-center text-[6rem] leading-[1] tracking-tighter text-teal-600 sm:text-9xl">
+          <span className="tk-futura-pt-bold block text-center text-[6rem] text-teal-600 leading-[1] tracking-tighter sm:text-9xl">
             <span className="-mr-1">Y</span>
             <span className="-mr-0.5">O</span>SHI
           </span>
         </h2>
 
         <div className="my-12 grid grid-cols-2 gap-4 text-center sm:gap-6">
-          {launchItems.map((item, index) => (
+          {launchItems.map((item) => (
             <LaunchItem
-              key={index}
+              key={item.title}
               state={item.state}
               icon={item.icon}
               title={item.title}
@@ -134,7 +134,7 @@ export default function Footer() {
           />
         </div>
         <div className="absolute bottom-0 left-0 h-[100%] w-full xl:[mask-image:radial-gradient(ellipse_50%_50%_at_center_60%,black_0%,black_60%,transparent_100%)]">
-          <LandscapeMesh className="absolute bottom-[-9.5%] left-[50%] h-[130%] w-[1280px] -translate-x-1/2 opacity-50 md:left-[50.9%] md:w-[2560px]" />
+          <LandscapeMesh className="-translate-x-1/2 absolute bottom-[-9.5%] left-[50%] h-[130%] w-[1280px] opacity-50 md:left-[50.9%] md:w-[2560px]" />
         </div>
       </section>
     </footer>

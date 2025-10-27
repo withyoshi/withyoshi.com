@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { lexend, ibmPlexSans, ibmPlexMono } from "../lib/fonts";
-import { getServerSiteConfig } from "../lib/config";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import GoogleAnalytics from "../lib/analytics/google-analytics";
 import MicrosoftClarity from "../lib/analytics/microsoft-clarity";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
+import { getServerSiteConfig } from "../lib/config";
+import { ibmPlexMono, ibmPlexSans, lexend } from "../lib/fonts";
 
 // Dynamic metadata based on site configuration
 export async function generateMetadata(): Promise<Metadata> {

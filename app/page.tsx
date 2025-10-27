@@ -1,8 +1,8 @@
 "use client";
+import { SiteProvider } from "../lib/site-context";
+import Footer from "./home/footer";
 import Header from "./home/header";
 import Main from "./home/main";
-import Footer from "./home/footer";
-import { SiteProvider } from "../lib/site-context";
 
 function HomeContent() {
   return (

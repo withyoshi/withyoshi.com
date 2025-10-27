@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, type ReactNode, useContext } from "react";
 import { getSiteConfig, type SiteConfig } from "./config";
 
 const SiteContext = createContext<SiteConfig | null>(null);

@@ -1,4 +1,4 @@
-import { Lexend, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { IBM_Plex_Mono, IBM_Plex_Sans, Lexend } from "next/font/google";
 
 // Note: Futura PT Bold is loaded via Typekit as it's not available on Google Fonts
 // The Typekit URL contains this font along with potentially others

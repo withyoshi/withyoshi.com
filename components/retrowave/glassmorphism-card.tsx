@@ -1,5 +1,5 @@
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 interface GlassmorphismCardProps {
   icon: IconDefinition;
@@ -23,9 +23,9 @@ export default function GlassmorphismCard({
           <FontAwesomeIcon icon={icon} className="h-6 w-6" />
         </div>
         <div className="text-left">
-          <h3 className="mb-2 text-lg font-semibold text-white">{title}</h3>
+          <h3 className="mb-2 font-semibold text-lg text-white">{title}</h3>
           <p
-            className="text-sm leading-relaxed text-white/60 [&_strong]:font-semibold [&_strong]:text-white"
+            className="text-sm text-white/60 leading-relaxed [&_strong]:font-semibold [&_strong]:text-white"
             dangerouslySetInnerHTML={{ __html: description }}
           />
         </div>
