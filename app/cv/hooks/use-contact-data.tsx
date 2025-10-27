@@ -14,9 +14,7 @@ import {
 import { usePhoneModal } from "../contexts/phone-modal-context";
 
 export function useContactData() {
-  // Always call the hook, but handle the case where context might not be available
-  const phoneModal = usePhoneModal();
-  const openModal = phoneModal?.openModal;
+  const { openModal } = usePhoneModal();
 
   return {
     email: {

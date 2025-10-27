@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type React from "react";
+import { PhoneModalProvider } from "./contexts/phone-modal-context";
 
 // CV page constants for reusability
 const title = "Yan Sern's Resume";
@@ -80,10 +81,12 @@ export default function CVLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <section className="min-h-screen bg-gray-100">
-      <main className="container mx-auto max-w-screen-xl overflow-hidden sm:p-8">
-        {children}
-      </main>
-    </section>
+    <PhoneModalProvider>
+      <section className="min-h-screen bg-gray-100">
+        <main className="container mx-auto max-w-screen-xl overflow-hidden sm:p-8">
+          {children}
+        </main>
+      </section>
+    </PhoneModalProvider>
   );
 }
