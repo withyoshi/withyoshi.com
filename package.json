@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "DEBUG=next:* next dev --turbopack",
     "dev:quiet": "next dev --turbopack",
-    "dev:debug": "DEBUG=next:* next dev --turbopack",
-    "dev:verbose": "DEBUG=* next dev --turbopack",
+    "dev:debug": "NODE_OPTIONS='--inspect=9229' DEBUG=next:* next dev --turbopack",
+    "dev:verbose": "NODE_OPTIONS='--inspect=9229' DEBUG=* next dev --turbopack",
     "build": "next build --turbopack && next-image-export-optimizer",
     "start": "next start",
     "lint": "biome check --unsafe --fix",
