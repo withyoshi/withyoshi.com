@@ -27,7 +27,15 @@
         "useSortedClasses": "error"
       },
       "suspicious": {
-        "useAwait": "off"
+        "useAwait": "off",
+        "noConsole": "off",
+        "noExplicitAny": "off"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
+      },
+      "performance": {
+        "noNamespaceImport": "off"
       }
     },
     "domains": {
