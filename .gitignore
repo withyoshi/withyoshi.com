@@ -44,7 +44,6 @@ tailwindcss-*.log
 next-env.d.ts
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo

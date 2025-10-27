@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    // Tailwind CSS IntelliSense - Autocomplete, syntax highlighting, and linting
+    "bradlc.vscode-tailwindcss",
+
+    // PostCSS Language Support - Syntax highlighting for PostCSS
+    "csstools.postcss",
+
+    // Import Cost - Display import/require package sizes inline
+    "wix.vscode-import-cost",
+
+    // Error Lens - Improve highlighting of errors, warnings
+    "usernamehw.errorlens",
+  ]
+}
