@@ -33,7 +33,7 @@ tailwindcss-*.log
 
 # local env files
 /.env*
-/!.env.example
+!.env.example
 
 # vercel
 .vercel
@@ -50,3 +50,4 @@ next-env.d.ts
 
 # OS
 Thumbs.db
+.env*.local
