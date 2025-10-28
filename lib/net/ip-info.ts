@@ -2,7 +2,6 @@ import { kv } from "@vercel/kv";
 import type { NextRequest } from "next/server";
 import { createLogger } from "@/lib/utils/log";
 
-// Create service-specific logger
 const logger = createLogger("ip-info");
 
 // ============================================================================
@@ -11,9 +10,9 @@ const logger = createLogger("ip-info");
 
 export type IPLocationData = {
   ip: string;
-  city: string;
-  region: string;
   country: string;
+  region: string;
+  city: string;
   timezone: string;
 };
 
@@ -101,16 +100,19 @@ export function getClientIP(request: NextRequest): string {
  * @returns Promise<object | null> - Full API response or null if failed
  */
 async function getIPLocationFromAPI(ip: string): Promise<any | null> {
-  const log = logger.for("getIPLocationFromAPI");
+  const log = logger.child({ routine: "GetIPLocationFromAPI" });
 
   try {
     // Use configurable API URL from environment variables
     const apiUrl = process.env.IP_LOCATOR_API_URL;
 
     if (!apiUrl) {
-      log.warn("IP_LOCATOR_API_URL not configured, cannot get location data", {
-        ip,
-      });
+      log.warn(
+        {
+          ip,
+        },
+        "IP_LOCATOR_API_URL not configured, cannot get location data"
+      );
       return null;
     }
 
@@ -124,26 +126,35 @@ async function getIPLocationFromAPI(ip: string): Promise<any | null> {
     });
 
     if (!response.ok) {
-      log.warn("IP location API failed", {
-        ip,
-        status: response.status,
-        statusText: response.statusText,
-      });
+      log.warn(
+        {
+          ip,
+          status: response.status,
+          statusText: response.statusText,
+        },
+        "IP location API failed"
+      );
       return null;
     }
 
     const data = await response.json();
-    log.info("IP location retrieved successfully", {
-      ip,
-      country: data.country,
-      city: data.city,
-    });
+    log.info(
+      {
+        ip,
+        country: data.country,
+        city: data.city,
+      },
+      "IP location retrieved successfully"
+    );
     return data;
   } catch (error) {
-    log.error("IP location API error", {
-      ip,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
+    log.error(
+      {
+        ip,
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      "IP location API error"
+    );
     return null;
   }
 }
@@ -159,7 +170,7 @@ export async function setIPLocation(
   locationData: IPLocationData,
   ttlSeconds: number = 7 * 24 * 60 * 60 // 7 days
 ): Promise<boolean> {
-  const log = logger.for("setIPLocation");
+  const log = logger.child({ routine: "SetIPLocation" });
 
   try {
     await kv.hset("ip:locations", { [ip]: JSON.stringify(locationData) });
@@ -167,14 +178,17 @@ export async function setIPLocation(
     // Set expiration for the entire hash
     await kv.expire("ip:locations", ttlSeconds);
 
-    log.debug("IP location cached successfully", locationData);
+    log.debug(locationData, "IP location cached successfully");
 
     return true;
   } catch (error) {
-    log.error("Failed to set IP location", {
-      ip,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
+    log.error(
+      {
+        ip,
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      "Failed to set IP location"
+    );
     return false;
   }
 }
@@ -187,7 +201,7 @@ export async function setIPLocation(
 export async function getIPLocation(
   ip: string
 ): Promise<IPLocationData | null> {
-  const log = logger.for("getIPLocation");
+  const log = logger.child({ routine: "GetIPLocation" });
 
   try {
     // First, try to get from Redis cache
@@ -196,29 +210,32 @@ export async function getIPLocation(
       const cachedLocationData = JSON.parse(
         locationJson as string
       ) as IPLocationData;
-      log.debug("IP location found in cache", cachedLocationData);
+      log.debug(cachedLocationData, "IP location found in cache");
       return cachedLocationData;
     }
 
     // Cache miss - fetch from API
-    log.debug("IP location not in cache, fetching from API", { ip });
+    log.debug({ ip }, "IP location not in cache, fetching from API");
     const locationData = await getIPLocationFromAPI(ip);
 
     if (!locationData) {
-      log.warn("Failed to get IP location from API", { ip });
+      log.warn({ ip }, "Failed to get IP location from API");
       return null;
     }
 
     // Cache the result for future use
     await setIPLocation(ip, locationData);
 
-    log.info("IP location fetched from API and cached", locationData);
+    log.info(locationData, "IP location fetched from API and cached");
     return locationData;
   } catch (error) {
-    log.error("Failed to get IP location", {
-      ip,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
+    log.error(
+      {
+        ip,
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      "Failed to get IP location"
+    );
     return null;
   }
 }
