@@ -188,7 +188,7 @@ export default function PhoneRequestModal({
     setSubmitStatus("idle");
 
     try {
-      const response = await fetch("/api/phone-request", {
+      const response = await fetch("/api/cv/phone-request", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
