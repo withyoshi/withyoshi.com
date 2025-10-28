@@ -32,6 +32,7 @@
     "gtag": "^1.0.1",
     "jsdom": "^26.1.0",
     "lucide-react": "^0.545.0",
+    "nanoid": "^5.1.6",
     "next": "15.5.5",
     "next-image-export-optimizer": "^1.19.0",
     "pino": "^10.1.0",
