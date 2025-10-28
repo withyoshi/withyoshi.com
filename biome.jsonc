@@ -21,7 +21,9 @@
       "recommended": true,
       "style": {
         "noMagicNumbers": "off",
-        "noNestedTernary": "off"
+        "noNestedTernary": "off",
+        "useConsistentTypeDefinitions": "off",
+        "useUnifiedTypeSignatures": "off"
       },
       "nursery": {
         "useSortedClasses": "error"
@@ -35,7 +37,8 @@
         "noExcessiveCognitiveComplexity": "off"
       },
       "performance": {
-        "noNamespaceImport": "off"
+        "noNamespaceImport": "off",
+        "noBarrelFile": "off"
       }
     },
     "domains": {
