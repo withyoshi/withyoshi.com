@@ -1,10 +1,9 @@
-import type { NextRequest } from "next/server";
-import { logger } from "@/lib/utils/log";
-import { defaultMiddlewares } from "./default-middlewares";
+import { createApiRoute } from "./create-api-route";
+import { normalizeMiddlewares } from "./middlewares";
 import type {
   ApiRouteHandler,
-  ApiRouteHandlerContext,
   ApiRouteMiddleware,
+  ApiRouteMiddlewareModifier,
   NextApiRouteHandler,
 } from "./types";
 
@@ -50,11 +49,8 @@ export function createApiHandler(
     | ApiRouteHandler,
   handler?: ApiRouteHandler
 ): NextApiRouteHandler {
-  // Default middleware stack
-  const builtinDefaultMiddlewares: ApiRouteMiddleware[] = defaultMiddlewares;
-
-  let name: string;
-  let middlewares: ApiRouteMiddleware[] | (() => ApiRouteMiddleware[]);
+  let name = "";
+  let middlewares: ApiRouteMiddleware[] | ApiRouteMiddlewareModifier;
   let finalHandler: ApiRouteHandler;
 
   // Determine which parameter combination we're dealing with based on parameter types
@@ -63,7 +59,6 @@ export function createApiHandler(
     !middlewaresOrHandler
   ) {
     // createApiHandler(handler)
-    name = "api";
     middlewares = [];
     finalHandler = nameOrMiddlewaresOrHandler as ApiRouteHandler;
   } else if (
@@ -91,7 +86,6 @@ export function createApiHandler(
     typeof middlewaresOrHandler === "function"
   ) {
     // createApiHandler(middlewares, handler)
-    name = "api";
     middlewares = nameOrMiddlewaresOrHandler as
       | ApiRouteMiddleware[]
       | (() => ApiRouteMiddleware[]);
@@ -100,37 +94,15 @@ export function createApiHandler(
     throw new Error("Invalid parameter combination for createApiHandler");
   }
 
-  // Determine which middlewares to use
-  let finalMiddlewares: ApiRouteMiddleware[];
+  // Normalize middlewares using the helper
+  const finalMiddlewares = normalizeMiddlewares(
+    middlewares as ApiRouteMiddleware[] | ApiRouteMiddlewareModifier | undefined
+  );
 
-  if (typeof middlewares === "function") {
-    // If a function is provided, it returns an array of middlewares that overrides defaults
-    finalMiddlewares = middlewares();
-  } else {
-    // Otherwise, add custom middlewares to the default stack
-    finalMiddlewares = [...builtinDefaultMiddlewares, ...middlewares];
-  }
-
-  // Return the merged createRoute logic directly
-  return async (
-    request: NextRequest,
-    { params }: { params: Promise<Record<string, string>> }
-  ) => {
-    const context: ApiRouteHandlerContext = {
-      name,
-      params,
-      logger: logger.child({ type: "route", name }),
-    };
-
-    // Create middleware chain
-    let next = () => finalHandler(request, context);
-
-    for (let i = finalMiddlewares.length - 1; i >= 0; i--) {
-      const middleware = finalMiddlewares[i];
-      const currentNext = next;
-      next = () => middleware(request, context, currentNext);
-    }
-
-    return next();
-  };
+  // Delegate route creation; createApiRoute will default name to "api" if needed
+  return createApiRoute({
+    name,
+    middlewares: finalMiddlewares,
+    handler: finalHandler,
+  });
 }

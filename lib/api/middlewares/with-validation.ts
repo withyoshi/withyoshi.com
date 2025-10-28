@@ -1,16 +1,16 @@
 import { z } from "zod";
-import type { MiddlewareFunction } from "../types";
+import type { ApiRouteMiddleware } from "../types";
 
-// Augment the HandlerContext type
+// Augment the ApiRouteHandlerContext type
 declare module "../types" {
-  interface HandlerContext {
+  interface ApiRouteHandlerContext {
     data?: any; // Added by withValidation middleware
   }
 }
 
 export function withValidation<T extends z.ZodType>(
   schema: T
-): MiddlewareFunction {
+): ApiRouteMiddleware {
   return async (request, context, next) => {
     try {
       const body = await request.json();

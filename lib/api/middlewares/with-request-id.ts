@@ -1,14 +1,14 @@
 import { nanoid } from "nanoid";
-import type { MiddlewareFunction } from "../types";
+import type { ApiRouteMiddleware } from "../types";
 
-// Augment the MiddlewareContext type
+// Augment the ApiRouteHandlerContext type
 declare module "../types" {
-  interface MiddlewareContext {
+  interface ApiRouteHandlerContext {
     requestId?: string; // Added by withRequestId middleware
   }
 }
 
-export const withRequestId: MiddlewareFunction = async (
+export const withRequestId: ApiRouteMiddleware = async (
   _request,
   context,
   next

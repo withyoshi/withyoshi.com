@@ -1,14 +1,14 @@
 import { getClientIP } from "@/lib/net/ip-info";
-import type { MiddlewareFunction } from "../types";
+import type { ApiRouteMiddleware } from "../types";
 
-// Augment the MiddlewareContext type
+// Augment the ApiRouteHandlerContext type
 declare module "../types" {
-  interface MiddlewareContext {
+  interface ApiRouteHandlerContext {
     ip?: string; // Added by withIPDetection middleware
   }
 }
 
-export const withIP: MiddlewareFunction = async (request, context, next) => {
+export const withIP: ApiRouteMiddleware = async (request, context, next) => {
   // Get client ip
   const ip = getClientIP(request);
 

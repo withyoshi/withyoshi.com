@@ -1,39 +1,13 @@
 import { createApiHandler } from "./create-api-handler";
-import type { ApiRouteHandler, ApiRouteMiddleware } from "./types";
-
-// Type for individual method configuration
-export interface ApiRouteHandlerConfig {
-  name?: string;
-  middlewares?: ApiRouteMiddleware[] | (() => ApiRouteMiddleware[]);
-  handler: ApiRouteHandler;
-}
-
-// Shorthand not needed; use ApiRouteHandler directly
-
-// Type for handlers object
-export type ApiRouteHandlers = {
-  GET?: ApiRouteHandlerConfig | ApiRouteHandler;
-  POST?: ApiRouteHandlerConfig | ApiRouteHandler;
-  PUT?: ApiRouteHandlerConfig | ApiRouteHandler;
-  PATCH?: ApiRouteHandlerConfig | ApiRouteHandler;
-  DELETE?: ApiRouteHandlerConfig | ApiRouteHandler;
-  HEAD?: ApiRouteHandlerConfig | ApiRouteHandler;
-  OPTIONS?: ApiRouteHandlerConfig | ApiRouteHandler;
-};
-
-// Type for endpoint configuration
-export interface ApiRouteEndpointConfig {
-  name?: string;
-  middlewares?: ApiRouteMiddleware[] | (() => ApiRouteMiddleware[]);
-  handlers: ApiRouteHandlers;
-}
-
-// Type for the returned endpoint object
-export type ApiEndpoint = {
-  [K in keyof ApiRouteEndpointConfig["handlers"]]: ReturnType<
-    typeof createApiHandler
-  >;
-};
+import { defaultMiddlewares, normalizeMiddlewares } from "./middlewares";
+import type {
+  ApiEndpoint,
+  ApiRouteEndpointConfig,
+  ApiRouteHandler,
+  ApiRouteHandlers,
+  ApiRouteMiddleware,
+  ApiRouteMiddlewareModifier,
+} from "./types";
 
 /**
  * Creates a complete API endpoint with multiple HTTP methods
@@ -74,97 +48,101 @@ export function createApiEndpoint(
     | (() => ApiRouteMiddleware[]),
   middlewaresOrHandlers?:
     | ApiRouteMiddleware[]
-    | (() => ApiRouteMiddleware[])
+    | ApiRouteMiddlewareModifier
     | ApiRouteHandlers,
   handlers?: ApiRouteHandlers
 ): ApiEndpoint {
-  // Determine the actual parameters based on the overload
-  let name: string;
-  let middlewares: ApiRouteMiddleware[];
-  let handlersObject: ApiRouteHandlers;
+  // Normalize arguments based on overload pattern
+  let endpointName = "";
+  let endpointMiddlewares: ApiRouteMiddleware[];
+  let endpointHandlers: ApiRouteHandlers;
 
-  if (typeof nameOrConfigOrHandlers === "string") {
-    // createApiEndpoint(name, handlers) or createApiEndpoint(name, middlewares, handlers)
-    name = nameOrConfigOrHandlers;
-    if (
-      Array.isArray(middlewaresOrHandlers) ||
-      typeof middlewaresOrHandlers === "function"
-    ) {
-      // createApiEndpoint(name, middlewares, handlers)
-      middlewares =
-        typeof middlewaresOrHandlers === "function"
-          ? middlewaresOrHandlers()
-          : middlewaresOrHandlers;
-      handlersObject = handlers || {};
-    } else {
-      // createApiEndpoint(name, handlers)
-      middlewares = [];
-      handlersObject = middlewaresOrHandlers || {};
-    }
-  } else if (
+  // Pattern: createApiEndpoint({ name?, middlewares?, handlers })
+  if (
     typeof nameOrConfigOrHandlers === "object" &&
     "handlers" in nameOrConfigOrHandlers
   ) {
-    // Full config object: createApiEndpoint(config)
-    const config = nameOrConfigOrHandlers;
-    name = config.name || "api";
-    middlewares =
-      typeof config.middlewares === "function"
-        ? config.middlewares()
-        : config.middlewares || [];
-    handlersObject = config.handlers;
-  } else if (
+    const { name = "", middlewares, handlers: h } = nameOrConfigOrHandlers;
+    endpointName = name;
+    endpointMiddlewares = normalizeMiddlewares(middlewares);
+    endpointHandlers = h;
+  }
+  // Pattern: createApiEndpoint(name, ...) - string as first arg
+  else if (typeof nameOrConfigOrHandlers === "string") {
+    endpointName = nameOrConfigOrHandlers;
+    const isMiddleware =
+      Array.isArray(middlewaresOrHandlers) ||
+      typeof middlewaresOrHandlers === "function";
+
+    if (isMiddleware) {
+      // Pattern: createApiEndpoint(name, middlewares, handlers)
+      endpointMiddlewares = normalizeMiddlewares(
+        middlewaresOrHandlers as
+          | ApiRouteMiddleware[]
+          | ApiRouteMiddlewareModifier
+      );
+      endpointHandlers = handlers || {};
+    } else {
+      // Pattern: createApiEndpoint(name, handlers)
+      endpointMiddlewares = defaultMiddlewares;
+      endpointHandlers = middlewaresOrHandlers || {};
+    }
+  }
+  // Pattern: createApiEndpoint(middlewares, handlers) - array/function as first arg
+  else if (
     Array.isArray(nameOrConfigOrHandlers) ||
     typeof nameOrConfigOrHandlers === "function"
   ) {
-    // createApiEndpoint(middlewares, handlers)
-    name = "api";
-    middlewares =
-      typeof nameOrConfigOrHandlers === "function"
-        ? nameOrConfigOrHandlers()
-        : nameOrConfigOrHandlers;
-    handlersObject = (middlewaresOrHandlers as ApiRouteHandlers) || {};
-  } else {
-    // createApiEndpoint(handlers)
-    name = "api";
-    middlewares = [];
-    handlersObject = nameOrConfigOrHandlers as ApiRouteHandlers;
+    endpointMiddlewares = normalizeMiddlewares(
+      nameOrConfigOrHandlers as
+        | ApiRouteMiddleware[]
+        | ApiRouteMiddlewareModifier
+    );
+    endpointHandlers = (middlewaresOrHandlers as ApiRouteHandlers) || {};
+  }
+  // Pattern: createApiEndpoint(handlers) - just handlers object
+  else {
+    endpointMiddlewares = defaultMiddlewares;
+    endpointHandlers = nameOrConfigOrHandlers;
   }
 
   const endpoint: Partial<ApiEndpoint> = {};
 
   // Create handlers for each configured method
-  for (const [method, methodConfig] of Object.entries(handlersObject)) {
+  for (const [method, methodConfig] of Object.entries(endpointHandlers)) {
     if (!methodConfig) {
       continue;
     }
 
-    // Handle both shorthand syntax (function) and full config object
-    let methodMiddlewares: ApiRouteMiddleware[] = [];
+    let name = endpointName;
+    let middlewares: ApiRouteMiddleware[] = endpointMiddlewares;
     let handler: ApiRouteHandler;
-    let handlerName: string;
 
     if (typeof methodConfig === "function") {
       // Shorthand syntax: GET: async () => {}
       handler = methodConfig;
-      handlerName = name;
     } else {
       // Full config object: GET: { name?, middlewares: [...], handler: ... }
-      methodMiddlewares =
-        typeof methodConfig.middlewares === "function"
-          ? methodConfig.middlewares()
-          : methodConfig.middlewares || [];
-      handler = methodConfig.handler;
-      handlerName = methodConfig.name || name;
-    }
+      const handlerMiddlewares = methodConfig.middlewares;
 
-    // Combine endpoint middlewares with method-specific middlewares
-    const finalMiddlewares = [...middlewares, ...methodMiddlewares];
+      if (typeof handlerMiddlewares === "function") {
+        middlewares = (handlerMiddlewares as ApiRouteMiddlewareModifier)(
+          endpointMiddlewares
+        );
+      } else {
+        middlewares = [
+          ...(endpointMiddlewares || []),
+          ...(handlerMiddlewares || []),
+        ];
+      }
+      handler = methodConfig.handler;
+      name = methodConfig.name || name;
+    }
 
     // Create the API handler for this method
     endpoint[method as keyof ApiEndpoint] = createApiHandler(
-      handlerName,
-      finalMiddlewares,
+      name,
+      middlewares,
       handler
     );
   }

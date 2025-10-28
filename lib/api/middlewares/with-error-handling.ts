@@ -1,8 +1,8 @@
 import type { ApiRouteMiddleware } from "../types";
 
-// Augment the MiddlewareContext type
+// Augment the ApiRouteHandlerContext type
 declare module "../types" {
-  interface MiddlewareContext {
+  interface ApiRouteHandlerContext {
     // withErrorHandling doesn't add properties to context
   }
 }
@@ -17,7 +17,6 @@ export const withErrorHandling: ApiRouteMiddleware = async (
   } catch (error) {
     context.logger.child({ routine: "ErrorHandling" }).error(
       {
-        requestId: context.requestId,
         error: error instanceof Error ? error.stack : error,
       },
       `Error in ${context.name}: ${error instanceof Error ? error.message : "Unknown error"}`

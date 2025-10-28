@@ -1,8 +1,8 @@
 import type { ApiRouteMiddleware } from "../types";
 
-// Augment the MiddlewareContext type
+// Augment the ApiRouteHandlerContext type
 declare module "../types" {
-  interface MiddlewareContext {
+  interface ApiRouteHandlerContext {
     // withAuth doesn't add properties to context
   }
 }
@@ -33,7 +33,6 @@ export function withAuth(token: string): ApiRouteMiddleware {
         {
           error: "Server configuration error",
           details: "Authentication token not provided",
-          requestId: context.requestId,
         },
         { status: 500 }
       );
@@ -51,7 +50,6 @@ export function withAuth(token: string): ApiRouteMiddleware {
         {
           error: "Unauthorized",
           details: "Invalid or missing authorization header",
-          requestId: context.requestId,
         },
         { status: 401 }
       );

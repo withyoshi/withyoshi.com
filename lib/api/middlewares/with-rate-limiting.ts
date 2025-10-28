@@ -1,9 +1,10 @@
+import { getClientIP } from "@/lib/net/ip-info";
 import type { NextRequest } from "next/server";
-import type { MiddlewareFunction } from "../types";
+import type { ApiRouteMiddleware } from "../types";
 
-// Augment the MiddlewareContext type
+// Augment the ApiRouteHandlerContext type
 declare module "../types" {
-  interface MiddlewareContext {
+  interface ApiRouteHandlerContext {
     // withRateLimiting doesn't add properties to context
   }
 }
@@ -15,12 +16,27 @@ export function withRateLimiting(
   maxRequests: number,
   windowMs: number,
   keyGenerator?: (request: NextRequest) => string
-): MiddlewareFunction {
+): ApiRouteMiddleware {
   // Simple in-memory rate limiting (in production, use Redis or similar)
   const requests = new Map<string, { count: number; resetTime: number }>();
 
+  // Cleanup expired entries periodically to prevent memory leaks
+  const cleanupInterval = setInterval(() => {
+    const now = Date.now();
+    for (const [key, value] of requests.entries()) {
+      if (now > value.resetTime) {
+        requests.delete(key);
+      }
+    }
+  }, windowMs);
+
+  // Allow cleanup to not prevent process exit
+  if (cleanupInterval.unref) {
+    cleanupInterval.unref();
+  }
+
   return async (request, context, next) => {
-    const key = keyGenerator ? keyGenerator(request) : context.ip || "unknown";
+    const key = keyGenerator ? keyGenerator(request) : getClientIP(request);
     const now = Date.now();
 
     const current = requests.get(key);

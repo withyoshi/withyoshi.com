@@ -1,24 +1,25 @@
 // Core functions
-
-export type {
-  ApiEndpoint,
-  ApiRouteEndpointConfig,
-  ApiRouteHandlerConfig,
-  ApiRouteHandlers,
-} from "./create-api-endpoint";
 export { createApiEndpoint } from "./create-api-endpoint";
 export { createApiHandler } from "./create-api-handler";
-export { withAuth } from "./middleware/with-auth";
-export { withErrorHandling } from "./middleware/with-error-handling";
-export { withIP } from "./middleware/with-ip";
-export { withRateLimiting } from "./middleware/with-rate-limiting";
-// Middleware functions
-export { withRequestId } from "./middleware/with-request-id";
-export { withValidation } from "./middleware/with-validation";
+export { createApiRoute } from "./create-api-route";
+// Middlewares
+export { defaultMiddlewares, normalizeMiddlewares } from "./middlewares";
+export { withAuth } from "./middlewares/with-auth";
+export { withErrorHandling } from "./middlewares/with-error-handling";
+export { withIP } from "./middlewares/with-ip";
+export { withRateLimiting } from "./middlewares/with-rate-limiting";
+export { withRequestId } from "./middlewares/with-request-id";
+export { withValidation } from "./middlewares/with-validation";
 // Types
 export type {
+  ApiEndpoint,
+  ApiRouteConfig,
+  ApiRouteEndpointConfig,
   ApiRouteHandler,
+  ApiRouteHandlerConfig,
   ApiRouteHandlerContext,
+  ApiRouteHandlers,
   ApiRouteMiddleware,
+  ApiRouteMiddlewareModifier,
   NextApiRouteHandler,
 } from "./types";
