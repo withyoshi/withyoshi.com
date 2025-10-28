@@ -3,17 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "DEBUG=next:* next dev --turbopack",
+    "dev": "LOG_LEVEL=info DEBUG=next:* next dev --turbopack",
     "dev:quiet": "next dev --turbopack",
-    "dev:debug": "NODE_OPTIONS='--inspect=9229' DEBUG=next:* next dev --turbopack",
-    "dev:verbose": "NODE_OPTIONS='--inspect=9229' DEBUG=* next dev --turbopack",
+    "dev:debug": "LOG_LEVEL=trace NODE_OPTIONS='--inspect=9229' DEBUG=* next dev --turbopack",
     "build": "next build --turbopack && next-image-export-optimizer",
     "start": "next start",
     "lint": "biome check --unsafe --fix",
     "lint:check": "biome check --unsafe",
     "export": "next build && next export",
     "format": "biome format --write .",
-    "format:check": "biome format ."
+    "format:check": "biome format .",
+    "shutdown": "pkill -f \"next dev\" && pkill -f \"next-server\""
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.1.0",
