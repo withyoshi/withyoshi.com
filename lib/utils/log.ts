@@ -2,49 +2,43 @@ import pino from "pino";
 
 // Configure pino logger
 const logger = pino({
-  level: process.env.LOG_LEVEL || "info",
+  level: (process.env.LOG_LEVEL as any) || "info",
+  formatters: {
+    log(meta) {
+      const { name, routine, msg } = meta;
+      let prefix = "[unknown]";
+
+      if (name && routine) {
+        prefix = `[${name}:${routine}]`;
+      } else if (name) {
+        prefix = `[${name}]`;
+      }
+
+      return {
+        ...meta,
+        msg: `${prefix} ${msg}`,
+      };
+    },
+  },
   transport:
     process.env.NODE_ENV === "development"
       ? {
           target: "pino-pretty",
           options: {
             colorize: true,
-            translateTime: "SYS:standard",
+            translateTime: "HH:MM:ss.l",
             ignore: "pid,hostname",
           },
         }
       : undefined,
 });
 
-// Logger factory that pre-fills common context
-export const createLogger = (service: string) => ({
-  info: (operation: string, message: string, extra?: any) =>
-    logger.info({ service, operation, ...extra }, message),
+// Sugar function to create a logger with a name or object
+export function createLogger(nameOrObject: string | Record<string, any>) {
+  if (typeof nameOrObject === "string") {
+    return logger.child({ name: nameOrObject });
+  }
+  return logger.child(nameOrObject);
+}
 
-  warn: (operation: string, message: string, extra?: any) =>
-    logger.warn({ service, operation, ...extra }, message),
-
-  error: (operation: string, message: string, extra?: any) =>
-    logger.error({ service, operation, ...extra }, message),
-
-  debug: (operation: string, message: string, extra?: any) =>
-    logger.debug({ service, operation, ...extra }, message),
-
-  // Fluent API for repeated operations
-  for: (operation: string) => ({
-    info: (message: string, extra?: any) =>
-      logger.info({ service, operation, ...extra }, message),
-
-    warn: (message: string, extra?: any) =>
-      logger.warn({ service, operation, ...extra }, message),
-
-    error: (message: string, extra?: any) =>
-      logger.error({ service, operation, ...extra }, message),
-
-    debug: (message: string, extra?: any) =>
-      logger.debug({ service, operation, ...extra }, message),
-  }),
-});
-
-// Export the base logger for cases where you need it directly
 export { logger };
