@@ -76,7 +76,6 @@ export default function Header() {
         const fadeDuration = 1000; // 1 second for alpha fade
         const totalDuration = sweepDuration + fadeDuration;
 
-        // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: Animation logic requires multiple conditions
         const animate = (currentTime: number) => {
           const elapsed = currentTime - startTime;
           const progress = Math.min(elapsed / totalDuration, 1);

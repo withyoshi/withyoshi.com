@@ -7,7 +7,6 @@ import { useState } from "react";
 
 // Extend HTMLAnchorElement to include startY property
 declare global {
-  // biome-ignore lint/style/useConsistentTypeDefinitions: interface required for global augmentation
   interface HTMLAnchorElement {
     startY?: number;
   }
