@@ -13,6 +13,7 @@
     "export": "next build && next export",
     "format": "biome format --write .",
     "format:check": "biome format .",
+    "encrypt-prompt-data": "node scripts/encrypt-prompt-data.js",
     "shutdown": "pkill -f \"next dev\" && pkill -f \"next-server\""
   },
   "dependencies": {
