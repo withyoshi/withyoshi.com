@@ -1,3 +1,4 @@
+import Chatbot from "./chatbot";
 import Footer from "./footer";
 import Header from "./header";
 import PDFDownloadSection from "./pdf-download";
@@ -22,6 +23,7 @@ export default function CVPage() {
         </footer>
       </div>
       <PDFDownloadSection />
+      <Chatbot />
     </>
   );
 }
