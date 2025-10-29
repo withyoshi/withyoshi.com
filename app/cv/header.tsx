@@ -14,7 +14,7 @@ export default function Header({ className }: { className?: string }) {
         <div className="flex w-full justify-center lg:hidden">
           <ProfilePic
             imageAlt="Profile picture"
-            imageSrc="/images/cv-profile-pic.jpg"
+            imageSrc="/images/cv-profile-pic-live.webp"
             videoSrc="/images/cv-hero.mp4"
           />
         </div>
