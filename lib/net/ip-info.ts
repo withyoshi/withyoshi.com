@@ -1,8 +1,41 @@
-import { kv } from "@vercel/kv";
 import type { NextRequest } from "next/server";
+import { redis } from "@/lib/storage/redis";
 import { createLogger } from "@/lib/utils/log";
 
 const logger = createLogger("ip-info");
+
+// ============================================================================
+// IN-MEMORY CACHE (process lifetime)
+// ============================================================================
+
+type MemoryCacheEntry<T> = {
+  value: T;
+  expiresAt: number;
+};
+
+// Simple in-memory cache for hobby plan warm instances (5-10 mins)
+const memoryCache = new Map<string, MemoryCacheEntry<IPLocationData>>();
+const DEFAULT_MEMORY_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
+function getFromMemoryCache(key: string): IPLocationData | null {
+  const entry = memoryCache.get(key);
+  if (!entry) {
+    return null;
+  }
+  if (Date.now() > entry.expiresAt) {
+    memoryCache.delete(key);
+    return null;
+  }
+  return entry.value;
+}
+
+function setInMemoryCache(
+  key: string,
+  value: IPLocationData,
+  ttlMs: number = DEFAULT_MEMORY_TTL_MS
+): void {
+  memoryCache.set(key, { value, expiresAt: Date.now() + ttlMs });
+}
 
 // ============================================================================
 // TYPES
@@ -10,9 +43,12 @@ const logger = createLogger("ip-info");
 
 export type IPLocationData = {
   ip: string;
-  country: string;
-  region: string;
   city: string;
+  region: string;
+  country: string;
+  loc: string; // "lat,lon"
+  org: string;
+  postal: string;
   timezone: string;
 };
 
@@ -99,7 +135,9 @@ export function getClientIP(request: NextRequest): string {
  * @param ip - IP address
  * @returns Promise<object | null> - Full API response or null if failed
  */
-async function getIPLocationFromAPI(ip: string): Promise<any | null> {
+async function getIPLocationFromAPI(
+  ip: string
+): Promise<IPLocationData | null> {
   const log = logger.child({ routine: "GetIPLocationFromAPI" });
 
   try {
@@ -168,18 +206,14 @@ async function getIPLocationFromAPI(ip: string): Promise<any | null> {
 export async function setIPLocation(
   ip: string,
   locationData: IPLocationData,
-  ttlSeconds: number = 7 * 24 * 60 * 60 // 7 days
+  ttlSeconds: number = 7 * 24 * 60 * 60
 ): Promise<boolean> {
   const log = logger.child({ routine: "SetIPLocation" });
 
   try {
-    await kv.hset("ip:locations", { [ip]: JSON.stringify(locationData) });
-
-    // Set expiration for the entire hash
-    await kv.expire("ip:locations", ttlSeconds);
-
+    await redis.hset("ip:locations", { [ip]: JSON.stringify(locationData) });
+    await redis.expire("ip:locations", ttlSeconds);
     log.debug(locationData, "IP location cached successfully");
-
     return true;
   } catch (error) {
     log.error(
@@ -204,14 +238,17 @@ export async function getIPLocation(
   const log = logger.child({ routine: "GetIPLocation" });
 
   try {
-    // First, try to get from Redis cache
-    const locationJson = await kv.hget("ip:locations", ip);
-    if (locationJson) {
-      const cachedLocationData = JSON.parse(
-        locationJson as string
-      ) as IPLocationData;
-      log.debug(cachedLocationData, "IP location found in cache");
-      return cachedLocationData;
+    // Skip private/local IPs entirely
+    if (isPrivateIP(ip)) {
+      log.debug({ ip }, "Private IP detected; skipping IP location lookup");
+      return null;
+    }
+
+    // First, try in-memory cache
+    const mem = getFromMemoryCache(ip);
+    if (mem) {
+      log.debug(mem, "IP location found in memory cache");
+      return mem;
     }
 
     // Cache miss - fetch from API
@@ -225,6 +262,7 @@ export async function getIPLocation(
 
     // Cache the result for future use
     await setIPLocation(ip, locationData);
+    setInMemoryCache(ip, locationData);
 
     log.info(locationData, "IP location fetched from API and cached");
     return locationData;
