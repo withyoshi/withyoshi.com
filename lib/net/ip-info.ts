@@ -42,14 +42,14 @@ function setInMemoryCache(
 // ============================================================================
 
 export type IPLocationData = {
-  ip: string;
-  city: string;
-  region: string;
-  country: string;
-  loc: string; // "lat,lon"
-  org: string;
-  postal: string;
-  timezone: string;
+  ip?: string;
+  city?: string;
+  region?: string;
+  country?: string;
+  loc?: string; // "lat,lon"
+  org?: string;
+  postal?: string;
+  timezone?: string;
 };
 
 // ============================================================================
@@ -241,7 +241,9 @@ export async function getIPLocation(
     // Skip private/local IPs entirely
     if (isPrivateIP(ip)) {
       log.debug({ ip }, "Private IP detected; skipping IP location lookup");
-      return null;
+      return {
+        ip,
+      };
     }
 
     // First, try in-memory cache
