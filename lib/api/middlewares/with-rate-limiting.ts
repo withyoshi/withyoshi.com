@@ -1,5 +1,5 @@
-import { getClientIP } from "@/lib/net/ip-info";
 import type { NextRequest } from "next/server";
+import { getClientIP } from "@/lib/net/ip-info";
 import type { ApiRouteMiddleware } from "../types";
 
 // Augment the ApiRouteHandlerContext type
