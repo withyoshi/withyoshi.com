@@ -24,6 +24,7 @@ const ProfilePic = ({
   const [preventHover, setPreventHover] = useState(false);
   const [isVideoLoading, setIsVideoLoading] = useState(true);
   const [hasTappedOnce, setHasTappedOnce] = useState(false);
+  const [isHintDismissing, setIsHintDismissing] = useState(false);
 
   const playVideo = () => {
     if (videoRef.current) {
@@ -50,8 +51,12 @@ const ProfilePic = ({
   };
 
   const handleFirstTap = () => {
-    setHasTappedOnce(true);
+    // Trigger dismiss animation for the hint, then unmount it
+    setIsHintDismissing(true);
     handleClick();
+    window.setTimeout(() => {
+      setHasTappedOnce(true);
+    }, 300);
   };
 
   const handleVideoEnded = () => {
@@ -170,12 +175,20 @@ const ProfilePic = ({
             onKeyDown={handleFirstTap}
             type="button"
           />
-          <div className="-ml-0.5 pointer-events-none absolute top-0 left-[100%] z-30 lg:hidden">
+          <div
+            className={`pointer-events-none absolute top-0 left-[100%] z-30 transition-all duration-300 lg:hidden ${
+              isHintDismissing
+                ? "-translate-y-2 opacity-0"
+                : "translate-y-0 opacity-100"
+            }`}
+          >
             <div
-              className={`relative flex items-center whitespace-nowrap text-gray-500 text-xl ${caveat.className}`}
+              className={`relative flex items-center whitespace-nowrap text-gray-400 text-xl ${caveat.className}`}
             >
               <HanddrawnArrowCurve className="h-6 w-6 translate-y-1 rotate-[-36deg] scale-x-[-1] text-gray-500" />
-              <span>tap me</span>
+              <span className="ml-0.5">
+                <span className="-mr-0.5">tap</span> me
+              </span>
             </div>
           </div>
         </>
