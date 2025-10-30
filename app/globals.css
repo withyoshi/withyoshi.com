@@ -188,6 +188,15 @@ svg[data-icon] svg {
 @layer components {
 }
 
+/* Hide native scrollbars when we draw a custom one */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
 /* biome-ignore lint/correctness/noInvalidPositionAtImportRule: These imports need to be after Tailwind to access CSS variables */
 @import "../lib/styles/utils/mask.css";
 /* biome-ignore lint/correctness/noInvalidPositionAtImportRule: These imports need to be after Tailwind to access CSS variables */

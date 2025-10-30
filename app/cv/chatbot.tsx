@@ -1,16 +1,35 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DefaultChatTransport } from "ai";
-import { MessageCircle, Send, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Send } from "lucide-react";
+import Image from "next/image";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 
 export default function CVChatbot() {
+  const filterIdRef = useRef<string>(
+    `cv-liquid-glass-${Math.random().toString(36).slice(2)}`
+  );
+  const _filterId = filterIdRef.current;
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [_showFirstTimeBubble, setShowFirstTimeBubble] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const messageListRef = useRef<HTMLDivElement>(null);
+  const messageContainerRef = useRef<HTMLDivElement>(null);
+  const _customTrackRef = useRef<HTMLDivElement>(null);
+  const [_scrollMetrics, _setScrollMetrics] = useState({
+    scrollTop: 0,
+    scrollHeight: 0,
+    clientHeight: 0,
+    trackHeight: 0,
+  });
+  const [_isDragging, _setIsDragging] = useState(false);
+  const _dragOffsetRef = useRef(0);
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
@@ -24,15 +43,35 @@ export default function CVChatbot() {
 
   const isLoading = status === "streaming" || status === "submitted";
 
+  // Track which messages have already been rendered to gate enter animations
+  const seenMessageIdsRef = useRef<Set<string>>(new Set());
+
   // Focus input helper function
   const focusInput = useCallback(() => {
     inputRef.current?.focus();
   }, []);
 
+  // Check if this is the first time visiting and show bubble
+  useEffect(() => {
+    const hasSeenBubble = localStorage.getItem("cv-chatbot-bubble-seen");
+    if (hasSeenBubble) {
+      setShowFirstTimeBubble(true);
+    }
+  }, []);
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (messages.length > 0) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      const el = messageListRef.current;
+      if (el) {
+        el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+      }
+    }
+    // Mark current messages as seen after they render once
+    for (const m of messages) {
+      if (m?.id) {
+        seenMessageIdsRef.current.add(m.id as string);
+      }
     }
     // Keep input focused after updates
     if (isOpen) {
@@ -49,6 +88,42 @@ export default function CVChatbot() {
       }
     }
   }, [messages]);
+
+  // Spacer at end of list to keep last message visible above the input bar
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+    const inputBarEl = document.getElementById(
+      "chatbot-input-bar"
+    ) as HTMLElement | null;
+    const spacerEl = messagesEndRef.current;
+
+    if (!spacerEl) {
+      return;
+    }
+
+    const applySpacer = () => {
+      const height = inputBarEl
+        ? Math.round(inputBarEl.getBoundingClientRect().height)
+        : 0;
+      spacerEl.style.height = `${Math.max(0, height)}px`;
+    };
+
+    applySpacer();
+    const onResize = () => applySpacer();
+    window.addEventListener("resize", onResize);
+
+    const ro = new ResizeObserver(() => applySpacer());
+    if (inputBarEl) {
+      ro.observe(inputBarEl);
+    }
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      ro.disconnect();
+    };
+  }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,11 +147,17 @@ export default function CVChatbot() {
     setInput(value);
   };
 
-  const handleChatOpen = () => {
-    setIsOpen(true);
+  const handleChatToggle = () => {
+    setIsOpen((prev) => !prev);
     setError(null);
-    // Focus input when opening chat
+    setShowFirstTimeBubble(false);
+    localStorage.setItem("cv-chatbot-bubble-seen", "true");
     setTimeout(() => focusInput(), 0);
+  };
+
+  const _handleBubbleDismiss = () => {
+    setShowFirstTimeBubble(false);
+    localStorage.setItem("cv-chatbot-bubble-seen", "true");
   };
 
   // Message renderer component
@@ -89,7 +170,9 @@ export default function CVChatbot() {
       message.content ||
       "";
 
-    return (
+    const isNew = !seenMessageIdsRef.current.has(message.id);
+
+    return content ? (
       <div
         className={`flex ${
           message.role === "user" ? "justify-end" : "justify-start"
@@ -97,77 +180,106 @@ export default function CVChatbot() {
         key={message.id}
       >
         <div
-          className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
-            message.role === "user"
-              ? "bg-mint-600 text-white"
-              : "bg-gray-100 text-gray-900"
+          className={`chatbot-message-item relative z-20 max-w-[85%] ${
+            isNew
+              ? "animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out"
+              : ""
           }`}
         >
-          {content}
+          <div
+            className={`relative z-20 rounded-2xl text-sm shadow-sm backdrop-contrast-125 ${
+              message.role === "user"
+                ? "bg-mint-600/90 text-white"
+                : "bg-white/50"
+            }`}
+          >
+            <div
+              className={`flex gap-1 px-4 py-3 ${message.role === "user" ? "flex-row-reverse" : "flex-row"}`}
+            >
+              <div
+                className={`flex flex-1 flex-col ${message.role === "user" ? "text-left" : "text-left"}`}
+              >
+                <div className="flex items-center gap-1">
+                  <span className="font-semibold">
+                    {message.role === "user" ? "Mystery Visitor" : "Yoyo"}
+                  </span>
+                  {message.role === "assistant" && (
+                    <span>
+                      <Image
+                        alt="Chat with Yoshi"
+                        className="h-4 w-4"
+                        height={24}
+                        src="/images/cv-yoyo.svg"
+                        width={24}
+                      />
+                    </span>
+                  )}
+                </div>
+                <div>{content}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    );
+    ) : null;
   };
 
   return (
     <>
-      {/* Floating Chat Button */}
-      {!isOpen && (
-        <button
-          aria-label="Open chat"
-          className="group fixed right-6 bottom-6 z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-mint-600 text-white shadow-lg transition-all hover:scale-110 hover:bg-mint-700 sm:h-16 sm:w-16"
-          onClick={handleChatOpen}
-          type="button"
+      {/* Chat Window */}
+
+      <div className="fixed right-0 bottom-0 z-[60] flex h-auto max-h-screen min-h-0 w-[90vw] max-w-[440px] flex-col px-6 py-8">
+        {/* Messages Container */}
+        <div
+          className={`relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl shadow-mint-500/50 shadow-xl backdrop-blur-sm backdrop-brightness-90 backdrop-contrast-75 transition-all duration-500 ease-out ${
+            isOpen
+              ? "max-h-[75vh] translate-y-0 opacity-100 sm:max-h-[60vh]"
+              : "pointer-events-none max-h-0 translate-y-2 opacity-0"
+          }`}
+          ref={messageContainerRef}
         >
-          <MessageCircle className="h-6 w-6 sm:h-7 sm:w-7" />
-        </button>
-      )}
+          <div className="pointer-events-none absolute inset-0 z-10 rounded-3xl bg-[radial-gradient(ellipse_at_top_left,theme(colors.mint.100),transparent)]" />
+          <div className="pointer-events-none absolute inset-0 z-10 rounded-3xl bg-[radial-gradient(ellipse_at_bottom_right,theme(colors.gray.100),transparent)]" />
+          <div className="mask-linear-135 mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-10 rounded-3xl border-2 border-white" />
+          <div className="mask-linear-180 mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-10 rounded-3xl border-1 border-mint-600/50" />
+          <div className="mask-linear mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-10 rounded-3xl border-1 border-gray-400/50" />
 
-      {/* Chat Modal */}
-      {isOpen && (
-        <div className="fixed right-6 bottom-6 z-[60] flex h-[600px] w-[90vw] max-w-[400px] flex-col rounded-2xl border border-gray-200 bg-white shadow-2xl">
-          {/* Header */}
-          <div className="flex items-center justify-between rounded-t-2xl border-gray-200 border-b bg-mint-600 p-4">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-white" />
-              <h3 className="font-semibold text-white">Ask about my CV</h3>
-            </div>
-            <button
-              aria-label="Close chat"
-              className="rounded-full p-1 text-white hover:bg-mint-700"
-              onClick={() => {
-                setIsOpen(false);
-                setError(null); // Clear errors when closing
-              }}
-              type="button"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
+          {/* Message List */}
+          <div
+            className="no-scrollbar relative z-20 max-h-screen space-y-4 overflow-y-auto overscroll-contain px-4 pt-4 sm:max-h-[60vh] [&>*:nth-last-child(2)]:m-0"
+            id="chatbot-message-list"
+            ref={messageListRef}
+          >
+            {renderMessage({
+              id: "1",
+              role: "assistant",
+              content: "Hello! I'm Yoyo!",
+            })}
 
-          {/* Messages */}
-          <div className="flex-1 space-y-4 overflow-y-auto p-4">
-            {messages.length === 0 && (
-              <div className="flex h-full flex-col items-center justify-center text-center text-gray-500 text-sm">
-                <MessageCircle className="mb-2 h-12 w-12 text-gray-300" />
-                <p className="mb-1 font-medium">Click to start chatting!</p>
-                <p className="text-xs">
-                  I'll help you learn about Yan Sern's experience and skills
-                </p>
-              </div>
-            )}
-
+            {Array.from({ length: 0 }).map((_, i) => (
+              <Fragment key={`intro-${i}`}>
+                {renderMessage({
+                  id: `assistant-intro-${i}`,
+                  role: "assistant",
+                  content: "Hello! I'm Yoyo!",
+                })}
+                {renderMessage({
+                  id: `user-intro-${i}`,
+                  role: "user",
+                  content: "Hello! I'm Yoshi!",
+                })}
+              </Fragment>
+            ))}
             {messages.map(renderMessage)}
-
             {error && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-2xl bg-red-50 px-4 py-3 text-sm">
+                <div className="max-w-[85%] rounded-4xl border border-red-400/30 bg-red-500/20 px-4 py-3 text-sm shadow-lg backdrop-blur-sm">
                   <div className="font-medium text-red-800">
                     Error occurred:
                   </div>
                   <div className="mt-1 text-red-700">{error}</div>
                   <button
-                    className="mt-2 text-red-600 text-xs hover:text-red-800"
+                    className="mt-2 text-red-600 text-xs transition-colors hover:text-red-800"
                     onClick={() => setError(null)}
                     type="button"
                   >
@@ -176,50 +288,82 @@ export default function CVChatbot() {
                 </div>
               </div>
             )}
-
             {isLoading && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-2xl bg-gray-100 px-4 py-2">
+                <div className="max-w-[85%] rounded-2xl border border-white/30 bg-white/20 p-2 shadow-lg backdrop-blur-sm">
                   <div className="flex gap-1">
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.3s]" />
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.15s]" />
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400" />
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-mint-400 [animation-delay:-0.3s]" />
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-mint-400 [animation-delay:-0.15s]" />
+                    <div className="h-2 w-2 animate-bounce rounded-full bg-mint-400" />
                   </div>
                 </div>
               </div>
             )}
-
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input - Always show, but with different behavior */}
-          <form
-            className="border-gray-200 border-t p-4"
-            onSubmit={handleSubmit}
+          {/* Input */}
+          <div
+            className="absolute bottom-0 z-40 w-full p-4"
+            id="chatbot-input-bar"
           >
-            <div className="space-y-2">
+            <form
+              className="relative z-20 rounded-2xl border-1 border-white/75 px-4 py-4 shadow-sm backdrop-blur-lg"
+              onSubmit={handleSubmit}
+            >
               <div className="flex gap-2">
                 <input
-                  className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm outline-none focus:border-mint-600 focus:ring-2 focus:ring-mint-600/20"
+                  className="flex-1 rounded-sm border border-gray-400/50 bg-white/75 px-3 py-2 text-gray-900 text-sm placeholder-gray-400 outline-none transition-all focus:border-mint-400 focus:bg-white/100 focus:ring-2 focus:ring-mint-400/40"
                   onChange={handleInputChange}
-                  placeholder="Ask about experience, skills, projects..."
+                  placeholder="Ask Yoyo anything..."
                   readOnly={isLoading}
                   ref={inputRef}
                   value={input}
                 />
                 <button
                   aria-label="Send message"
-                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-mint-600 text-white transition-colors hover:bg-mint-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border border-mint-600/50 bg-mint-600/80 text-white transition-all hover:scale-105 hover:bg-mint-600/90 disabled:border-gray-400/50 disabled:bg-mint-600/0 disabled:text-gray-400/50"
                   disabled={isLoading || !input.trim()}
                   type="submit"
                 >
                   <Send className="h-4 w-4" />
                 </button>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
-      )}
+
+        {/* Floating Chat toggle button */}
+        <div
+          className="relative flex flex-shrink-0 items-center justify-end pt-4"
+          id="chatbot-toggle-bar"
+        >
+          <button
+            aria-label={isOpen ? "Close chat" : "Open chat"}
+            className={`relative h-12 w-12 cursor-pointer rounded-full bg-mint-600 shadow-lg backdrop-blur-sm transition-all hover:scale-130 ${isOpen ? "scale-100" : "scale-120"}`}
+            onClick={handleChatToggle}
+            type="button"
+          >
+            <div className="absolute top-0 right-0 h-full w-[150%] overflow-hidden rounded-r-full">
+              <div className="absolute right-0 aspect-square h-full min-h-full">
+                <Image
+                  alt="Chat with Yoshi"
+                  className={`${isOpen ? "translate-x-[100%] scale-0" : "-translate-x-[12px] scale-96"}  absolute top-0.5 left-0 h-12 h-full w-12 w-full transform transition-transform duration-300 ease-out`}
+                  height={24}
+                  src="/images/cv-yoyo.svg"
+                  width={24}
+                />
+              </div>
+            </div>
+            <div className="absolute top-0 right-0 flex h-full w-full items-center justify-center overflow-hidden rounded text-white">
+              <FontAwesomeIcon
+                className={`text-2xl transform text-white transition-transform duration-300 ease-out ${isOpen ? "translate-x-0" : "-translate-x-[100%] scale-0"}`}
+                icon={faXmark}
+              />
+            </div>
+          </button>
+        </div>
+      </div>
     </>
   );
 }
