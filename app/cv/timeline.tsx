@@ -96,13 +96,13 @@ const TimelineItem = ({
               {/* Mobile-only first-time tooltip */}
               {shouldShowTooltip && (
                 <div
-                  className={`absolute inline-flex items-center gap-1 ${caveat.className} top-[-24px] left-[134px] text-xl text-gray-400 transition-all duration-300 md:hidden ${
+                  className={`absolute inline-flex items-center gap-1 ${caveat.className} top-[-24px] left-[134px] text-gray-400 text-xl transition-all duration-300 md:hidden ${
                     isTooltipDismissing
                       ? "-translate-y-2 opacity-0"
                       : "translate-y-0 opacity-100"
                   }`}
                 >
-                  <HanddrawnArrowCurve className="translate-y-1 h-6 w-6 rotate-[-35deg] scale-x-[-1] scale-y-[1] text-gray-500" />
+                  <HanddrawnArrowCurve className="h-6 w-6 translate-y-1 rotate-[-35deg] scale-x-[-1] scale-y-[1] text-gray-500" />
                   <span>tap to expand</span>
                 </div>
               )}
