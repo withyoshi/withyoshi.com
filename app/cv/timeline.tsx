@@ -157,12 +157,13 @@ const Timeline = ({ className }: TimelineProps) => {
           </p>
           <ul>
             <li>
-              Added AI features that leverage LLM + RAG, e.g. chatbot, semantic
-              search, and predictive analysis.
+              Built LLM-powered AI features that leverages RAG & prompt
+              engineering, e.g. chatbot, semantic search, and predictive
+              analysis.
             </li>
             <li>
-              Created NLP workflows to categorize and structure raw data into
-              context-relevant vector embeddings.
+              Created NLP workflows to extract and categorize raw data,
+              structuring them into context-relevant vector embeddings.
             </li>
             <li>
               Built data scrapers to collect and process e-commerce and real
