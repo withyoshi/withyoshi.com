@@ -133,17 +133,17 @@ const PersonalNote = ({ className = "" }: PersonalNoteProps) => (
   <section className={`${className}`}>
     <div
       className={
-        "rounded-sm bg-gray-100 p-6 pt-4 pb-5 overflow-hidden relative"
+        "relative overflow-hidden rounded-sm bg-gray-100 p-6 pt-4 pb-5"
       }
     >
       <FontAwesomeIcon
-        className="mb-2 text-6xl text-white absolute right-5 -top-5"
+        className="-top-5 absolute right-5 mb-2 text-6xl text-white"
         icon={faQuoteRight}
       />
       <h4 className="font-semibold text-mint-600 text-sm">
         My traits & passions
       </h4>
-      <p className="text-balance italic text-gray-600 text-sm">
+      <p className="text-balance text-gray-600 text-sm italic">
         Friendly and curious. I&apos;m into photography, piano, and building
         things in my homelab.
       </p>
