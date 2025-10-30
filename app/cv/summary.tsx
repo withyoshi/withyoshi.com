@@ -139,7 +139,6 @@ const PersonalNote = ({ className = "" }: PersonalNoteProps) => (
       <FontAwesomeIcon
         className="mb-2 text-6xl text-white absolute right-5 -top-5"
         icon={faQuoteRight}
-        text
       />
       <h4 className="font-semibold text-mint-600 text-sm">
         My traits & passions

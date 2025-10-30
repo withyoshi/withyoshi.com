@@ -31,6 +31,10 @@ export default function CVChatbot() {
   const [_isDragging, _setIsDragging] = useState(false);
   const _dragOffsetRef = useRef(0);
 
+  const [isPro, _setIsPro] = useState(true);
+  const [isVip, _setIsVip] = useState(false);
+  const [userName, _setUserName] = useState(null);
+
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/cv/chatbot",
@@ -182,7 +186,7 @@ export default function CVChatbot() {
         <div
           className={`chatbot-message-item relative z-20 max-w-[85%] ${
             isNew
-              ? "animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out"
+              ? "fade-in slide-in-from-bottom-2 animate-in duration-300 ease-out"
               : ""
           }`}
         >
@@ -200,19 +204,36 @@ export default function CVChatbot() {
                 className={`flex flex-1 flex-col ${message.role === "user" ? "text-left" : "text-left"}`}
               >
                 <div className="flex items-center gap-1">
-                  <span className="font-semibold">
-                    {message.role === "user" ? "Mystery Visitor" : "Yoyo"}
-                  </span>
+                  {message.role === "user" && (
+                    <>
+                      <span className="font-semibold">
+                        {userName || "Mystery Visitor"}
+                      </span>
+                      {isPro && !isVip && (
+                        <span className="rounded-sm bg-white/25 px-[4px] py-[2px] font-semibold text-[9px] text-white">
+                          PRO
+                        </span>
+                      )}
+                      {isVip && (
+                        <span className="rounded-sm bg-purple-500 px-[4px] py-[2px] font-semibold text-[9px] text-white">
+                          VIP
+                        </span>
+                      )}{" "}
+                    </>
+                  )}
                   {message.role === "assistant" && (
-                    <span>
-                      <Image
-                        alt="Chat with Yoshi"
-                        className="h-4 w-4"
-                        height={24}
-                        src="/images/cv-yoyo.svg"
-                        width={24}
-                      />
-                    </span>
+                    <>
+                      <span className="font-semibold">Yoyo</span>{" "}
+                      <span className="-mt-0.5 ml-0.5 rounded-full bg-mint-600">
+                        <Image
+                          alt="Chat with Yoshi"
+                          className="-left-1 relative top-0.5 h-4 w-4"
+                          height={24}
+                          src="/images/cv-yoyo.svg"
+                          width={24}
+                        />
+                      </span>
+                    </>
                   )}
                 </div>
                 <div>{content}</div>
@@ -348,7 +369,7 @@ export default function CVChatbot() {
               <div className="absolute right-0 aspect-square h-full min-h-full">
                 <Image
                   alt="Chat with Yoshi"
-                  className={`${isOpen ? "translate-x-[100%] scale-0" : "-translate-x-[12px] scale-96"}  absolute top-0.5 left-0 h-12 h-full w-12 w-full transform transition-transform duration-300 ease-out`}
+                  className={`${isOpen ? "translate-x-[100%] scale-0" : "-translate-x-[10px] scale-96"} absolute top-0.5 left-0 h-12 h-full w-12 w-full transform transition-transform duration-500 ease-out`}
                   height={24}
                   src="/images/cv-yoyo.svg"
                   width={24}
@@ -357,7 +378,7 @@ export default function CVChatbot() {
             </div>
             <div className="absolute top-0 right-0 flex h-full w-full items-center justify-center overflow-hidden rounded text-white">
               <FontAwesomeIcon
-                className={`text-2xl transform text-white transition-transform duration-300 ease-out ${isOpen ? "translate-x-0" : "-translate-x-[100%] scale-0"}`}
+                className={`transform text-2xl text-white transition-transform duration-300 ease-out ${isOpen ? "translate-x-0" : "-translate-x-[100%] scale-0"}`}
                 icon={faXmark}
               />
             </div>
