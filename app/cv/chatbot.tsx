@@ -16,7 +16,7 @@ export default function CVChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [_showFirstTimeBubble, setShowFirstTimeBubble] = useState(false);
+  const [showFirstTimeTooltip, setShowFirstTimeTooltip] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const messageListRef = useRef<HTMLDivElement>(null);
@@ -57,10 +57,7 @@ export default function CVChatbot() {
 
   // Check if this is the first time visiting and show bubble
   useEffect(() => {
-    const hasSeenBubble = localStorage.getItem("cv-chatbot-bubble-seen");
-    if (hasSeenBubble) {
-      setShowFirstTimeBubble(true);
-    }
+    setShowFirstTimeTooltip(true);
   }, []);
 
   // Auto-scroll to bottom when new messages arrive
@@ -154,15 +151,72 @@ export default function CVChatbot() {
   const handleChatToggle = () => {
     setIsOpen((prev) => !prev);
     setError(null);
-    setShowFirstTimeBubble(false);
-    localStorage.setItem("cv-chatbot-bubble-seen", "true");
+    setShowFirstTimeTooltip(false);
     setTimeout(() => focusInput(), 0);
   };
 
-  const _handleBubbleDismiss = () => {
-    setShowFirstTimeBubble(false);
-    localStorage.setItem("cv-chatbot-bubble-seen", "true");
+  const handleTooltipDismiss = () => {
+    setShowFirstTimeTooltip(false);
   };
+
+  const handleStartChatFromTooltip = () => {
+    // Open chat and hide tooltip
+    setShowFirstTimeTooltip(false);
+    setIsOpen(true);
+    setError(null);
+    setTimeout(() => focusInput(), 0);
+  };
+
+  const FirstTimeTooltip = ({
+    onClose,
+    onStart,
+  }: {
+    onClose: () => void;
+    onStart: () => void;
+  }) => (
+    <div className="relative z-10 overflow-hidden rounded-2xl shadow-lg shadow-mint-500/50 backdrop-blur-sm backdrop-brightness-95 backdrop-contrast-90">
+      {/* overlays matching messages container (5 empty children) */}
+      <div className="pointer-events-none absolute inset-0 z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,theme(colors.mint.100),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 z-10 rounded-2xl bg-[radial-gradient(ellipse_at_bottom_right,theme(colors.gray.100),transparent)]" />
+      <div className="mask-linear-135 mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-10 rounded-2xl border-2 border-white" />
+      <div className="mask-linear-180 mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-10 rounded-2xl border-1 border-mint-600/50" />
+      <div className="mask-linear mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-10 rounded-2xl border-1 border-gray-400/50" />
+
+      <div className="relative z-20 p-4 text-sm">
+        <div className="mb-3 text-gray-900">
+          <div className="flex items-center justify-between gap-2">
+            <h5 className="font-semibold text-lg text-mint-600">
+              Ask Yoyo anything!
+            </h5>
+            <button
+              aria-label="Close"
+              className="group flex aspect-square h-5 w-5 cursor-pointer items-center justify-center rounded-full p-2 text-gray-500 transition-all duration-100 hover:bg-mint-600/90 hover:text-white"
+              onClick={onClose}
+              type="button"
+            >
+              <FontAwesomeIcon
+                className="text-[12px] transition-all duration-100 group-hover:text-[10px]"
+                icon={faXmark}
+              />
+            </button>
+          </div>
+          <span>
+            Get to know Yan Sern personally through Yoyo, an AI chatbot that
+            knows everything about him.
+          </span>
+        </div>
+        <div className="flex justify-start">
+          <button
+            className="cursor-pointer rounded-md border border-mint-600/50 bg-mint-600/90 px-3 py-1.5 font-medium font-semibold text-white text-xs transition-colors hover:bg-mint-600"
+            onClick={onStart}
+            type="button"
+          >
+            Start Chat
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   // Message renderer component
   const renderMessage = (message: any) => {
@@ -256,7 +310,7 @@ export default function CVChatbot() {
             isOpen
               ? "max-h-[75vh] translate-y-0 opacity-100 sm:max-h-[60vh]"
               : "pointer-events-none max-h-0 translate-y-2 opacity-0"
-          }`}
+          } ${isLoading ? "chatbot-glow-loading" : ""}`}
           ref={messageContainerRef}
         >
           <div className="pointer-events-none absolute inset-0 z-10 rounded-3xl bg-[radial-gradient(ellipse_at_top_left,theme(colors.mint.100),transparent)]" />
@@ -361,7 +415,7 @@ export default function CVChatbot() {
         >
           <button
             aria-label={isOpen ? "Close chat" : "Open chat"}
-            className={`relative h-12 w-12 cursor-pointer rounded-full bg-mint-600 shadow-lg backdrop-blur-sm transition-all hover:scale-130 ${isOpen ? "scale-100" : "scale-120"}`}
+            className={`relative z-20 h-12 w-12 cursor-pointer rounded-full bg-mint-600 shadow-lg backdrop-blur-sm transition-all hover:scale-130 ${isOpen ? "scale-100" : "scale-120"}`}
             onClick={handleChatToggle}
             type="button"
           >
@@ -383,6 +437,14 @@ export default function CVChatbot() {
               />
             </div>
           </button>
+          {showFirstTimeTooltip && !isOpen && (
+            <div className="absolute right-[24px] bottom-[24px] z-[10] max-w-[280px]">
+              <FirstTimeTooltip
+                onClose={handleTooltipDismiss}
+                onStart={handleStartChatFromTooltip}
+              />
+            </div>
+          )}
         </div>
       </div>
     </>
