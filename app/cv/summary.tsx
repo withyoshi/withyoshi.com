@@ -1,5 +1,5 @@
 "use client";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faQuoteRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import LivePhoto from "./live-photo";
 
@@ -132,10 +132,19 @@ type PersonalNoteProps = {
 const PersonalNote = ({ className = "" }: PersonalNoteProps) => (
   <section className={`${className}`}>
     <div
-      className={`md:after:-bottom-[1rem] relative rounded-sm bg-green-50 p-6 pt-4 pb-5 md:ml-3 md:translate-x-4 md:rounded-br-none md:border-l-4 md:border-l-mint-600 md:shadow-sm md:after:absolute md:after:right-0 md:after:h-0 md:after:w-0 md:after:border-t-[1rem] md:after:border-t-mint-600 md:after:border-r-[1rem] md:after:border-r-transparent md:after:content-['']`}
+      className={
+        "rounded-sm bg-gray-100 p-6 pt-4 pb-5 overflow-hidden relative"
+      }
     >
-      <h4 className="font-semibold text-mint-600 text-sm">Traits & passions</h4>
-      <p className="text-balance text-gray-700 text-sm">
+      <FontAwesomeIcon
+        className="mb-2 text-6xl text-white absolute right-5 -top-5"
+        icon={faQuoteRight}
+        text
+      />
+      <h4 className="font-semibold text-mint-600 text-sm">
+        My traits & passions
+      </h4>
+      <p className="text-balance italic text-gray-600 text-sm">
         Friendly and curious. I&apos;m into photography, piano, and building
         things in my homelab.
       </p>
@@ -175,7 +184,7 @@ const Summary = ({ className }: { className?: string }) => (
         >
           <div className="relative">
             <ExperienceList experiences={leadershipExperience} />
-            <PersonalNote className="md:-mr-10 relative my-4" />
+            <PersonalNote className="mt-6" />
           </div>
         </SummaryCard>
       </section>
