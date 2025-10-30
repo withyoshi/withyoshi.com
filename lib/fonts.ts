@@ -14,6 +14,8 @@ export const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   variable: "--font-ibm-plex-sans",
   display: "swap",
+  // Load both normal and italic styles so italic uses true glyphs
+  style: ["normal", "italic"],
   weight: ["400", "500", "600", "700"], // normal, medium, semibold, bold
 });
 
