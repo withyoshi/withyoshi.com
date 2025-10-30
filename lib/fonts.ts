@@ -1,4 +1,4 @@
-import { IBM_Plex_Mono, IBM_Plex_Sans, Lexend } from "next/font/google";
+import { Caveat, IBM_Plex_Mono, IBM_Plex_Sans, Lexend } from "next/font/google";
 
 // Note: Futura PT Bold is loaded via Typekit as it's not available on Google Fonts
 // The Typekit URL contains this font along with potentially others
@@ -22,4 +22,10 @@ export const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
   display: "swap",
   weight: ["400", "500", "600", "700"], // normal, medium, semibold, bold
+});
+
+export const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
+  display: "swap",
 });
