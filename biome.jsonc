@@ -7,7 +7,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignoreUnknown": false,
+    "ignoreUnknown": true,
     "includes": ["**", "!**/*.jsonc"]
   },
   "formatter": {
@@ -73,7 +73,7 @@
             "useSortedClasses": {
               "level": "error",
               "options": {
-                "functions": ["clsx", "cn", "cva"]
+                "functions": ["clsx", "cn", "cva", "tw"]
               }
             }
           }
