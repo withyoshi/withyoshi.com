@@ -93,8 +93,9 @@ export function MessageList(props: ChatbotMessageProps) {
         ))}
       </AnimatePresence>
 
-      {status === "submitted" ||
-        (status === "streaming" && <MessageItemLoading />)}
+      {(status === "submitted" || status === "streaming") && (
+        <MessageItemLoading />
+      )}
 
       {/* Queued user messages while assistant is streaming */}
       <AnimatePresence initial={false}>
