@@ -6,13 +6,7 @@ import Image from "next/image";
 import { useContext } from "react";
 import { ChatboxContext } from "./provider";
 
-type ChatToggleProps = {
-  className?: string;
-};
-
-export function ChatToggle(props: ChatToggleProps) {
-  const { className } = props;
-
+export function ChatToggle() {
   const { isOpen, setIsOpen, setShowFirstTimeTooltip } =
     useContext(ChatboxContext);
 
