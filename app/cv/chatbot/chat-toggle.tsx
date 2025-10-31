@@ -4,18 +4,18 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 
-type ChatbotToggleButtonProps = {
+type ChatToggleProps = {
   isOpen: boolean;
   onClick: () => void;
 };
 
-export function ChatbotToggleButton(props: ChatbotToggleButtonProps) {
+export function ChatToggle(props: ChatToggleProps) {
   const { isOpen, onClick } = props;
 
   return (
     <button
       aria-label={isOpen ? "Close chat" : "Open chat"}
-      className={`relative z-20 h-12 w-12 cursor-pointer rounded-full bg-mint-600 shadow-lg backdrop-blur-sm transition-all hover:scale-130 ${isOpen ? "scale-100" : "scale-120"}`}
+      className={`relative z-20 h-12 w-12 cursor-pointer rounded-full bg-mint-600 shadow-lg backdrop-blur-sm transition-all hover:scale-130 ${isOpen ? "scale-80 xs:scale-100" : "scale-100 xs:scale-120"}`}
       onClick={onClick}
       type="button"
     >

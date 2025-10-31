@@ -22,6 +22,8 @@ svg[data-icon] svg {
 
 @theme {
   /* Override font stack with my preferred fonts */
+  /* Custom breakpoint for xs (480px) */
+  --breakpoint-xs: 30rem;
   --font-sans:
     "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
@@ -183,6 +185,8 @@ svg[data-icon] svg {
     @apply text-mint-600;
   }
 }
+
+/* Global animations (none currently) */
 
 /* biome-ignore lint/suspicious/noEmptyBlock: Empty @layer components block reserved for future use */
 @layer components {

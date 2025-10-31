@@ -1,0 +1,94 @@
+"use client";
+
+import Image from "next/image";
+import { useContext } from "react";
+import { ProBadge, VipBadge } from "./message-item-badges";
+import { ChatboxContext } from "./provider";
+
+export type ChatMessage = {
+  id: string;
+  role: "user" | "assistant" | string;
+  content?: string;
+  parts?: Array<{ type: string; text?: string }>;
+  metadata?: unknown;
+};
+
+function extractMessageContent(message: ChatMessage): string {
+  return (
+    message.parts
+      ?.filter((part) => part.type === "text")
+      .map((part) => part.text || "")
+      .join("") ||
+    message.content ||
+    ""
+  );
+}
+
+function MessageHeader({ role }: { role: string }) {
+  const { conversationState } = useContext(ChatboxContext);
+  if (role === "user") {
+    return (
+      <>
+        <span className="font-semibold">
+          {conversationState.userName || "Mystery Visitor"}
+        </span>
+        {conversationState.isVip ? (
+          <VipBadge />
+        ) : conversationState.isPro ? (
+          <ProBadge />
+        ) : null}
+      </>
+    );
+  }
+
+  if (role === "assistant") {
+    return (
+      <>
+        <span className="font-semibold">Yoyo</span>
+        <span className="-mt-0.5 ml-0.5 rounded-full bg-mint-600">
+          <Image
+            alt="Chat with Yoshi"
+            className="-left-1 relative top-0.5 h-4 w-4"
+            height={24}
+            src="/images/cv-yoyo.svg"
+            width={24}
+          />
+        </span>
+      </>
+    );
+  }
+
+  return null;
+}
+
+export function MessageItem({ message }: { message: ChatMessage }) {
+  const content = extractMessageContent(message);
+  const isUser = message.role === "user";
+
+  if (!content) {
+    return null;
+  }
+
+  return (
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+      <div className="chatbot-message-item relative z-20 max-w-[85%]">
+        <div
+          className={`relative z-20 rounded-2xl text-sm shadow-sm backdrop-contrast-125 ${
+            isUser ? "bg-mint-600/90 text-white" : "bg-white/50"
+          }`}
+        >
+          <div
+            className={`flex gap-1 px-4 py-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
+          >
+            <div className="flex flex-1 flex-col text-left">
+              <div className="flex items-center gap-1">
+                <MessageHeader role={message.role} />
+              </div>
+              <div>{content}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
