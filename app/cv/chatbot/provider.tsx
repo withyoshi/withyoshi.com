@@ -2,7 +2,8 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { createContext, useMemo, useState } from "react";
+import { nanoid } from "nanoid";
+import { createContext, useCallback, useMemo, useRef, useState } from "react";
 
 type ChatboxContextValue = {
   // tipbox
@@ -23,12 +24,10 @@ type ChatboxContextValue = {
   messages: any[];
   sendMessage: (params: { text: string }) => void;
   status: string;
-  // derived flags
-  isMessageStreaming: boolean;
-  isMessageSubmitted: boolean;
-  isMessageReady: boolean;
-  isMessageError: boolean;
-  isMessageLoading: boolean;
+  // message queue
+  queuedMessages: Array<{ id: string; text: string }>;
+  queueMessage: (text: string) => void;
+  addMessage: (text: string) => void;
   // conversation state
   conversationState: {
     userName: string | null;
@@ -56,9 +55,13 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
   const [showFirstTimeTooltip, setShowFirstTimeTooltip] = useState(true);
   const [conversationState, setConversationState] = useState({
     userName: null as string | null,
-    isPro: true,
-    isVip: false,
+    isPro: false,
+    isVip: true,
   });
+  const [queuedMessages, setQueuedMessages] = useState<
+    Array<{ id: string; text: string }>
+  >([]);
+  const queuedMessagesRef = useRef<Array<{ id: string; text: string }>>([]);
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
@@ -68,13 +71,43 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       console.error(chatError);
       setError(chatError.message || "An error occurred while chatting");
     },
+    onFinish: () => {
+      console.log("onFinish");
+      const current = queuedMessagesRef.current;
+      if (!current || current.length === 0) {
+        return;
+      }
+      const [next, ...rest] = current;
+      queuedMessagesRef.current = rest;
+      setQueuedMessages(rest);
+      sendMessage({ text: next.text });
+    },
   });
 
-  const isMessageStreaming = status === "streaming";
-  const isMessageSubmitted = status === "submitted";
-  const isMessageReady = status === "ready";
-  const isMessageError = !!error;
-  const isMessageLoading = isMessageStreaming && isMessageSubmitted;
+  const queueMessage = useCallback((text: string) => {
+    setQueuedMessages((prev) => {
+      const next = [...prev, { id: nanoid(), text }];
+      queuedMessagesRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const addMessage = useCallback(
+    (text: string) => {
+      if (!text) {
+        return;
+      }
+      if (status === "error") {
+        setError(null);
+        sendMessage({ text });
+      } else if (status === "ready") {
+        sendMessage({ text });
+      } else {
+        queueMessage(text);
+      }
+    },
+    [status, sendMessage, queueMessage]
+  );
 
   const value = useMemo(
     () => ({
@@ -91,11 +124,9 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       messages: messages as any[],
       sendMessage,
       status,
-      isMessageStreaming,
-      isMessageSubmitted,
-      isMessageReady,
-      isMessageError,
-      isMessageLoading,
+      queuedMessages,
+      queueMessage,
+      addMessage,
       conversationState,
       setConversationState,
     }),
@@ -108,11 +139,9 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       messages,
       sendMessage,
       status,
-      isMessageStreaming,
-      isMessageSubmitted,
-      isMessageReady,
-      isMessageError,
-      isMessageLoading,
+      queuedMessages,
+      queueMessage,
+      addMessage,
       conversationState,
     ]
   );

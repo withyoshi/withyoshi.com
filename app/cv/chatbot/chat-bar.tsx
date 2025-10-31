@@ -3,90 +3,88 @@
 import { faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Send } from "lucide-react";
-import {
-  forwardRef,
-  useContext,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import { useContext, useEffect, useRef } from "react";
 import { ChatboxContext } from "./provider";
 
 type ChatBarProps = {
   input: string;
   onSubmit: (e: React.FormEvent) => void;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  className?: string;
 };
 
-export type ChatBarHandle = {
-  focus: () => void;
-};
-
-export const ChatBar = forwardRef<ChatBarHandle, ChatBarProps>((props, ref) => {
-  const { input, onSubmit, onChange } = props;
-  const {
-    isTipboxVisible,
-    setTipboxVisible,
-    isMessageSubmitted,
-    isMessageReady,
-  } = useContext(ChatboxContext);
+export function ChatBar({
+  input,
+  onSubmit,
+  onChange,
+  className,
+}: ChatBarProps) {
+  const { isTipboxVisible, setTipboxVisible, status, isOpen } =
+    useContext(ChatboxContext);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useImperativeHandle(ref, () => ({
-    focus: () => {
-      inputRef.current?.focus();
-    },
-  }));
-
   useEffect(() => {
-    if (isMessageReady) {
-      inputRef.current?.focus();
+    if (!isOpen) {
+      return;
     }
-  }, [isMessageReady]);
+    const id = setTimeout(() => inputRef.current?.focus(), 0);
+    return () => clearTimeout(id);
+  }, [isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    setTipboxVisible(false);
+    onSubmit(e);
+  };
 
   return (
-    <div
-      className="absolute bottom-0 z-40 w-full p-2 xs:p-4"
-      id="chatbot-input-bar"
-    >
+    <div className={`w-full ${className ?? ""}`}>
       <form
-        className="relative z-20 rounded-2xl border-1 border-white/75 bg-white/10 p-2 xs:p-4 shadow-sm backdrop-blur-lg"
-        onSubmit={onSubmit}
+        className="relative z-20 xs:rounded-2xl border-white/75 xs:border-1 border-t-1 bg-white/40 xs:p-4 px-4 pt-3.5 pb-4 shadow-sm backdrop-blur-lg"
+        onSubmit={handleSubmit}
       >
-        <div className="flex gap-2">
+        <div className="flex">
+          <div className="relative flex flex-1">
+            <input
+              className="flex-1 rounded-sm border border-gray-400/50 bg-white/75 pr-11 pl-2.5 text-gray-900 text-sm placeholder-gray-400 outline-none transition-all focus:border-mint-400 focus:bg-white/100 focus:ring-2 focus:ring-mint-400/40"
+              onChange={onChange}
+              placeholder="Ask Yoyo anything..."
+              ref={inputRef}
+              value={input}
+            />
+            <button
+              aria-label="Send message"
+              className="absolute right-0 m-1 flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-[5px] bg-mint-600 text-white transition-all hover:scale-105 disabled:bg-transparent disabled:text-gray-400/50"
+              disabled={
+                status === "submitted" ||
+                status === "streaming" ||
+                !input.trim()
+              }
+              type="submit"
+            >
+              <Send className="relative left-[-0.5px] h-4 w-4" />
+            </button>
+          </div>
           <button
             aria-label="Show tips"
-            className={`xs:-left-[1px] absolute xs:relative left-[2px] flex h-10 flex-shrink-0 cursor-pointer items-center justify-center xs:rounded-sm xs:border xs:bg-transparent pr-2 xs:pr-3 pl-4 xs:pl-3.5 transition-all hover:scale-105 ${
+            className={`group relative ml-2 xs:ml-3 flex h-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-sm border pr-3 pl-3.5 transition-all hover:scale-105 ${
               isTipboxVisible
-                ? "xs:border-mint-600/80 text-mint-600/80"
-                : "xs:border-gray-400/50 text-gray-400/50 hover:xs:border-mint-600/50 hover:text-mint-600/60"
+                ? "border-mint-600"
+                : "border-gray-400/50 hover:border-mint-600/50"
             }`}
             onClick={() => setTipboxVisible((prev) => !prev)}
             type="button"
           >
             <FontAwesomeIcon
-              className="relative xs:left-[-1px] h-4 w-4"
+              className={`relative left-[-1px] h-4 w-4 ${
+                isTipboxVisible
+                  ? "text-mint-600"
+                  : "text-gray-400/50 hover:text-mint-600"
+              }`}
               icon={faWandMagicSparkles}
             />
-          </button>
-          <input
-            className="flex-1 rounded-sm border border-gray-400/50 bg-white/75 xs:px-3 py-2 pl-8 xs:pl-3 text-gray-900 text-sm placeholder-gray-400 outline-none transition-all focus:border-mint-400 focus:bg-white/100 focus:ring-2 focus:ring-mint-400/40"
-            onChange={onChange}
-            placeholder="Ask Yoyo anything..."
-            readOnly={isMessageSubmitted}
-            ref={inputRef}
-            value={input}
-          />
-          <button
-            aria-label="Send message"
-            className="flex h-10 w-10 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border border-mint-600/50 bg-mint-600/80 text-white transition-all hover:scale-105 hover:bg-mint-600/90 disabled:border-gray-400/50 disabled:bg-mint-600/0 disabled:text-gray-400/50"
-            disabled={isMessageSubmitted || !input.trim()}
-            type="submit"
-          >
-            <Send className="relative left-[-0.5px] h-4 w-4" />
           </button>
         </div>
       </form>
     </div>
   );
-});
+}

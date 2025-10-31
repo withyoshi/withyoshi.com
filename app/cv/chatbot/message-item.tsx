@@ -29,7 +29,7 @@ function MessageHeader({ role }: { role: string }) {
   if (role === "user") {
     return (
       <>
-        <span className="font-semibold">
+        <span className="min-w-0 flex-1 truncate font-semibold">
           {conversationState.userName || "Mystery Visitor"}
         </span>
         {conversationState.isVip ? (
@@ -61,7 +61,13 @@ function MessageHeader({ role }: { role: string }) {
   return null;
 }
 
-export function MessageItem({ message }: { message: ChatMessage }) {
+export function MessageItem({
+  message,
+  className = "",
+}: {
+  message: ChatMessage;
+  className?: string;
+}) {
   const content = extractMessageContent(message);
   const isUser = message.role === "user";
 
@@ -70,7 +76,9 @@ export function MessageItem({ message }: { message: ChatMessage }) {
   }
 
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`flex ${isUser ? "justify-end" : "justify-start"} ${className}`}
+    >
       <div className="chatbot-message-item relative z-20 max-w-[85%]">
         <div
           className={`relative z-20 rounded-2xl text-sm shadow-sm backdrop-contrast-125 ${
@@ -80,8 +88,8 @@ export function MessageItem({ message }: { message: ChatMessage }) {
           <div
             className={`flex gap-1 px-4 py-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
           >
-            <div className="flex flex-1 flex-col text-left">
-              <div className="flex items-center gap-1">
+            <div className="flex min-w-0 flex-1 flex-col text-left">
+              <div className="flex min-w-0 items-center gap-1">
                 <MessageHeader role={message.role} />
               </div>
               <div>{content}</div>

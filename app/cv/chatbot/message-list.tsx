@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useContext, useEffect, useRef } from "react";
+import debounce from "lodash.debounce";
+import { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { MessageItem } from "./message-item";
 import { MessageItemError } from "./message-item-error";
 import { MessageItemLoading } from "./message-item-loading";
@@ -22,21 +23,28 @@ type ChatbotMessageProps = {
   onTipSelect: (tip: string) => void;
 };
 
-export function ChatbotMessage(props: ChatbotMessageProps) {
+export function MessageList(props: ChatbotMessageProps) {
   const { messages, error, onTipSelect } = props;
-  const { isTipboxVisible, isMessageSubmitted } = useContext(ChatboxContext);
+  const { isTipboxVisible, status, queuedMessages } =
+    useContext(ChatboxContext);
 
   const messageListRef = useRef<HTMLDivElement>(null);
 
+  const scrollToBottomDebounced = useMemo(
+    () =>
+      debounce(() => {
+        const container = messageListRef.current;
+        if (!container) {
+          return;
+        }
+        container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+      }, 50),
+    []
+  );
+
   const scrollToBottom = useCallback(() => {
-    const container = messageListRef.current;
-    if (!container) {
-      return;
-    }
-    setTimeout(() => {
-      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
-    }, 50);
-  }, []);
+    scrollToBottomDebounced();
+  }, [scrollToBottomDebounced]);
 
   const scrollToBottomImmediate = useCallback(() => {
     const container = messageListRef.current;
@@ -69,13 +77,43 @@ export function ChatbotMessage(props: ChatbotMessageProps) {
 
       <AnimatePresence initial={false}>
         {messages.map((m) => (
-          <MessageItem key={m.id} message={m} />
+          <motion.div
+            animate={{ height: "auto", opacity: 1, y: 0 }}
+            exit={{ height: 0, opacity: 0, y: 10 }}
+            initial={{ height: 0, opacity: 0, y: 10 }}
+            key={m.id}
+            onUpdate={scrollToBottom}
+            style={{ overflow: "hidden" }}
+            transition={{ duration: 0.1, ease: "easeOut" }}
+          >
+            <MessageItem message={m} />
+          </motion.div>
+        ))}
+      </AnimatePresence>
+
+      {status === "submitted" && <MessageItemLoading />}
+
+      {/* Queued user messages while assistant is streaming */}
+      <AnimatePresence initial={false}>
+        {queuedMessages.map((qm) => (
+          <motion.div
+            animate={{ height: "auto", opacity: 1, y: 0 }}
+            exit={{ height: 0, opacity: 0, y: 10 }}
+            initial={{ height: 0, opacity: 0, y: 10 }}
+            key={`queued-${qm.id}`}
+            onUpdate={scrollToBottom}
+            style={{ overflow: "hidden" }}
+            transition={{ duration: 0.1, ease: "easeOut" }}
+          >
+            <MessageItem
+              className="grayscale"
+              message={{ id: qm.id, role: "user", content: qm.text }}
+            />
+          </motion.div>
         ))}
       </AnimatePresence>
 
       {error && <MessageItemError error={error} />}
-
-      {isMessageSubmitted && <MessageItemLoading />}
 
       {/* Tipbox with framer-motion enter/exit */}
       <AnimatePresence initial={false}>
@@ -86,7 +124,7 @@ export function ChatbotMessage(props: ChatbotMessageProps) {
             initial={{ height: 0, opacity: 0, y: 6 }}
             onUpdate={scrollToBottomImmediate}
             style={{ overflow: "hidden" }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
+            transition={{ duration: 0.1, ease: "easeOut" }}
           >
             <Tipbox onTipSelect={onTipSelect} />
           </motion.div>
@@ -94,7 +132,7 @@ export function ChatbotMessage(props: ChatbotMessageProps) {
       </AnimatePresence>
 
       {/* Fixed spacer height - approximately 100px for input bar with padding */}
-      <div className="h-[106px]" />
+      <div className="h-[86px] xs:h-[106px]" />
     </div>
   );
 }
