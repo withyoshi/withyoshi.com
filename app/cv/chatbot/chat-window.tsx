@@ -9,9 +9,9 @@ export function ChatWindow() {
 
   return (
     <div
-      className={`fixed right-0 bottom-14 xs:bottom-16 z-20  flex h-auto min-h-0 w-screen xs:max-w-[480px] flex-col transition-all duration-500 ease-out ${isOpen ? "max-h-[calc(100vh-3.5rem)] xs:max-h-[calc(100vh-4rem)]" : "max-h-0"}`}
+      className={`fixed right-0 bottom-14 xs:bottom-16 z-20 flex h-auto min-h-0 w-screen xs:max-w-[480px] flex-col transition-all duration-500 ease-out ${isOpen ? "max-h-[calc(100vh-3.5rem)] xs:max-h-[calc(100vh-4rem)]" : "max-h-0"}`}
     >
-      <div className="relative m-3 xs:m-6 flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl shadow-mint-500/50 shadow-xl bg-white/10 backdrop-blur-sm transition-all duration-500 ease-out">
+      <div className="relative m-3 xs:m-6 flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl bg-white/10 shadow-mint-500/50 shadow-xl backdrop-blur-sm transition-all duration-500 ease-out">
         <div className="pointer-events-none absolute inset-0 z-10 rounded-3xl bg-[radial-gradient(ellipse_at_top_left,theme(colors.mint.100),transparent)]" />
         <div className="pointer-events-none absolute inset-0 z-0 rounded-3xl bg-[radial-gradient(ellipse_at_bottom_right,theme(colors.mint.100),transparent)]" />
 
