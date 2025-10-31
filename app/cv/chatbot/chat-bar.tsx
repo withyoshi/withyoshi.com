@@ -19,7 +19,7 @@ export function ChatBar({
   onChange,
   className,
 }: ChatBarProps) {
-  const { isTipboxVisible, setTipboxVisible, status, isOpen } =
+  const { isTipboxVisible, setTipboxVisible, isOpen } =
     useContext(ChatboxContext);
   const inputRef = useRef<HTMLInputElement>(null);
 
