@@ -8,21 +8,17 @@ import { ProBadge, VipBadge } from "./tip-badges";
 import { TipPill } from "./tip-pill";
 import { useTips } from "./use-tips";
 
-type TipboxProps = {
-  onTipSelect: (tip: string) => void;
-};
-
-export function Tipbox({ onTipSelect }: TipboxProps) {
+export function Tipbox() {
   const [hasSeenProVipInfo, setHasSeenProVipInfo] = useState(false);
   const [usedTipKeys, setUsedTipKeys] = useState<Set<string>>(new Set());
   const tips = useTips();
-  const chatbox = useContext(ChatboxContext);
-  const { setTipboxVisible } = chatbox;
+  const { setError, addMessage } = useContext(ChatboxContext);
 
   const handleShowProVipInfo = () => {
     setHasSeenProVipInfo(true);
-    onTipSelect("What's PRO & VIP?");
-    setTipboxVisible(false);
+    setError(null);
+    addMessage("What is PRO & VIP?");
+    // setTipboxVisible(false);
   };
 
   const displayedTips = useMemo(() => {
@@ -50,8 +46,9 @@ export function Tipbox({ onTipSelect }: TipboxProps) {
 
   const handleTipClick = (tip: { key: string; value: string }) => {
     setUsedTipKeys((prev) => new Set(prev).add(tip.key));
-    onTipSelect(tip.value);
-    setTipboxVisible(false);
+    setError(null);
+    addMessage(tip.value);
+    // setTipboxVisible(false);
   };
 
   const handleShowMore = () => {
@@ -66,7 +63,7 @@ export function Tipbox({ onTipSelect }: TipboxProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap justify-end gap-2">
         {displayedTips.map((tip) => (
           <TipPill key={tip.key} onClick={() => handleTipClick(tip)}>
             <span>{tip.value}</span>
@@ -74,24 +71,20 @@ export function Tipbox({ onTipSelect }: TipboxProps) {
             {tip.category === "vip" && <VipBadge />}
           </TipPill>
         ))}
-      </div>
-      {displayedTips.length > 0 && (
-        <div className="flex items-center gap-2">
-          {!hasSeenProVipInfo && (
-            <TipPill onClick={handleShowProVipInfo}>
-              <span>What is</span>
-              <ProBadge />
-              <span>and</span>
-              <VipBadge />
-              <span>?</span>
-            </TipPill>
-          )}
-          <TipPill onClick={handleShowMore}>
-            <span>Show More...</span>
-            <FontAwesomeIcon icon={faWandMagicSparkles} />
+        {!hasSeenProVipInfo && (
+          <TipPill onClick={handleShowProVipInfo}>
+            <span>What is</span>
+            <ProBadge />
+            <span>and</span>
+            <VipBadge />
+            <span>?</span>
           </TipPill>
-        </div>
-      )}
+        )}
+        <TipPill onClick={handleShowMore}>
+          <span>Show More...</span>
+          <FontAwesomeIcon icon={faWandMagicSparkles} />
+        </TipPill>
+      </div>
     </div>
   );
 }

@@ -5,22 +5,7 @@ import { ChatBar } from "./chat-bar";
 import { MessageList } from "./message-list";
 import { ChatboxContext } from "./provider";
 export function ChatWindow() {
-  const { isOpen, messages, addMessage, input, setInput, error, setError } =
-    useContext(ChatboxContext);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (input.trim()) {
-      setError(null);
-      addMessage(input);
-      setInput("");
-    }
-  };
-
-  const handleTipSelect = (tip: string) => {
-    setError(null);
-    addMessage(tip);
-  };
+  const { isOpen, messages, error } = useContext(ChatboxContext);
 
   return (
     <div
@@ -34,19 +19,10 @@ export function ChatWindow() {
       <div className="pointer-events-none absolute inset-0 z-0 rounded-3xl bg-[radial-gradient(ellipse_at_bottom_right,theme(colors.mint.50),transparent)]" />
 
       {/* Message List */}
-      <MessageList
-        error={error}
-        messages={messages as any}
-        onTipSelect={handleTipSelect}
-      />
+      <MessageList error={error} messages={messages as any} />
 
       {/* Input */}
-      <ChatBar
-        className="absolute bottom-0 z-40 xs:p-4"
-        input={input}
-        onChange={(e) => setInput(e.target.value)}
-        onSubmit={handleSubmit}
-      />
+      <ChatBar className="absolute bottom-0 z-40 xs:p-4" />
 
       <div className="mask-linear-135 mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-50 rounded-3xl border-2 border-white" />
       <div className="mask-linear-180 mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-50 rounded-3xl border-1 border-mint-600/50" />

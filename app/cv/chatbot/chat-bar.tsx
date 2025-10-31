@@ -7,20 +7,19 @@ import { useContext, useEffect, useRef } from "react";
 import { ChatboxContext } from "./provider";
 
 type ChatBarProps = {
-  input: string;
-  onSubmit: (e: React.FormEvent) => void;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
 };
 
-export function ChatBar({
-  input,
-  onSubmit,
-  onChange,
-  className,
-}: ChatBarProps) {
-  const { isTipboxVisible, setTipboxVisible, isOpen } =
-    useContext(ChatboxContext);
+export function ChatBar({ className }: ChatBarProps) {
+  const {
+    isTipboxVisible,
+    setTipboxVisible,
+    setError,
+    input,
+    setInput,
+    isOpen,
+    addMessage,
+  } = useContext(ChatboxContext);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -32,8 +31,25 @@ export function ChatBar({
   }, [isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    setTipboxVisible(false);
-    onSubmit(e);
+    e.preventDefault();
+    const message = input.trim();
+
+    if (!message) {
+      return;
+    }
+
+    setError(null);
+
+    if (isTipboxVisible) {
+      setTipboxVisible(false);
+      setTimeout(() => {
+        addMessage(message);
+      }, 150);
+    } else {
+      addMessage(message);
+    }
+
+    setInput("");
   };
 
   return (
@@ -46,7 +62,7 @@ export function ChatBar({
           <div className="relative flex flex-1">
             <input
               className="flex-1 rounded-sm border border-gray-400/50 bg-white/75 pr-11 pl-2.5 text-gray-900 text-sm placeholder-gray-400 outline-none transition-all focus:border-mint-400 focus:bg-white/100 focus:ring-2 focus:ring-mint-400/40"
-              onChange={onChange}
+              onChange={(e) => setInput(e.target.value)}
               placeholder="Ask Yoyo anything..."
               ref={inputRef}
               value={input}
@@ -74,7 +90,7 @@ export function ChatBar({
               className={`relative left-[-1px] h-4 w-4 ${
                 isTipboxVisible
                   ? "text-mint-600"
-                  : "text-gray-400/50 hover:text-mint-600"
+                  : "text-gray-400/50 group-hover:text-mint-600"
               }`}
               icon={faWandMagicSparkles}
             />

@@ -4,7 +4,6 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useContext } from "react";
-import { ProBadge, VipBadge } from "./message-item-badges";
 import { ChatboxContext } from "./provider";
 
 export type ChatMessage = {
@@ -28,95 +27,192 @@ function extractMessageContent(message: ChatMessage): string {
   );
 }
 
-function MessageHeader({ role }: { role: string }) {
+function VipBadge() {
+  return (
+    <span className="rounded-sm bg-purple-500 px-[4px] py-[2px] font-semibold text-[9px] text-white">
+      VIP
+    </span>
+  );
+}
+
+function ProBadge() {
+  return (
+    <span className="rounded-sm bg-white/25 px-[4px] py-[2px] font-semibold text-[9px] text-white">
+      PRO
+    </span>
+  );
+}
+
+function MessageHeaderUser() {
   const { conversationState } = useContext(ChatboxContext);
-  if (role === "user") {
-    return (
-      <>
-        <span className="min-w-0 truncate font-semibold">
-          {conversationState.userName || "Mystery Visitor"}
-        </span>
-        {conversationState.isVip ? (
-          <VipBadge />
-        ) : conversationState.isPro ? (
-          <ProBadge />
-        ) : null}
-      </>
-    );
-  }
+  return (
+    <div className="flex min-w-0 items-start gap-1">
+      <span className="min-w-0 truncate font-semibold">
+        {conversationState.userName || "Mystery Visitor"}
+      </span>
+      {conversationState.isVip ? (
+        <VipBadge />
+      ) : conversationState.isPro ? (
+        <ProBadge />
+      ) : null}
+    </div>
+  );
+}
 
-  if (role === "assistant") {
-    return (
-      <>
-        <span className="font-semibold">Yoyo</span>
-        <span className="-mt-0.5 ml-0.5 rounded-full bg-mint-600">
-          <Image
-            alt="Chat with Yoshi"
-            className="-left-1 relative top-0.5 h-4 w-4"
-            height={24}
-            src="/images/cv-yoyo.svg"
-            width={24}
-          />
-        </span>
-      </>
-    );
-  }
+function MessageHeaderAssistant() {
+  return (
+    <div className="flex min-w-0 items-start gap-1">
+      <span className="font-semibold">Yoyo</span>
+      <span className="-mt-0.5 ml-0.5 rounded-full bg-mint-600">
+        <Image
+          alt="Chat with Yoshi"
+          className="-left-1 relative top-0.5 h-4 w-4"
+          height={24}
+          src="/images/cv-yoyo.svg"
+          width={24}
+        />
+      </span>
+    </div>
+  );
+}
 
-  return null;
+function MessageItemUser({
+  content,
+  className,
+}: {
+  content: string;
+  className: string;
+}) {
+  return (
+    <div
+      className={`${className} ml-auto min-w-0 flex-col bg-mint-600/90 text-left text-white`}
+    >
+      <MessageHeaderUser />
+      <div>{content}</div>
+    </div>
+  );
+}
+
+function MessageItemAssistant({
+  content,
+  className,
+}: {
+  content: string;
+  className: string;
+}) {
+  return (
+    <div className={`${className} min-w-0 flex-col bg-white/50 text-left`}>
+      <MessageHeaderAssistant />
+      <div>{content}</div>
+    </div>
+  );
+}
+
+function MessageItemQueued({
+  message,
+  content,
+  className,
+}: {
+  message: ChatMessage;
+  content: string;
+  className: string;
+}) {
+  const { removeQueuedMessage } = useContext(ChatboxContext);
+
+  return (
+    <div
+      className={`${className} ml-auto flex-row-reverse items-center gap-4 border border-mint-600 bg-transparent text-mint-600`}
+    >
+      <button
+        aria-label="Remove queued message"
+        className="relative aspect-square h-8 w-8 cursor-pointer rounded-full border-1 border-mint-600 p-1 text-mint-600/80 hover:bg-mint-600/50 hover:text-white focus:outline-none"
+        onClick={() => removeQueuedMessage(message.id)}
+        type="button"
+      >
+        <FontAwesomeIcon className="-top-0.5 relative h-4 w-4" icon={faXmark} />
+      </button>
+      <div className="flex min-w-0 flex-1 flex-col text-left">
+        <MessageHeaderUser />
+        <div>{content}</div>
+      </div>
+    </div>
+  );
+}
+
+function MessageItemError({
+  error,
+  className,
+}: {
+  error: string;
+  className: string;
+}) {
+  return (
+    <div
+      className={`${className} border border-red-400/30 bg-red-500/20 shadow-lg backdrop-blur-sm`}
+    >
+      <div className="font-medium text-red-800">Error occurred</div>
+      <div className="mt-1 break-all text-red-700 text-xs">{error}</div>
+    </div>
+  );
+}
+
+function MessageItemLoading({ className }: { className: string }) {
+  return (
+    <div
+      className={`${className} border border-white/30 bg-white/20 p-2 shadow-lg backdrop-blur-sm`}
+    >
+      <div className="relative top-0.5 h-2 w-2 animate-bounce rounded-full bg-mint-400 [animation-delay:-0.3s]" />
+      <div className="relative top-0.5 h-2 w-2 animate-bounce rounded-full bg-mint-400 [animation-delay:-0.15s]" />
+      <div className="relative top-0.5 h-2 w-2 animate-bounce rounded-full bg-mint-400" />
+    </div>
+  );
 }
 
 export function MessageItem({
   message,
-  className = "",
+  error,
+  loading,
 }: {
-  message: ChatMessage;
-  className?: string;
+  message?: ChatMessage;
+  error?: string;
+  loading?: boolean;
 }) {
+  const className =
+    "relative z-20 flex w-fit max-w-[85%] gap-1 rounded-2xl px-4 py-3 text-sm shadow-sm";
+
+  if (loading) {
+    return <MessageItemLoading className={className} />;
+  }
+
+  if (error) {
+    return <MessageItemError className={className} error={error} />;
+  }
+
+  if (!message) {
+    return null;
+  }
+
   const content = extractMessageContent(message);
   const isUser = message.role === "user";
   const isQueued = message.metadata?.queued;
-  const { removeQueuedMessage } = useContext(ChatboxContext);
 
   if (!content) {
     return null;
   }
 
   return (
-    <div
-      className={`flex ${isUser ? "justify-end" : "justify-start"} ${className}`}
-    >
-      <div className="relative z-20 max-w-[85%]">
-        <div
-          className={`relative z-20 rounded-2xl text-sm shadow-sm ${
-            isUser
-              ? isQueued
-                ? "border border-mint-600 bg-transparent text-mint-600"
-                : "bg-mint-600/90 text-white"
-              : "bg-white/50"
-          }`}
-        >
-          <div
-            className={`flex gap-1 px-4 py-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
-          >
-            {isUser && isQueued ? (
-              <button
-                aria-label="Remove queued message"
-                className="-mr-2 relative aspect-square h-10 w-10 cursor-pointer rounded-full p-1 text-mint-600/80 hover:bg-mint-600/50 hover:text-white focus:outline-none"
-                onClick={() => removeQueuedMessage(message.id)}
-                type="button"
-              >
-                <FontAwesomeIcon className="h-4 w-4" icon={faXmark} />
-              </button>
-            ) : null}
-            <div className="flex min-w-0 flex-1 flex-col text-left">
-              <div className="flex min-w-0 items-start gap-1">
-                <MessageHeader role={message.role} />
-              </div>
-              <div>{content}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="pb-4">
+      {isUser && isQueued ? (
+        <MessageItemQueued
+          className={className}
+          content={content}
+          message={message}
+        />
+      ) : isUser ? (
+        <MessageItemUser className={className} content={content} />
+      ) : (
+        <MessageItemAssistant className={className} content={content} />
+      )}
     </div>
   );
 }
