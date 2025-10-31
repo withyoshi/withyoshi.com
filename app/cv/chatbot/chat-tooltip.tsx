@@ -6,15 +6,21 @@ import { useContext } from "react";
 import { ChatboxContext } from "./provider";
 
 export function ChatTooltip() {
-  const { setShowFirstTimeTooltip } = useContext(ChatboxContext);
+  const { setShowFirstTimeTooltip, showFirstTimeTooltip, isOpen } =
+    useContext(ChatboxContext);
   const handleClose = () => setShowFirstTimeTooltip(false);
   const { setIsOpen } = useContext(ChatboxContext);
   const handleStart = () => {
     setIsOpen(true);
     setShowFirstTimeTooltip(false);
   };
+
+  if (!showFirstTimeTooltip || isOpen) {
+    return null;
+  }
+
   return (
-    <div className="relative z-10 overflow-hidden rounded-2xl shadow-lg shadow-mint-500/50 backdrop-blur-sm backdrop-brightness-95 backdrop-contrast-90">
+    <div className="fixed right-12 bottom-12 z-10 max-w-[280px] overflow-hidden rounded-2xl shadow-lg shadow-mint-500/50 backdrop-blur-md backdrop-brightness-95 backdrop-contrast-90">
       {/* overlays matching messages container (5 empty children) */}
       <div className="pointer-events-none absolute inset-0 z-10 rounded-2xl bg-[radial-gradient(ellipse_at_top_left,theme(colors.mint.100),transparent)]" />
       <div className="pointer-events-none absolute inset-0 z-10 rounded-2xl bg-[radial-gradient(ellipse_at_bottom_right,theme(colors.gray.100),transparent)]" />

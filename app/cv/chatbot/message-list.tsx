@@ -31,27 +31,26 @@ export function MessageList(props: ChatbotMessageProps) {
 
   const scrollToBottomDebounced = useMemo(
     () =>
-      debounce(() => {
-        const container = messageListRef.current;
-        if (!container) {
-          return;
-        }
-        container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
-      }, 50),
+      debounce(
+        () => {
+          const container = messageListRef.current;
+          if (!container) {
+            return;
+          }
+          container.scrollTo({
+            top: container.scrollHeight,
+            behavior: "smooth",
+          });
+        },
+        50,
+        { leading: true, trailing: true }
+      ),
     []
   );
 
   const scrollToBottom = useCallback(() => {
     scrollToBottomDebounced();
   }, [scrollToBottomDebounced]);
-
-  const scrollToBottomImmediate = useCallback(() => {
-    const container = messageListRef.current;
-    if (!container) {
-      return;
-    }
-    container.scrollTop = container.scrollHeight;
-  }, []);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -98,18 +97,10 @@ export function MessageList(props: ChatbotMessageProps) {
         {queuedMessages.map((queuedMessage) => (
           <motion.div
             animate={{ height: "auto", opacity: 1, y: 0 }}
-            exit={{
-              height: 0,
-              opacity: 0,
-              y: "-100%",
-              transition: {
-                y: { duration: 0.25 },
-                height: { duration: 0.5, delay: 0.25 },
-              },
-            }}
+            exit={{ height: 0, opacity: 0, y: "-100%" }}
             initial={{ height: 0, opacity: 0, y: 10 }}
             key={queuedMessage.id}
-            onUpdate={scrollToBottomImmediate}
+            onUpdate={scrollToBottom}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
             <MessageItem message={queuedMessage} />

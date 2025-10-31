@@ -2,7 +2,8 @@
 
 import { faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useMemo, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { ChatboxContext } from "./provider";
 import { ProBadge, VipBadge } from "./tip-badges";
 import { TipPill } from "./tip-pill";
@@ -11,8 +12,18 @@ import { useTips } from "./use-tips";
 export function Tipbox() {
   const [hasSeenProVipInfo, setHasSeenProVipInfo] = useState(false);
   const [usedTipKeys, setUsedTipKeys] = useState<Set<string>>(new Set());
+  const [animationKey, setAnimationKey] = useState(0);
+  const prevIsOpenRef = useRef(false);
   const tips = useTips();
-  const { setError, addMessage } = useContext(ChatboxContext);
+  const { setError, addMessage, isOpen } = useContext(ChatboxContext);
+
+  // Replay animations when chatbox opens
+  useEffect(() => {
+    if (isOpen && !prevIsOpenRef.current) {
+      setAnimationKey((prev) => prev + 1);
+    }
+    prevIsOpenRef.current = isOpen;
+  }, [isOpen]);
 
   const handleShowProVipInfo = () => {
     setHasSeenProVipInfo(true);
@@ -63,27 +74,68 @@ export function Tipbox() {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap justify-end gap-2">
-        {displayedTips.map((tip) => (
-          <TipPill key={tip.key} onClick={() => handleTipClick(tip)}>
-            <span>{tip.value}</span>
-            {tip.category === "pro" && <ProBadge />}
-            {tip.category === "vip" && <VipBadge />}
-          </TipPill>
-        ))}
-        {!hasSeenProVipInfo && (
-          <TipPill onClick={handleShowProVipInfo}>
-            <span>What is</span>
-            <ProBadge />
-            <span>and</span>
-            <VipBadge />
-            <span>?</span>
-          </TipPill>
-        )}
-        <TipPill onClick={handleShowMore}>
-          <span>Show More...</span>
-          <FontAwesomeIcon icon={faWandMagicSparkles} />
-        </TipPill>
+      <div className="flex flex-wrap justify-end gap-2" key={animationKey}>
+        <AnimatePresence mode="popLayout">
+          {displayedTips.map((tip, index) => (
+            <motion.div
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              initial={{ scale: 0, opacity: 0 }}
+              key={tip.key}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                delay: index * 0.05,
+              }}
+            >
+              <TipPill onClick={() => handleTipClick(tip)}>
+                <span>{tip.value}</span>
+                {tip.category === "pro" && <ProBadge />}
+                {tip.category === "vip" && <VipBadge />}
+              </TipPill>
+            </motion.div>
+          ))}
+          {!hasSeenProVipInfo && (
+            <motion.div
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              initial={{ scale: 0, opacity: 0 }}
+              key="pro-vip-info"
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 20,
+                delay: displayedTips.length * 0.05,
+              }}
+            >
+              <TipPill onClick={handleShowProVipInfo}>
+                <span>What is</span>
+                <ProBadge />
+                <span>and</span>
+                <VipBadge />
+                <span>?</span>
+              </TipPill>
+            </motion.div>
+          )}
+          <motion.div
+            animate={{ scale: 1, opacity: 1 }}
+            initial={{ scale: 0, opacity: 0 }}
+            key="show-more"
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 20,
+              delay:
+                (displayedTips.length + (hasSeenProVipInfo ? 0 : 1)) * 0.05,
+            }}
+          >
+            <TipPill onClick={handleShowMore}>
+              <span>Show More...</span>
+              <FontAwesomeIcon icon={faWandMagicSparkles} />
+            </TipPill>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

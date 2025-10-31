@@ -159,7 +159,7 @@ function MessageItemError({
 function MessageItemLoading({ className }: { className: string }) {
   return (
     <div
-      className={`${className} border border-white/30 bg-white/20 p-2 shadow-lg backdrop-blur-sm`}
+      className={`${className} border border-white/30 bg-white/25 p-2 shadow-lg`}
     >
       <div className="relative top-0.5 h-2 w-2 animate-bounce rounded-full bg-mint-400 [animation-delay:-0.3s]" />
       <div className="relative top-0.5 h-2 w-2 animate-bounce rounded-full bg-mint-400 [animation-delay:-0.15s]" />

@@ -3,20 +3,34 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
+import { useContext } from "react";
+import { ChatboxContext } from "./provider";
 
 type ChatToggleProps = {
-  isOpen: boolean;
-  onClick: () => void;
+  className?: string;
 };
 
 export function ChatToggle(props: ChatToggleProps) {
-  const { isOpen, onClick } = props;
+  const { className } = props;
+
+  const { isOpen, setIsOpen, setShowFirstTimeTooltip } =
+    useContext(ChatboxContext);
+
+  const showChatbox = () => {
+    setIsOpen(true);
+    setShowFirstTimeTooltip(false);
+  };
+  const hideChatbox = () => {
+    setIsOpen(false);
+  };
 
   return (
     <button
       aria-label={isOpen ? "Close chat" : "Open chat"}
-      className={`relative z-20 h-12 w-12 cursor-pointer rounded-full bg-mint-600 shadow-lg backdrop-blur-sm transition-all hover:scale-130 ${isOpen ? "scale-80 xs:scale-100" : "scale-100 xs:scale-120"}`}
-      onClick={onClick}
+      className={
+        "fixed right-2 xs:right-6 bottom-2 xs:bottom-6 z-30 h-12 w-12 scale-100 cursor-pointer rounded-full bg-mint-600 shadow-lg backdrop-blur-sm transition-all hover:scale-105"
+      }
+      onClick={isOpen ? hideChatbox : showChatbox}
       type="button"
     >
       <div className="absolute top-0 right-0 h-full w-[150%] overflow-hidden rounded-r-full">
