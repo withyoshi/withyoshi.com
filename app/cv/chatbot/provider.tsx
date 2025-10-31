@@ -22,6 +22,7 @@ type ChatboxContextValue = {
   status: string;
   queuedMessages: ChatMessage[];
   queueMessage: (text: string) => void;
+  removeQueuedMessage: (id: string) => void;
   addMessage: (text: string) => void;
   conversationState: {
     userName: string | null;
@@ -54,6 +55,7 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
   });
   const [queuedMessages, setQueuedMessages] = useState<ChatMessage[]>([]);
   const sendPipelineRef = useRef<Promise<void>>(Promise.resolve());
+  const cancelledMessageIdsRef = useRef<Set<string>>(new Set());
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
@@ -83,7 +85,13 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       // Serialize actual sends via promise pipeline
       sendPipelineRef.current = sendPipelineRef.current
         .then(async () => {
-          // Remove from UI queue right before sending
+          // If user canceled this queued message, skip sending
+          if (cancelledMessageIdsRef.current.has(queuedId)) {
+            // Ensure it's not shown in UI anymore
+            setQueuedMessages((prev) => prev.filter((m) => m.id !== queuedId));
+            return;
+          }
+          // Remove from UI queue right before sending and send
           setQueuedMessages((prev) => prev.filter((m) => m.id !== queuedId));
           await sendMessage({ text });
         })
@@ -93,6 +101,11 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
     },
     [sendMessage]
   );
+
+  const removeQueuedMessage = useCallback((id: string) => {
+    cancelledMessageIdsRef.current.add(id);
+    setQueuedMessages((prev) => prev.filter((m) => m.id !== id));
+  }, []);
 
   const addMessage = useCallback(
     (text: string) => {
@@ -125,6 +138,7 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       status,
       queuedMessages,
       queueMessage,
+      removeQueuedMessage,
       addMessage,
       conversationState,
       setConversationState,
@@ -140,6 +154,7 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       status,
       queuedMessages,
       queueMessage,
+      removeQueuedMessage,
       addMessage,
       conversationState,
     ]

@@ -54,11 +54,7 @@ export function ChatBar({
             <button
               aria-label="Send message"
               className="absolute right-0 m-1 flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-[5px] bg-mint-600 text-white transition-all hover:scale-105 disabled:bg-transparent disabled:text-gray-400/50"
-              disabled={
-                status === "submitted" ||
-                status === "streaming" ||
-                !input.trim()
-              }
+              disabled={!input.trim()}
               type="submit"
             >
               <Send className="relative left-[-0.5px] h-4 w-4" />

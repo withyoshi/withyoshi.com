@@ -1,5 +1,7 @@
 "use client";
 
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useContext } from "react";
 import { ProBadge, VipBadge } from "./message-item-badges";
@@ -10,7 +12,9 @@ export type ChatMessage = {
   role: "user" | "assistant" | string;
   content?: string;
   parts?: Array<{ type: string; text?: string }>;
-  metadata?: unknown;
+  metadata?: {
+    queued?: boolean;
+  };
 };
 
 function extractMessageContent(message: ChatMessage): string {
@@ -29,7 +33,7 @@ function MessageHeader({ role }: { role: string }) {
   if (role === "user") {
     return (
       <>
-        <span className="min-w-0 flex-1 truncate font-semibold">
+        <span className="min-w-0 truncate font-semibold">
           {conversationState.userName || "Mystery Visitor"}
         </span>
         {conversationState.isVip ? (
@@ -71,6 +75,7 @@ export function MessageItem({
   const content = extractMessageContent(message);
   const isUser = message.role === "user";
   const isQueued = message.metadata?.queued;
+  const { removeQueuedMessage } = useContext(ChatboxContext);
 
   if (!content) {
     return null;
@@ -93,8 +98,18 @@ export function MessageItem({
           <div
             className={`flex gap-1 px-4 py-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
           >
+            {isUser && isQueued ? (
+              <button
+                aria-label="Remove queued message"
+                className="-mr-2 relative aspect-square h-10 w-10 cursor-pointer rounded-full p-1 text-mint-600/80 hover:bg-mint-600/50 hover:text-white focus:outline-none"
+                onClick={() => removeQueuedMessage(message.id)}
+                type="button"
+              >
+                <FontAwesomeIcon className="h-4 w-4" icon={faXmark} />
+              </button>
+            ) : null}
             <div className="flex min-w-0 flex-1 flex-col text-left">
-              <div className="flex min-w-0 items-center gap-1">
+              <div className="flex min-w-0 items-start gap-1">
                 <MessageHeader role={message.role} />
               </div>
               <div>{content}</div>

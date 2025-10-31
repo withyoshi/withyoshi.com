@@ -14,7 +14,9 @@ export type ChatMessage = {
   role: "user" | "assistant" | string;
   content?: string;
   parts?: Array<{ type: string; text?: string }>;
-  metadata?: unknown;
+  metadata?: {
+    queued?: boolean;
+  };
 };
 
 type ChatbotMessageProps = {
