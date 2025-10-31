@@ -70,6 +70,7 @@ export function MessageItem({
 }) {
   const content = extractMessageContent(message);
   const isUser = message.role === "user";
+  const isQueued = message.metadata?.queued;
 
   if (!content) {
     return null;
@@ -79,10 +80,14 @@ export function MessageItem({
     <div
       className={`flex ${isUser ? "justify-end" : "justify-start"} ${className}`}
     >
-      <div className="chatbot-message-item relative z-20 max-w-[85%]">
+      <div className="relative z-20 max-w-[85%]">
         <div
-          className={`relative z-20 rounded-2xl text-sm shadow-sm backdrop-contrast-125 ${
-            isUser ? "bg-mint-600/90 text-white" : "bg-white/50"
+          className={`relative z-20 rounded-2xl text-sm shadow-sm ${
+            isUser
+              ? isQueued
+                ? "border border-mint-600 bg-transparent text-mint-600"
+                : "bg-mint-600/90 text-white"
+              : "bg-white/50"
           }`}
         >
           <div

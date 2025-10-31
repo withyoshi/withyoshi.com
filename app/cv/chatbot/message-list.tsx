@@ -91,24 +91,22 @@ export function MessageList(props: ChatbotMessageProps) {
         ))}
       </AnimatePresence>
 
-      {status === "submitted" && <MessageItemLoading />}
+      {status === "submitted" ||
+        (status === "streaming" && <MessageItemLoading />)}
 
       {/* Queued user messages while assistant is streaming */}
       <AnimatePresence initial={false}>
-        {queuedMessages.map((qm) => (
+        {queuedMessages.map((queuedMessage) => (
           <motion.div
             animate={{ height: "auto", opacity: 1, y: 0 }}
             exit={{ height: 0, opacity: 0, y: 10 }}
             initial={{ height: 0, opacity: 0, y: 10 }}
-            key={`queued-${qm.id}`}
+            key={queuedMessage.id}
             onUpdate={scrollToBottom}
             style={{ overflow: "hidden" }}
             transition={{ duration: 0.1, ease: "easeOut" }}
           >
-            <MessageItem
-              className="grayscale"
-              message={{ id: qm.id, role: "user", content: qm.text }}
-            />
+            <MessageItem message={queuedMessage} />
           </motion.div>
         ))}
       </AnimatePresence>

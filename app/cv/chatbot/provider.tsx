@@ -4,31 +4,25 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { nanoid } from "nanoid";
 import { createContext, useCallback, useMemo, useRef, useState } from "react";
+import type { ChatMessage } from "./message-item";
 
 type ChatboxContextValue = {
-  // tipbox
-  isTipboxVisible: boolean;
-  setTipboxVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  // open/close
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  // chat input/error
+  isTipboxVisible: boolean;
+  setTipboxVisible: React.Dispatch<React.SetStateAction<boolean>>;
   input: string;
   setInput: React.Dispatch<React.SetStateAction<string>>;
   error: string | null;
   setError: React.Dispatch<React.SetStateAction<string | null>>;
-  // first-time tooltip
   showFirstTimeTooltip: boolean;
   setShowFirstTimeTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-  // chat state
   messages: any[];
   sendMessage: (params: { text: string }) => void;
   status: string;
-  // message queue
-  queuedMessages: Array<{ id: string; text: string }>;
+  queuedMessages: ChatMessage[];
   queueMessage: (text: string) => void;
   addMessage: (text: string) => void;
-  // conversation state
   conversationState: {
     userName: string | null;
     isPro: boolean;
@@ -58,10 +52,8 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
     isPro: false,
     isVip: true,
   });
-  const [queuedMessages, setQueuedMessages] = useState<
-    Array<{ id: string; text: string }>
-  >([]);
-  const queuedMessagesRef = useRef<Array<{ id: string; text: string }>>([]);
+  const [queuedMessages, setQueuedMessages] = useState<ChatMessage[]>([]);
+  const sendPipelineRef = useRef<Promise<void>>(Promise.resolve());
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
@@ -71,26 +63,36 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       console.error(chatError);
       setError(chatError.message || "An error occurred while chatting");
     },
-    onFinish: () => {
-      console.log("onFinish");
-      const current = queuedMessagesRef.current;
-      if (!current || current.length === 0) {
-        return;
-      }
-      const [next, ...rest] = current;
-      queuedMessagesRef.current = rest;
-      setQueuedMessages(rest);
-      sendMessage({ text: next.text });
-    },
+    // No need to manually advance a queue; the promise pipeline serializes sends
   });
 
-  const queueMessage = useCallback((text: string) => {
-    setQueuedMessages((prev) => {
-      const next = [...prev, { id: nanoid(), text }];
-      queuedMessagesRef.current = next;
-      return next;
-    });
-  }, []);
+  const queueMessage = useCallback(
+    (text: string) => {
+      const queuedId = nanoid();
+      // Add to UI queue immediately
+      setQueuedMessages((prev) => [
+        ...prev,
+        {
+          id: queuedId,
+          role: "user",
+          content: text,
+          metadata: { queued: true },
+        },
+      ]);
+
+      // Serialize actual sends via promise pipeline
+      sendPipelineRef.current = sendPipelineRef.current
+        .then(async () => {
+          // Remove from UI queue right before sending
+          setQueuedMessages((prev) => prev.filter((m) => m.id !== queuedId));
+          await sendMessage({ text });
+        })
+        .catch(() => {
+          // Keep chain alive; error is handled by onError or inside sendMessage
+        });
+    },
+    [sendMessage]
+  );
 
   const addMessage = useCallback(
     (text: string) => {
@@ -99,14 +101,11 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       }
       if (status === "error") {
         setError(null);
-        sendMessage({ text });
-      } else if (status === "ready") {
-        sendMessage({ text });
-      } else {
-        queueMessage(text);
       }
+      // Always enqueue; pipeline ensures strict serialization
+      queueMessage(text);
     },
-    [status, sendMessage, queueMessage]
+    [status, queueMessage]
   );
 
   const value = useMemo(
