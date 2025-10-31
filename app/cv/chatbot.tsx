@@ -20,7 +20,7 @@ export default function Chatbot() {
       setIsOpen(false);
     };
     return (
-      <div className="fixed right-0 bottom-0 z-[60] flex h-auto max-h-screen min-h-0 w-screen xs:max-w-[440px] flex-col p-3 xs:p-6">
+      <div className="fixed right-0 bottom-0 z-[60] flex h-auto max-h-screen min-h-0 w-screen xs:max-w-[480px] flex-col p-3 xs:p-6">
         <ChatWindow />
         <div className="relative flex flex-shrink-0 items-center justify-end pt-2 xs:pt-4">
           <ChatToggle

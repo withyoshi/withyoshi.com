@@ -65,7 +65,7 @@ export function MessageList(props: ChatbotMessageProps) {
 
   return (
     <div
-      className="no-scrollbar relative z-20 max-h-screen space-y-4 overflow-y-auto overscroll-contain px-4 pt-4 sm:max-h-[60vh] [&>*:nth-last-child(2)]:m-0"
+      className="no-scrollbar relative z-20 max-h-screen space-y-4 overflow-y-auto overscroll-contain px-4 pt-4 sm:max-h-[75vh] [&>*:nth-last-child(2)]:m-0"
       id="chatbot-message-list"
       ref={messageListRef}
     >
