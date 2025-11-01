@@ -26,7 +26,7 @@
         "useUnifiedTypeSignatures": "off"
       },
       "nursery": {
-        "useSortedClasses": "error"
+        "useSortedClasses": "off"
       },
       "suspicious": {
         "useAwait": "off",
@@ -70,12 +70,7 @@
       "linter": {
         "rules": {
           "nursery": {
-            "useSortedClasses": {
-              "level": "error",
-              "options": {
-                "functions": ["clsx", "cn", "cva", "tw"]
-              }
-            }
+            "useSortedClasses": "off"
           }
         }
       }
