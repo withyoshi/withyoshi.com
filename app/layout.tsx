@@ -93,6 +93,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // Viewport configuration
 export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   themeColor: "#0d9488", // teal-600
 };
 
@@ -103,12 +107,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <meta
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-          name="viewport"
-        />
-      </head>
       <body
         className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} ${lexend.variable} font-sans text-gray-600 antialiased`}
       >

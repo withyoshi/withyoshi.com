@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import VisualViewportProvider from "@/components/lib/visual-viewport-provider";
 import { PhoneModalProvider } from "./contexts/phone-modal-context";
 
 // CV page constants for reusability
@@ -81,11 +82,13 @@ export default function CVLayout({
 }>) {
   return (
     <PhoneModalProvider>
-      <section className="min-h-screen bg-gray-100">
-        <main className="container mx-auto max-w-screen-xl overflow-hidden sm:p-8">
-          {children}
-        </main>
-      </section>
+      <VisualViewportProvider>
+        <section className="min-h-screen bg-gray-100">
+          <main className="container mx-auto max-w-screen-xl overflow-hidden sm:p-8">
+            {children}
+          </main>
+        </section>
+      </VisualViewportProvider>
     </PhoneModalProvider>
   );
 }
