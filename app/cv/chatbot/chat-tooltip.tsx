@@ -80,5 +80,9 @@ export function ChatTooltip() {
     </AnimatePresence>
   );
 
+  if (typeof document === "undefined") {
+    return null;
+  }
+
   return createPortal(content, document.body);
 }
