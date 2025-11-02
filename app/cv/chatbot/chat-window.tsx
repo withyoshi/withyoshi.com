@@ -9,6 +9,11 @@ import { ChatboxContext } from "./provider";
 
 export function ChatWindow() {
   const { isOpen, messages, error } = useContext(ChatboxContext);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const content = (
     <>
@@ -44,7 +49,7 @@ export function ChatWindow() {
     </>
   );
 
-  if (typeof document === "undefined") {
+  if (!mounted) {
     return null;
   }
 

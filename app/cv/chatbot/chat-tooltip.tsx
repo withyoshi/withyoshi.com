@@ -3,13 +3,19 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChatboxContext } from "./provider";
 
 export function ChatTooltip() {
   const { setShowFirstTimeTooltip, showFirstTimeTooltip, isOpen } =
     useContext(ChatboxContext);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleClose = () => setShowFirstTimeTooltip(false);
   const { setIsOpen } = useContext(ChatboxContext);
   const handleStart = () => {
@@ -80,7 +86,7 @@ export function ChatTooltip() {
     </AnimatePresence>
   );
 
-  if (typeof document === "undefined") {
+  if (!mounted) {
     return null;
   }
 

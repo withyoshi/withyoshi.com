@@ -3,13 +3,18 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChatboxContext } from "./provider";
 
 export function ChatToggle() {
   const { isOpen, setIsOpen, setShowFirstTimeTooltip } =
     useContext(ChatboxContext);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const showChatbox = () => {
     setIsOpen(true);
@@ -54,7 +59,7 @@ export function ChatToggle() {
     </>
   );
 
-  if (typeof document === "undefined") {
+  if (!mounted) {
     return null;
   }
 
