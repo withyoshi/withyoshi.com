@@ -85,7 +85,7 @@ function MessageItemUser({
 }) {
   return (
     <div
-      className={`${className} border-t-1 border-t-mint-100 ml-auto min-w-0 flex-col text-left text-white bg-[linear-gradient(0deg,theme(colors.mint.700/0.9),theme(colors.mint.600/0.7))]`}
+      className={`${className} border-t-1 border-t-mint-100 ml-auto min-w-0 flex-col text-left text-white bg-[linear-gradient(0deg,theme(colors.mint.600),theme(colors.mint.600/0.8))]`}
     >
       <MessageHeaderUser />
       <div>{content}</div>
