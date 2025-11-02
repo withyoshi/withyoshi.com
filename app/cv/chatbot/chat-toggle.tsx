@@ -34,7 +34,7 @@ export function ChatToggle() {
       `}</style>
       <button
         aria-label={isOpen ? "Close chat" : "Open chat"}
-        className="fixed z-120 w-[var(--chat-toggle-size)] h-[var(--chat-toggle-size)] xs:-translate-y-3 rounded-full bg-mint-600 backdrop-blur-sm shadow-lg cursor-pointer transition-all scale-100 hover:scale-105 right-5 bottom-[var(--chat-toggle-bottom)]"
+        className="fixed z-120 w-[var(--chat-toggle-size)] h-[var(--chat-toggle-size)] xs:-translate-y-3 rounded-full border-t-1 border-t-white/50 bg-mint-600 backdrop-blur-sm shadow-lg cursor-pointer transition-all scale-100 hover:scale-105 right-5 bottom-[var(--chat-toggle-bottom)]"
         onClick={isOpen ? hideChatbox : showChatbox}
         type="button"
       >
