@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChatBar } from "./chat-bar";
 import { MessageList } from "./message-list";
@@ -31,9 +31,9 @@ export function ChatWindow() {
         initial={false}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <div className="relative m-3 xs:m-6 flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl bg-white/10 shadow-mint-500/50 shadow-xl backdrop-blur-sm transition-all duration-500 ease-out">
+        <div className="relative m-3 xs:m-6 flex min-h-0 flex-1 flex-col overflow-hidden rounded-3xl bg-white/5 shadow-mint-500/50 shadow-xl backdrop-blur-sm backdrop-brightness-95 backdrop-contrast-80 transition-all duration-500 ease-out">
           <div className="pointer-events-none absolute inset-0 z-10 rounded-3xl bg-[radial-gradient(ellipse_at_top_left,theme(colors.mint.100),transparent)]" />
-          <div className="pointer-events-none absolute inset-0 z-0 rounded-3xl bg-[radial-gradient(ellipse_at_bottom_right,theme(colors.mint.100),transparent)]" />
+          <div className="pointer-events-none absolute inset-0 z-0 rounded-3xl bg-[radial-gradient(ellipse_at_bottom_right,theme(colors.mint.50),transparent)]" />
 
           {/* Message List */}
           <MessageList error={error} messages={messages as any} />

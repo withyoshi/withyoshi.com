@@ -85,7 +85,7 @@ function MessageItemUser({
 }) {
   return (
     <div
-      className={`${className} ml-auto min-w-0 flex-col bg-mint-600/90 text-left text-white`}
+      className={`${className} border-t-1 border-t-mint-100 ml-auto min-w-0 flex-col text-left text-white bg-[linear-gradient(0deg,theme(colors.mint.700/0.9),theme(colors.mint.600/0.7))]`}
     >
       <MessageHeaderUser />
       <div>{content}</div>
@@ -101,7 +101,9 @@ function MessageItemAssistant({
   className: string;
 }) {
   return (
-    <div className={`${className} min-w-0 flex-col bg-white/50 text-left`}>
+    <div
+      className={`${className} border-t-1 border-t-white min-w-0 flex-col bg-[linear-gradient(90deg,theme(colors.white/0.8),theme(colors.white/0.4))] text-left`}
+    >
       <MessageHeaderAssistant />
       <div>{content}</div>
     </div>
@@ -159,7 +161,7 @@ function MessageItemError({
 function MessageItemLoading({ className }: { className: string }) {
   return (
     <div
-      className={`${className} border border-white/30 bg-white/25 p-2 shadow-lg`}
+      className={`${className} gap-1 border border-white/30 bg-white/25 p-2 shadow-lg`}
     >
       <div className="relative top-0.5 h-2 w-2 animate-bounce rounded-full bg-mint-400 [animation-delay:-0.3s]" />
       <div className="relative top-0.5 h-2 w-2 animate-bounce rounded-full bg-mint-400 [animation-delay:-0.15s]" />
@@ -178,14 +180,22 @@ export function MessageItem({
   loading?: boolean;
 }) {
   const className =
-    "relative z-20 flex w-fit max-w-[85%] gap-1 rounded-2xl px-4 py-3 text-sm shadow-sm";
+    "relative z-20 flex w-fit max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm";
 
   if (loading) {
-    return <MessageItemLoading className={className} />;
+    return (
+      <div className="pb-4">
+        <MessageItemLoading className={className} />
+      </div>
+    );
   }
 
   if (error) {
-    return <MessageItemError className={className} error={error} />;
+    return (
+      <div className="pb-4">
+        <MessageItemError className={className} error={error} />
+      </div>
+    );
   }
 
   if (!message) {
