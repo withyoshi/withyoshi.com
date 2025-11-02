@@ -2,15 +2,9 @@
 
 import { useMemo } from "react";
 
-export type Tips = {
-  free: Array<{ key: string; value: string }>;
-  pro: Array<{ key: string; value: string }>;
-  vip: Array<{ key: string; value: string }>;
-};
-
 const tipsDataset: Record<string, string[]> = {
-  free: ["Have you worked with AI?", "Where do you live?"],
-  pro: ["How old are you?", "What is your MBTI? "],
+  free: ["Have you worked with AI?", "Where do you live?", "X", "Y", "Z"],
+  pro: ["How old are you?", "What is your MBTI?", "D", "E", "F"],
   vip: [
     "When is your birthday?",
     "Remote or hybrid?",
@@ -18,17 +12,35 @@ const tipsDataset: Record<string, string[]> = {
   ],
 };
 
-export function useTips(): Tips {
+export type TipCategory = keyof typeof tipsDataset;
+
+export type TipItem = {
+  key: string;
+  value: string;
+  category: TipCategory;
+  index: number;
+};
+
+export type TipsByCategory = Record<TipCategory, TipItem[]>;
+
+export type TipIndexByCategory = Record<TipCategory, number>;
+
+export type UsedTipIndexByCategory = Record<TipCategory, Set<number>>;
+
+export function useTipsByCategory(): TipsByCategory {
   return useMemo(() => {
-    const result = Object.keys(tipsDataset).reduce((acc, category) => {
+    const result = {} as TipsByCategory;
+
+    for (const category of Object.keys(tipsDataset) as TipCategory[]) {
       const values = tipsDataset[category];
-      const items = values.map((value, index) => ({
-        key: `${category}-${index + 1}`,
+      result[category] = values.map((value, index) => ({
+        key: `${category}-${index}`,
         value,
+        category,
+        index,
       }));
-      acc[category as keyof Tips] = items;
-      return acc;
-    }, {} as Tips);
+    }
+
     return result;
   }, []);
 }
