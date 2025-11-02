@@ -170,23 +170,6 @@ export default function VisualViewportProvider({
   children,
 }: VisualViewportProviderProps) {
   useEffect(() => {
-    // Only in development
-    if (process.env.NODE_ENV === "development") {
-      // Force reload CSS on every navigation
-      const refreshCSS = () => {
-        const links = document.querySelectorAll('link[rel="stylesheet"]');
-        for (const link of links) {
-          if (link instanceof HTMLLinkElement) {
-            const href = link.href.split("?")[0];
-            link.href = `${href}?t=${Date.now()}`;
-          }
-        }
-      };
-      refreshCSS();
-    }
-  }, []);
-
-  useEffect(() => {
     const cleanup = setupVisualViewportVars();
     return cleanup || undefined;
   }, []);
