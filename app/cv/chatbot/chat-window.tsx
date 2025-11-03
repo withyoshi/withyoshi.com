@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useContext, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { AwardBadge } from "./award-badge";
 import { ChatBar } from "./chat-bar";
 import { MessageList } from "./message-list";
 import { ChatboxContext } from "./provider";
@@ -44,6 +45,9 @@ export function ChatWindow() {
           <div className="mask-linear-135 mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-50 rounded-3xl border-2 border-white" />
           <div className="mask-linear-180 mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-50 rounded-3xl border-1 border-mint-600/50" />
           <div className="mask-linear mask-linear-from-0% mask-linear-to-100% pointer-events-none absolute inset-0 z-50 rounded-3xl border-1 border-gray-400/50" />
+
+          {/* Award Component */}
+          <AwardBadge />
         </div>
       </motion.div>
     </>

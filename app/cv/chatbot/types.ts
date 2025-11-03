@@ -1,5 +1,4 @@
 export type ConversationState = {
   userName: string | null;
-  isPro: boolean;
-  isVip: boolean;
+  userStatus: "pro" | "vip" | null;
 };

@@ -3,7 +3,14 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { nanoid } from "nanoid";
-import { createContext, useCallback, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ChatMessage } from "./message-item";
 
 type ChatboxContextValue = {
@@ -26,14 +33,12 @@ type ChatboxContextValue = {
   addMessage: (text: string) => void;
   conversationState: {
     userName: string | null;
-    isPro: boolean;
-    isVip: boolean;
+    userStatus: "pro" | "vip" | null;
   };
   setConversationState: React.Dispatch<
     React.SetStateAction<{
       userName: string | null;
-      isPro: boolean;
-      isVip: boolean;
+      userStatus: "pro" | "vip" | null;
     }>
   >;
 };
@@ -50,8 +55,7 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
   const [showFirstTimeTooltip, setShowFirstTimeTooltip] = useState(true);
   const [conversationState, setConversationState] = useState({
     userName: null as string | null,
-    isPro: false,
-    isVip: true,
+    userStatus: null as "pro" | "vip" | null,
   });
   const [queuedMessages, setQueuedMessages] = useState<ChatMessage[]>([]);
   const sendPipelineRef = useRef<Promise<void>>(Promise.resolve());
@@ -67,6 +71,19 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
     },
     // No need to manually advance a queue; the promise pipeline serializes sends
   });
+
+  // Update conversation state from message metadata
+  useEffect(() => {
+    const lastMessage = messages.at(-1);
+    if (lastMessage && (lastMessage as any).metadata?.conversationState) {
+      const fullState = (lastMessage as any).metadata.conversationState;
+      // Only expose userName and userStatus to frontend
+      setConversationState({
+        userName: fullState.userName ?? null,
+        userStatus: fullState.userStatus ?? null,
+      });
+    }
+  }, [messages]);
 
   const queueMessage = useCallback(
     (text: string) => {

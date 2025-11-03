@@ -109,6 +109,7 @@ export async function processConversationStream(
       if (part.type === "start") {
         return {
           createdAt: Date.now(),
+conversationState,
         };
       }
 

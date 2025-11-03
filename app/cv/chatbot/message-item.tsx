@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useContext } from "react";
 import { ChatboxContext } from "./provider";
+import type { ConversationState } from "./types";
 
 export type ChatMessage = {
   id: string;
@@ -13,6 +14,7 @@ export type ChatMessage = {
   parts?: Array<{ type: string; text?: string }>;
   metadata?: {
     queued?: boolean;
+    conversationState?: ConversationState;
   };
 };
 
@@ -50,9 +52,9 @@ function MessageHeaderUser() {
       <span className="min-w-0 truncate font-semibold">
         {conversationState.userName || "Mystery Visitor"}
       </span>
-      {conversationState.isVip ? (
+      {conversationState.userStatus === "vip" ? (
         <VipBadge />
-      ) : conversationState.isPro ? (
+      ) : conversationState.userStatus === "pro" ? (
         <ProBadge />
       ) : null}
     </div>
