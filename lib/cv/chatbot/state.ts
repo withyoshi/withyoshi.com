@@ -9,29 +9,26 @@ export const ConversationStateSchema = z.object({
     .string()
     .optional()
     .describe("User's name as provided during conversation"),
-  company: z
+  intro: z
     .string()
     .optional()
-    .describe("User's company or organization name"),
-  email: z.string().email().optional().describe("User's email address"),
-  hasProvidedCompany: z
+    .describe("User's introduction and background information"),
+  contact: z
+    .string()
+    .optional()
+    .describe("User's contact method (email, phone, LinkedIn URL, etc.)"),
+  isPro: z
     .boolean()
     .optional()
-    .describe("Whether user has explicitly provided company information"),
-  hasProvidedEmail: z
+    .describe(
+      "Whether user has provided their userName (unlocks pro.txt content)"
+    ),
+  isVip: z
     .boolean()
     .optional()
-    .describe("Whether user has explicitly provided email information"),
-  nameAttempts: z
-    .number()
-    .int()
-    .min(0)
-    .optional()
-    .describe("Number of attempts made to collect user's name"),
-  hasAcknowledgedYoshi: z
-    .boolean()
-    .optional()
-    .describe("Whether user has acknowledged the Yoshi nickname"),
+    .describe(
+      "Whether user has introduced themselves and provided contact method (unlocks vip.txt content)"
+    ),
   lastActivity: z
     .number()
     .int()
@@ -50,59 +47,89 @@ export function generateConversationStatePrompt(
   conversationState: ConversationState
 ) {
   const prompt = [
-    "You are analyzing a conversation to extract and update user information. Here's what each field represents:",
+    "You are extracting user information from a conversation. Your job is to understand what the user has genuinely shared, not to infer or guess.",
     "",
-    "FIELD DESCRIPTIONS:",
-    "- userName: The user's actual name as they provided it (e.g., 'John Smith', 'Sarah')",
-    "- company: The user's company or organization name (e.g., 'Google', 'Microsoft', 'Acme Corp')",
-    "- email: The user's email address (must be valid email format)",
-    "- hasProvidedCompany: Boolean indicating if user explicitly mentioned their company",
-    "- hasProvidedEmail: Boolean indicating if user explicitly provided their email",
-    "- nameAttempts: Number of times we've tried to collect the user's name (0-3 max)",
-    "- hasAcknowledgedYoshi: Boolean indicating if user acknowledged the 'Yoshi' nickname",
-    "- lastActivity: Timestamp of when this conversation state was last updated",
+    "FIELD MEANINGS - Understand These Principles:",
+    "",
+    "userName: The user's personal identifier - something they would write on a form under 'Name'",
+    "- A personal name identifies an individual person",
+    "- Job titles, roles, positions, and organization names are NOT names",
+    "- If the user REFUSES to share their name (even if they phrase it as 'My name is...'), they have NOT provided a name",
+    "- Apply semantic understanding: if it's clearly not meant as their personal identifier, don't extract it",
+    "",
+    "intro: The user describing who they are and what they do",
+    "- This is their background, profession, interests, company, role - whatever they volunteer about themselves",
+    "- Example: 'I'm a software engineer at Google' or 'I work in data science'",
+    "- Can be partial; doesn't need to be a complete biography",
+    "- APPEND new information to existing intro (don't replace, accumulate throughout conversation)",
+    "",
+    "contact: How to actually reach the user",
+    "- Email addresses, phone numbers, social media links, LinkedIn profiles",
+    "- Must be actual contact information, not just mentioning they have contact info",
+    "",
+    "isPro: Boolean - Has the user genuinely shared their personal name?",
+    "- Only true if userName field contains a real personal name",
+    "- False if they refused, declined, or if what they shared isn't actually their name",
+    "- CRITICAL: Asking PRO questions does NOT mean they provided their name",
+    "- CRITICAL: Only set to true when they explicitly state their name",
+    "- Once set to true, preserve it (don't reset based on new statements)",
+    "",
+    "isVip: Boolean - Has the user both introduced themselves AND shared contact info?",
+    "- Requires BOTH intro and contact to have actual content",
+    "- Also requires isPro to be true (can't be VIP without a userName)",
+    "- CRITICAL: Asking VIP questions does NOT mean they provided intro/contact",
+    "- CRITICAL: Only set to true when they explicitly provide both intro AND contact",
+    "- Once set to true, preserve it (don't reset based on new statements)",
+    "",
+    "REASONING FRAMEWORK:",
+    "",
+    "1. Read what the user actually said, not what you infer",
+    "2. Distinguish between 'sharing information' and 'refusing to share'",
+    "   - 'My name is John' = sharing",
+    "   - 'I won't tell you my name' = refusing",
+    "   - 'My name is not gonna tell' = refusing (they're saying they won't tell)",
+    "3. Apply common sense about what counts as each field:",
+    "   - Would a person write this on a form under that label?",
+    "   - Is this what they genuinely shared vs what I'm inferring?",
+    "4. IMPORTANT: Asking questions does NOT count as providing information",
+    "   - 'How old are you?' does NOT mean they provided their userName",
+    "   - 'Where have you lived?' does NOT mean they provided intro/contact",
+    "   - Only explicit information sharing counts toward access levels",
+    "5. For intro field: APPEND new information to existing content (accumulate throughout conversation)",
+    "   - Don't replace existing intro - add to it",
+    "   - Combine complementary information from different messages",
+    "6. Preserve existing data unless clearly updated with new information",
+    "7. When in doubt, don't update - only update when confident",
     "",
     "CURRENT CONVERSATION STATE:",
     JSON.stringify(conversationState, null, 2),
     "",
     "INSTRUCTIONS:",
-    "1. Only update fields you can infer confidently from the conversation text",
-    "2. If no clear data is found for a field, leave it unchanged (don't set to undefined)",
-    "3. For boolean fields, only set to true if explicitly mentioned or clearly implied",
-    "4. For nameAttempts, increment only if you made an attempt to ask for their name",
-    "5. Preserve existing data unless you have new, more complete information",
-    "6. Return the updated conversation state as a JSON object",
+    "1. Analyze what the user has ACTUALLY shared in this conversation",
+    "2. For each field, ask yourself: 'Did they genuinely provide this?'",
+    "3. REMEMBER: Asking questions does NOT mean they provided the required information",
+    "4. For intro field: If user shares new information about themselves, APPEND it to existing intro",
+    "   - Example: If existing intro is 'I'm a developer' and user says 'I work at Google', combine to 'I'm a developer at Google'",
+    "5. Update fields only when you're confident about the new information",
+    "6. Preserve existing true values (don't set booleans back to false without clear reason)",
+    "7. Return the updated conversation state as a JSON object",
   ].join("\n");
 
   return prompt;
 }
 
 /**
- * Helper function to check if user has provided company info
+ * Helper function to check if user has pro access (provided userName)
  */
-export function hasProvidedCompany(state: ConversationState): boolean {
-  return Boolean(state.company || state.hasProvidedCompany);
+export function isPro(state: ConversationState): boolean {
+  return Boolean(state.isPro);
 }
 
 /**
- * Helper function to check if user has provided email info
+ * Helper function to check if user has vip access (introduced themselves + contact)
  */
-export function hasProvidedEmail(state: ConversationState): boolean {
-  return Boolean(state.email || state.hasProvidedEmail);
-}
-
-/**
- * Helper function to check if name collection should continue
- */
-export function shouldAskForName(state: ConversationState): boolean {
-  return (state.nameAttempts || 0) < 3;
-}
-
-/**
- * Helper function to check if Yoshi nickname has been acknowledged
- */
-export function hasAcknowledgedYoshi(state: ConversationState): boolean {
-  return Boolean(state.hasAcknowledgedYoshi);
+export function isVip(state: ConversationState): boolean {
+  return Boolean(state.isVip);
 }
 
 /**

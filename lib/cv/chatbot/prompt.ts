@@ -2,8 +2,8 @@ import CryptoJS from "crypto-js";
 import {
   encryptedCorePrompt,
   encryptedCvPrompt,
-  encryptedFaqPrompt,
-  encryptedGatedPrompt,
+  encryptedProPrompt,
+  encryptedVipPrompt,
 } from "./data";
 import type { ConversationState } from "./state";
 
@@ -22,13 +22,13 @@ function decrypt(encryptedData: string): string {
 // Decrypt all prompts once during module initialization
 const corePrompt = decrypt(encryptedCorePrompt);
 const cvPrompt = decrypt(encryptedCvPrompt);
-const faqPrompt = decrypt(encryptedFaqPrompt);
-const gatedPrompt = decrypt(encryptedGatedPrompt);
+const proPrompt = decrypt(encryptedProPrompt);
+const vipPrompt = decrypt(encryptedVipPrompt);
 
 /**
  * Generates the complete system prompt by combining all decrypted prompt data
  */
-export const systemPrompt = [corePrompt, cvPrompt, faqPrompt, gatedPrompt].join(
+export const systemPrompt = [corePrompt, cvPrompt, proPrompt, vipPrompt].join(
   "\n"
 );
 
@@ -38,30 +38,18 @@ export const systemPrompt = [corePrompt, cvPrompt, faqPrompt, gatedPrompt].join(
 export function generateConversationStateContext(
   conversationState: ConversationState = {}
 ): string {
-  const {
-    userName,
-    company,
-    email,
-    nameAttempts = 0,
-    hasAcknowledgedYoshi,
-  } = conversationState;
-
-  const hasGatedAccess = company && email;
-  const maxNameAttemptsReached = nameAttempts >= 3;
+  const { userName, intro, contact, isPro, isVip } = conversationState;
 
   return [
     "## CONVERSATION STATE",
-    userName ? `User: ${userName}` : "User: Anonymous",
-    company ? `Company: ${company}` : "",
-    email ? `Email: ${email}` : "",
-    hasGatedAccess
-      ? "✅ GATED INFO UNLOCKED - Personal details can be shared"
-      : "🔒 GATED INFO LOCKED - Need both company and email",
-    nameAttempts > 0
-      ? `Name attempts: ${nameAttempts}/3${maxNameAttemptsReached ? " (STOP asking)" : ""}`
-      : "",
-    hasAcknowledgedYoshi
-      ? "✅ Yoshi nickname acknowledged - Don't repeat surprise"
-      : "",
+    userName ? `Name: ${userName}` : "Name: Not provided",
+    intro ? `Introduction: ${intro}` : "",
+    contact ? `Contact: ${contact}` : "",
+    isPro
+      ? "✅ PRO ACCESS UNLOCKED - Name provided, can share PRO level content (marked with # PRO_LEVEL_CONTENT_START/END)"
+      : "🔒 PRO ACCESS LOCKED - Need userName to access PRO level content",
+    isVip
+      ? "✅ VIP ACCESS UNLOCKED - Introduced + contact provided, can share VIP level content (marked with # VIP_LEVEL_CONTENT_START/END)"
+      : "🔒 VIP ACCESS LOCKED - Need intro and contact to access VIP level content",
   ].join("\n");
 }

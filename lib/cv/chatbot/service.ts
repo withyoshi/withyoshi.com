@@ -91,7 +91,7 @@ export async function processConversationStream(
     model: openai("gpt-4o-mini"),
     system: systemPrompt, // Static system prompt - cached.
     messages: [
-      // Dynamic conversation state contect - uncached.
+      // Dynamic conversation state context - uncached.
       {
         role: "system" as const,
         content: conversationStateContext,
@@ -109,7 +109,7 @@ export async function processConversationStream(
       if (part.type === "start") {
         return {
           createdAt: Date.now(),
-conversationState,
+          conversationState,
         };
       }
 
