@@ -13,18 +13,18 @@ import { useEffect, useRef, useState } from "react";
  */
 export function useTypewriter(
   text: string,
-  wordsPerChunk: number = 2,
-  delay: number = 50,
-  enabled: boolean = true,
+  wordsPerChunk = 2,
+  delay = 50,
+  enabled = true,
   key?: string
 ): string {
   const [displayedText, setDisplayedText] = useState("");
-  const previousKeyRef = useRef<string | undefined>();
+  const previousKeyRef = useRef<string | undefined>(undefined);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const targetWordCountRef = useRef(0);
 
   useEffect(() => {
-    if (!enabled || !text) {
+    if (!(enabled && text)) {
       setDisplayedText(text);
       return;
     }
@@ -72,7 +72,8 @@ export function useTypewriter(
 
     intervalRef.current = setInterval(() => {
       if (currentChunkIndex < wordChunks.length) {
-        const wordsToShow = startIndex + (currentChunkIndex + 1) * wordsPerChunk;
+        const wordsToShow =
+          startIndex + (currentChunkIndex + 1) * wordsPerChunk;
         const actualWordsToShow = Math.min(wordsToShow, totalWords);
         const newDisplayedText = words.slice(0, actualWordsToShow).join("");
         setDisplayedText(newDisplayedText);
