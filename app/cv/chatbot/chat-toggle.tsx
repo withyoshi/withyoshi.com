@@ -8,7 +8,7 @@ import { createPortal } from "react-dom";
 import { ChatboxContext } from "./provider";
 
 export function ChatToggle() {
-  const { isOpen, setIsOpen, setShowFirstTimeTooltip } =
+  const { isOpen, setIsOpen, setShowFirstTimeTooltip, conversationState } =
     useContext(ChatboxContext);
   const [mounted, setMounted] = useState(false);
 
@@ -32,6 +32,11 @@ export function ChatToggle() {
           --chat-toggle-bottom: calc((var(--spacing) * 5) + var(--sa-bottom));
         }
       `}</style>
+      <div className="fixed top-0 left-0 z-120">
+        <pre className="bg-black/80 text-mint-400 text-xs rounded px-3 py-2 z-50 max-w-xs pointer-events-none whitespace-pre-wrap">
+          {JSON.stringify(conversationState, null, 2)}
+        </pre>
+      </div>
       <button
         aria-label={isOpen ? "Close chat" : "Open chat"}
         className="fixed z-120 w-[var(--chat-toggle-size)] h-[var(--chat-toggle-size)] xs:-translate-y-3 rounded-full border-t-1 border-t-white/50 bg-mint-600 backdrop-blur-sm shadow-lg cursor-pointer transition-all scale-100 hover:scale-105 right-5 bottom-[var(--chat-toggle-bottom)]"

@@ -102,6 +102,9 @@ export async function processConversationStream(
       ...modelMessage,
     ],
     temperature: 0.7,
+    // Note: With average output of ~40 tokens and input of ~20k tokens, you're well within GPT-4o's
+    // 128k token limit. "Unknown" finish reasons are likely due to Edge runtime timeouts (~30s limit)
+    // rather than token limits. The retry mechanism handles these timeout cases automatically.
   });
 
   // Convert to UI message stream response with metadata

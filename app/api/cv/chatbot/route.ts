@@ -51,7 +51,22 @@ export const POST = createApiHandler(
       messages,
       latestConversationState,
       async ({ messages: finishedMessages = [], responseMessage }) => {
-        logger.info({ responseMessage }, "Chat stream finished");
+        const finishReason = (responseMessage as any)?.metadata?.finishReason;
+        const logData = {
+          finishReason,
+          generationTime: (responseMessage as any)?.metadata?.generationTime,
+          totalUsage: (responseMessage as any)?.metadata?.totalUsage,
+          chatId: chatSession.id,
+        };
+
+        if (finishReason === "unknown") {
+          logger.warn(
+            { ...logData, responseMessage },
+            "Chat stream finished with UNKNOWN finish reason - potential OpenAI or Edge runtime issue"
+          );
+        } else {
+          logger.info({ ...logData, responseMessage }, "Chat stream finished");
+        }
 
         // Upload transcript and store chat session data
         try {

@@ -44,7 +44,7 @@ export function Tipbox() {
   const [animationKey, setAnimationKey] = useState(0);
   const prevIsOpenRef = useRef(false);
   const tipsByCategory = useTipsByCategory();
-  const { addMessage, isOpen } = useContext(ChatboxContext);
+  const { addMessage, isOpen, scrollToBottomRef } = useContext(ChatboxContext);
 
   const categories = useMemo(
     () => Object.keys(tipsByCategory) as TipCategory[],
@@ -314,6 +314,7 @@ export function Tipbox() {
               key={tipItem.key}
               layout
               {...buttonAnimation}
+              onUpdate={scrollToBottomRef.current || undefined}
               transition={{
                 ...buttonAnimation.transition,
                 delay: index * 0.05,

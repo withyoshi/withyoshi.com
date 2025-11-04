@@ -24,7 +24,7 @@ type ChatbotMessageProps = {
 
 export function MessageList(props: ChatbotMessageProps) {
   const { messages, error } = props;
-  const { isTipboxVisible, status, queuedMessages } =
+  const { isTipboxVisible, status, queuedMessages, scrollToBottomRef } =
     useContext(ChatboxContext);
 
   const messageListRef = useRef<HTMLDivElement>(null);
@@ -51,6 +51,14 @@ export function MessageList(props: ChatbotMessageProps) {
   const scrollToBottom = useCallback(() => {
     scrollToBottomDebounced();
   }, [scrollToBottomDebounced]);
+
+  // Expose scrollToBottom through context
+  useEffect(() => {
+    scrollToBottomRef.current = scrollToBottom;
+    return () => {
+      scrollToBottomRef.current = null;
+    };
+  }, [scrollToBottom, scrollToBottomRef]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
