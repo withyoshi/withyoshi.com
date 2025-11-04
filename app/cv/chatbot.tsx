@@ -1,5 +1,6 @@
 "use client";
 
+import { ChatDebug } from "./chatbot/chat-debug";
 import { ChatToggle } from "./chatbot/chat-toggle";
 import { ChatTooltip } from "./chatbot/chat-tooltip";
 import { ChatWindow } from "./chatbot/chat-window";
@@ -11,6 +12,7 @@ export default function Chatbot() {
       <ChatWindow />
       <ChatToggle />
       <ChatTooltip />
+      <ChatDebug />
     </ChatboxProvider>
   );
 }
