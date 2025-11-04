@@ -13,7 +13,7 @@ export function AwardBadge() {
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
   // Derive award type from conversationState
-  const awardType = conversationState.userStatus;
+  const awardType = conversationState.userType;
 
   const badgeBaseClasses =
     "absolute -translate-x-1/2 -translate-y-1/2 rounded-3xl px-6 py-3 border-t-1 border-t-white border-b-1 border-b-black/50 origin-center font-semibold text-2xl text-white shadow-2xl flex items-center justify-center whitespace-nowrap backface-hidden";
@@ -25,10 +25,10 @@ export function AwardBadge() {
 
     // Check if user just became PRO or VIP, or switched between them
     if (
-      (!prevState.userStatus && currentState.userStatus) ||
-      (prevState.userStatus &&
-        currentState.userStatus &&
-        prevState.userStatus !== currentState.userStatus)
+      (!prevState.userType && currentState.userType) ||
+      (prevState.userType &&
+        currentState.userType &&
+        prevState.userType !== currentState.userType)
     ) {
       setIsComplete(false); // Renders the element
       setTimeout(() => setIsAnimating(true), 50); // Starts the animation
@@ -72,11 +72,23 @@ export function AwardBadge() {
       return;
     }
 
+    let rafId: number | null = null;
+
     const updateSize = () => {
       const rect = container.getBoundingClientRect();
-      setContainerSize({
-        width: rect.width,
-        height: rect.height,
+      setContainerSize((prev) => {
+        const same = prev.width === rect.width && prev.height === rect.height;
+        return same ? prev : { width: rect.width, height: rect.height };
+      });
+    };
+
+    const scheduleUpdate = () => {
+      if (rafId != null) {
+        return;
+      }
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        updateSize();
       });
     };
 
@@ -85,17 +97,20 @@ export function AwardBadge() {
 
     // Use ResizeObserver to watch for size changes
     const resizeObserver = new ResizeObserver(() => {
-      updateSize();
+      scheduleUpdate();
     });
 
     resizeObserver.observe(container);
 
     // Also listen to window resize events
-    window.addEventListener("resize", updateSize);
+    window.addEventListener("resize", scheduleUpdate);
 
     return () => {
+      if (rafId != null) {
+        cancelAnimationFrame(rafId);
+      }
       resizeObserver.disconnect();
-      window.removeEventListener("resize", updateSize);
+      window.removeEventListener("resize", scheduleUpdate);
     };
   }, [awardType, isAnimating]);
 
