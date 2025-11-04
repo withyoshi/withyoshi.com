@@ -4,9 +4,18 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useContext } from "react";
+import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import { ChatboxContext } from "./provider";
 import type { ConversationState } from "./types";
+import { useTypewriter } from "./use-typewriter";
+
+// Configure ReactMarkdown to open links externally
+const markdownComponents: Components = {
+  a: ({ node, ...props }) => (
+    <a {...props} rel="noopener noreferrer" target="_blank" />
+  ),
+};
 
 export type ChatMessage = {
   id: string;
@@ -91,8 +100,8 @@ function MessageItemUser({
       className={`${className} border-t-1 border-t-mint-100 ml-auto min-w-0 flex-col text-left text-white bg-[linear-gradient(0deg,theme(colors.mint.600),theme(colors.mint.600/0.8))]`}
     >
       <MessageHeaderUser />
-      <div className="prose prose-sm prose-invert prose-p:my-0 prose-strong:font-bold prose-strong:text-white max-w-none">
-        <ReactMarkdown>{content}</ReactMarkdown>
+      <div className="max-w-none">
+        <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
       </div>
     </div>
   );
@@ -101,17 +110,31 @@ function MessageItemUser({
 function MessageItemAssistant({
   content,
   className,
+  messageId,
 }: {
   content: string;
   className: string;
+  messageId?: string;
 }) {
+  // Apply typewriter effect - always enabled for assistant messages
+  // The effect will restart when messageId changes (new message), but continue smoothly during content updates
+  const displayedContent = useTypewriter(
+    content,
+    2, // 2 words at a time
+    50, // 50ms delay between chunks
+    true, // Always enabled
+    messageId // Key to reset only on new messages
+  );
+
   return (
     <div
       className={`${className} border-t-1 border-t-white min-w-0 flex-col bg-[linear-gradient(90deg,theme(colors.white/0.8),theme(colors.white/0.4))] text-left`}
     >
       <MessageHeaderAssistant />
-      <div className="prose prose-sm prose-p:my-0 prose-strong:font-bold max-w-none">
-        <ReactMarkdown>{content}</ReactMarkdown>
+      <div className="break-words [&>ul]:list-disc [&>ol]:list-decimal [&>ul>li]:ml-4 [&>ul>li+li]:mt-1 max-w-none [&>*+*]:mt-1">
+        <ReactMarkdown components={markdownComponents}>
+          {displayedContent}
+        </ReactMarkdown>
       </div>
     </div>
   );
@@ -142,8 +165,10 @@ function MessageItemQueued({
       </button>
       <div className="flex min-w-0 flex-1 flex-col text-left">
         <MessageHeaderUser />
-        <div className="prose prose-sm prose-invert prose-p:my-0 prose-strong:font-bold prose-strong:text-white max-w-none">
-          <ReactMarkdown>{content}</ReactMarkdown>
+        <div className="max-w-none [&>p]:my-0 [&>strong]:font-bold [&>strong]:text-white">
+          <ReactMarkdown components={markdownComponents}>
+            {content}
+          </ReactMarkdown>
         </div>
       </div>
     </div>
@@ -159,9 +184,9 @@ function MessageItemError({
 }) {
   return (
     <div
-      className={`${className} border border-red-400/30 bg-red-500/20 shadow-lg backdrop-blur-sm`}
+      className={`${className} flex-col border border-red-400/30 bg-red-500/20 shadow-lg backdrop-blur-sm`}
     >
-      <div className="font-medium text-red-800">Error occurred</div>
+      <div className="font-medium text-xs text-red-800">Error occurred</div>
       <div className="mt-1 break-all text-red-700 text-xs">{error}</div>
     </div>
   );
@@ -230,7 +255,11 @@ export function MessageItem({
       ) : isUser ? (
         <MessageItemUser className={className} content={content} />
       ) : (
-        <MessageItemAssistant className={className} content={content} />
+        <MessageItemAssistant
+          className={className}
+          content={content}
+          messageId={message.id}
+        />
       )}
     </div>
   );
