@@ -7,7 +7,9 @@ import {
   type UIMessageStreamOnFinishCallback,
 } from "ai";
 import { createLogger } from "../../utils/log";
+import { getChatbotPromptApproach } from "./config";
 import { buildSystemPrompt, generateConversationStateContext } from "./prompt";
+import { processConversationWithRAG } from "./rag/service";
 import type { ConversationState } from "./state";
 import {
   ConversationStateSchema,
@@ -69,7 +71,11 @@ export async function analyzeConversationState(
   }
 }
 
-export async function processConversationStream(
+/**
+ * Process conversation with prompt approach (default)
+ * Uses all content in prompt: core.md + guest.md + pro.md + vip.md
+ */
+export async function processConversationWithPrompt(
   messages: UIMessage[],
   conversationState: ConversationState,
   onFinish?: UIMessageStreamOnFinishCallback<UIMessage>
@@ -102,9 +108,6 @@ export async function processConversationStream(
       ...modelMessage,
     ],
     temperature: 0.7,
-    // Note: With average output of ~40 tokens and input of ~20k tokens, you're well within GPT-4o's
-    // 128k token limit. "Unknown" finish reasons are likely due to Edge runtime timeouts (~30s limit)
-    // rather than token limits. The retry mechanism handles these timeout cases automatically.
   });
 
   // Convert to UI message stream response with metadata
@@ -140,4 +143,39 @@ export async function processConversationStream(
   });
 
   return response;
+}
+
+/**
+ * Process conversation stream
+ * Routes to either RAG or prompt approach based on configuration
+ */
+export async function processConversationStream(
+  messages: UIMessage[],
+  conversationState: ConversationState,
+  onFinish?: UIMessageStreamOnFinishCallback<UIMessage>
+): Promise<Response> {
+  const log = logger.child({
+    routine: "processConversationStream",
+  });
+
+  // Determine which approach to use based on config
+  const approach = getChatbotPromptApproach();
+  log.info({ approach }, "Using chatbot prompt approach");
+
+  // Process conversation based on configured approach
+  if (approach === "rag") {
+    // RAG approach: use vector store retrieval
+    return await processConversationWithRAG(
+      messages,
+      conversationState,
+      onFinish
+    );
+  }
+
+  // Default approach: use all content in prompt
+  return await processConversationWithPrompt(
+    messages,
+    conversationState,
+    onFinish
+  );
 }
