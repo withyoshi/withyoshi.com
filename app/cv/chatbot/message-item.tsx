@@ -4,6 +4,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useContext } from "react";
+import ReactMarkdown from "react-markdown";
 import { ChatboxContext } from "./provider";
 import type { ConversationState } from "./types";
 
@@ -52,9 +53,9 @@ function MessageHeaderUser() {
       <span className="min-w-0 truncate font-semibold">
         {conversationState.userName || "Mystery Visitor"}
       </span>
-      {conversationState.userStatus === "vip" ? (
+      {conversationState.userType === "vip" ? (
         <VipBadge />
-      ) : conversationState.userStatus === "pro" ? (
+      ) : conversationState.userType === "pro" ? (
         <ProBadge />
       ) : null}
     </div>
@@ -67,7 +68,7 @@ function MessageHeaderAssistant() {
       <span className="font-semibold">Yoyo</span>
       <span className="-mt-0.5 ml-0.5 rounded-full bg-mint-600">
         <Image
-          alt="Chat with Yoshi"
+          alt=""
           className="-left-1 relative top-0.5 h-4 w-4"
           height={24}
           src="/images/cv-yoyo.svg"
@@ -90,7 +91,9 @@ function MessageItemUser({
       className={`${className} border-t-1 border-t-mint-100 ml-auto min-w-0 flex-col text-left text-white bg-[linear-gradient(0deg,theme(colors.mint.600),theme(colors.mint.600/0.8))]`}
     >
       <MessageHeaderUser />
-      <div>{content}</div>
+      <div className="prose prose-sm prose-invert prose-p:my-0 prose-strong:font-bold prose-strong:text-white max-w-none">
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </div>
     </div>
   );
 }
@@ -107,7 +110,9 @@ function MessageItemAssistant({
       className={`${className} border-t-1 border-t-white min-w-0 flex-col bg-[linear-gradient(90deg,theme(colors.white/0.8),theme(colors.white/0.4))] text-left`}
     >
       <MessageHeaderAssistant />
-      <div>{content}</div>
+      <div className="prose prose-sm prose-p:my-0 prose-strong:font-bold max-w-none">
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </div>
     </div>
   );
 }
@@ -137,7 +142,9 @@ function MessageItemQueued({
       </button>
       <div className="flex min-w-0 flex-1 flex-col text-left">
         <MessageHeaderUser />
-        <div>{content}</div>
+        <div className="prose prose-sm prose-invert prose-p:my-0 prose-strong:font-bold prose-strong:text-white max-w-none">
+          <ReactMarkdown>{content}</ReactMarkdown>
+        </div>
       </div>
     </div>
   );
