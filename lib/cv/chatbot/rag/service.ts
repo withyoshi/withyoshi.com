@@ -4,7 +4,7 @@
  * Main service that integrates RAG with the chatbot
  */
 
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import type { UIMessage, UIMessageStreamOnFinishCallback } from "ai";
 import { convertToModelMessages, streamText } from "ai";
 import { encryptedCoreRagPrompt } from "../data";
@@ -142,7 +142,7 @@ More detailed information about this topic is available in VIP content. You can 
   // Static core prompt goes in `system` parameter (cached by provider)
   // Dynamic context goes as first system message in messages array
   const streamResult = streamText({
-    model: openai("gpt-5-mini"),
+    model: google("gemini-2.5-flash"),
     system: staticSystemPrompt,
     messages: [
       // Dynamic context as first system message (not cached, but allows provider optimization)

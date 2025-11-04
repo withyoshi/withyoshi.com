@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import {
   convertToModelMessages,
   generateObject,
@@ -56,7 +56,7 @@ export async function analyzeConversationState(
 
   try {
     const { object: extractedConversationState } = await generateObject({
-      model: openai("gpt-5-mini"),
+      model: google("gemini-2.5-flash"),
       schema: ConversationStateSchema,
       messages: messagesWithSystem,
       temperature: 0,
@@ -97,7 +97,7 @@ export async function processConversationWithPrompt(
 
   // Create the streaming response with metadata
   const streamResult = streamText({
-    model: openai("gpt-5-mini"),
+    model: google("gemini-2.5-flash"),
     system: staticSystemPrompt,
     messages: [
       // Dynamic conversation state context - uncached.

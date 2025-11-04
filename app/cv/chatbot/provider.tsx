@@ -267,7 +267,7 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
         const newRetryCount = currentRetries + 1;
         retryAttemptsRef.current.set(contentHash, newRetryCount);
         console.log(
-          `[Chatbot Retry] Retrying message (attempt ${newRetryCount}/3):`,
+          `[Chatbot Retry] Will retry message in 30 seconds (attempt ${newRetryCount}/3):`,
           `${textToRetry.slice(0, 50)}...`
         );
 
@@ -304,8 +304,10 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
           return filtered;
         });
 
-        // Resend the previous user message
-        queueMessage(textToRetry);
+        // Resend the previous user message after 30 second delay
+        setTimeout(() => {
+          queueMessage(textToRetry);
+        }, 30_000); // 30 seconds = 30000 milliseconds
       } else {
         console.warn(
           "[Chatbot Retry] Max retry attempts (3) reached for message:",

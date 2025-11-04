@@ -4,7 +4,7 @@
  * Creates embeddings for content chunks and stores them in a vector database
  */
 
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import { embed } from "ai";
 
 export interface ContentChunk {
@@ -33,7 +33,7 @@ export async function createEmbeddings(
     const embeddings = await Promise.all(
       batch.map((chunk) =>
         embed({
-          model: openai.embedding("text-embedding-3-small"),
+          model: google.embedding("gemini-embedding-001"),
           value: chunk.content,
         })
       )
@@ -276,7 +276,7 @@ export async function createQueryEmbedding(query: string): Promise<number[]> {
   const expandedQuery = expandQuery(query);
 
   const { embedding } = await embed({
-    model: openai.embedding("text-embedding-3-small"),
+    model: google.embedding("gemini-embedding-001"),
     value: expandedQuery,
   });
 
