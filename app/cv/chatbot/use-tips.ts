@@ -6,6 +6,7 @@ import { useMemo } from "react";
 const tipsDataset: Record<string, string[]> = {
   free: [
     "Where does he live?",
+    "How is this chatbot built?",
     "What has he worked on?",
     "What projects has he built?",
     "What technologies does he use?",
