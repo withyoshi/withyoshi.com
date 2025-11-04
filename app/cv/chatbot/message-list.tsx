@@ -69,7 +69,8 @@ export function MessageList(props: ChatbotMessageProps) {
         message={{
           id: "1",
           role: "assistant",
-          content: "Hello! I'm Yoyo!",
+          content:
+            "Hey! I'm Yoyo! 👋 Your chatbot assistant to get to know Yan Sern better. Got a question about him? Ask me and I'll tell you everything I know. 🪄 You can also use the message presets below to get started!",
         }}
       />
 
