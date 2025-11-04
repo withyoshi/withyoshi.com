@@ -1,7 +1,7 @@
 import CryptoJS from "crypto-js";
 import {
   encryptedCorePrompt,
-  encryptedCvPrompt,
+  encryptedGuestPrompt,
   encryptedProPrompt,
   encryptedVipPrompt,
 } from "./data";
@@ -10,7 +10,7 @@ import type { ConversationState } from "./state";
 /**
  * Decrypts a string using AES-256 decryption
  */
-function decrypt(encryptedData: string): string {
+export function decrypt(encryptedData: string): string {
   const secretKey = process.env.CHATBOT_SECRET_KEY;
   if (!secretKey) {
     throw new Error("CHATBOT_SECRET_KEY is required for decryption");
@@ -21,16 +21,30 @@ function decrypt(encryptedData: string): string {
 
 // Decrypt all prompts once during module initialization
 const corePrompt = decrypt(encryptedCorePrompt);
-const cvPrompt = decrypt(encryptedCvPrompt);
+const guestPrompt = decrypt(encryptedGuestPrompt);
 const proPrompt = decrypt(encryptedProPrompt);
 const vipPrompt = decrypt(encryptedVipPrompt);
 
 /**
- * Generates the complete system prompt by combining all decrypted prompt data
+ * Builds the static system prompt with all content.
+ * Access control is handled by the ACCESS CONTROL rules in core.md based on conversationState.
+ * This is static to enable better token caching.
  */
-export const systemPrompt = [corePrompt, cvPrompt, proPrompt, vipPrompt].join(
-  "\n"
-);
+export function buildSystemPrompt(): string {
+  // Include all content statically - access control is enforced by prompt rules
+  return [corePrompt, guestPrompt, proPrompt, vipPrompt].join("\n");
+}
+
+/**
+ * Static system prompt - kept for backward compatibility
+ * Use buildSystemPrompt for new code
+ */
+export const systemPrompt = [
+  corePrompt,
+  guestPrompt,
+  proPrompt,
+  vipPrompt,
+].join("\n");
 
 /**
  * Generates conversation state context for the system prompt
@@ -38,18 +52,5 @@ export const systemPrompt = [corePrompt, cvPrompt, proPrompt, vipPrompt].join(
 export function generateConversationStateContext(
   conversationState: ConversationState = {}
 ): string {
-  const { userName, intro, contact, isPro, isVip } = conversationState;
-
-  return [
-    "## CONVERSATION STATE",
-    userName ? `Name: ${userName}` : "Name: Not provided",
-    intro ? `Introduction: ${intro}` : "",
-    contact ? `Contact: ${contact}` : "",
-    isPro
-      ? "✅ PRO ACCESS UNLOCKED - Name provided, can share PRO level content (marked with # PRO_LEVEL_CONTENT_START/END)"
-      : "🔒 PRO ACCESS LOCKED - Need userName to access PRO level content",
-    isVip
-      ? "✅ VIP ACCESS UNLOCKED - Introduced + contact provided, can share VIP level content (marked with # VIP_LEVEL_CONTENT_START/END)"
-      : "🔒 VIP ACCESS LOCKED - Need intro and contact to access VIP level content",
-  ].join("\n");
+  return `\n## CONVERSATION STATE START\n${JSON.stringify(conversationState)}\n## CONVERSATION STATE END`;
 }

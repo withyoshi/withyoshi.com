@@ -7,7 +7,7 @@ import {
   type UIMessageStreamOnFinishCallback,
 } from "ai";
 import { createLogger } from "../../utils/log";
-import { generateConversationStateContext, systemPrompt } from "./prompt";
+import { buildSystemPrompt, generateConversationStateContext } from "./prompt";
 import type { ConversationState } from "./state";
 import {
   ConversationStateSchema,
@@ -22,11 +22,7 @@ export interface ChatbotRequest {
 export interface ChatbotResponse {
   response: Response;
   chatId: string;
-  conversationState: ConversationState;
-  chatSession: {
-    id: string;
-    conversationState: ConversationState;
-    createdAt: number;
+  conversationState?: {
     lastActivity: number;
   };
 }
@@ -39,8 +35,11 @@ export async function analyzeConversationState(
 ): Promise<ConversationState | null> {
   const log = logger.child({ routine: "analyzeConversationState" });
 
+  // Filter to only user messages - assistant messages mention Yan Sern and confuse extraction
+  const userMessages = messages.filter((msg) => msg.role === "user");
+
   // Convert UIMessage[] to ModelMessage[] format
-  const modelMessage = convertToModelMessages(messages);
+  const modelMessage = convertToModelMessages(userMessages);
 
   const prompt = generateConversationStatePrompt(currentConversationState);
 
@@ -82,14 +81,18 @@ export async function processConversationStream(
   const conversationStateContext =
     generateConversationStateContext(conversationState);
 
+  // Use static system prompt for better token caching
+  // Dynamic conversation state is passed in messages array
+  const staticSystemPrompt = buildSystemPrompt();
+
   // Track time to first token
   const startTime = Date.now();
   let timeToFirstToken: number | undefined;
 
-  // 9) Create the streaming response with metadata
+  // Create the streaming response with metadata
   const streamResult = streamText({
     model: openai("gpt-4o-mini"),
-    system: systemPrompt, // Static system prompt - cached.
+    system: staticSystemPrompt,
     messages: [
       // Dynamic conversation state context - uncached.
       {
@@ -101,7 +104,7 @@ export async function processConversationStream(
     temperature: 0.7,
   });
 
-  // 10) Convert to UI message stream response with metadata
+  // Convert to UI message stream response with metadata
   const response = streamResult.toUIMessageStreamResponse({
     originalMessages: messages,
     messageMetadata: ({ part }) => {
