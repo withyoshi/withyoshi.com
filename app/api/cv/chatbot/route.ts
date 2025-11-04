@@ -46,7 +46,7 @@ export const POST = createApiHandler(
       logger.warn({ error }, "Failed to update conversation state");
     });
 
-    // Using the new messages and conversation state, update conversation stream.
+    // Process conversation
     const response = await processConversationStream(
       messages,
       latestConversationState,
@@ -62,7 +62,7 @@ export const POST = createApiHandler(
         if (finishReason === "unknown") {
           logger.warn(
             { ...logData, responseMessage },
-            "Chat stream finished with UNKNOWN finish reason - potential OpenAI or Edge runtime issue"
+            "Chat stream finished with UNKNOWN finish reason - potential rate limit issues."
           );
         } else {
           logger.info({ ...logData, responseMessage }, "Chat stream finished");

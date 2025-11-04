@@ -282,7 +282,7 @@ export default function CvLogsPage() {
                   <p className="font-bold text-2xl text-gray-900">
                     {formatCost(globalStats.totalCost)}
                   </p>
-                  <p className="text-gray-500 text-xs">GPT-4o-mini pricing</p>
+                  <p className="text-gray-500 text-xs">GPT-5-mini pricing</p>
                 </div>
               </div>
             </div>

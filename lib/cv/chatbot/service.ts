@@ -56,7 +56,7 @@ export async function analyzeConversationState(
 
   try {
     const { object: extractedConversationState } = await generateObject({
-      model: openai("gpt-4o-mini"),
+      model: openai("gpt-5-mini"),
       schema: ConversationStateSchema,
       messages: messagesWithSystem,
       temperature: 0,
@@ -97,7 +97,7 @@ export async function processConversationWithPrompt(
 
   // Create the streaming response with metadata
   const streamResult = streamText({
-    model: openai("gpt-4o"),
+    model: openai("gpt-5-mini"),
     system: staticSystemPrompt,
     messages: [
       // Dynamic conversation state context - uncached.

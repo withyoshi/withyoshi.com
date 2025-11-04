@@ -55,16 +55,17 @@ export const GET = createApiHandler(
         completion_tokens: 0,
       };
 
-      // Calculate costs (GPT-4o-mini pricing)
+      // Calculate costs (GPT-5-mini pricing)
       const inputTokens = Number.parseInt(stats.prompt_tokens, 10) || 0;
       const outputTokens = Number.parseInt(stats.completion_tokens, 10) || 0;
       const cachedInputTokens =
         Number.parseInt(stats.cached_input_tokens, 10) || 0;
 
       const chargedInputTokens = inputTokens - cachedInputTokens;
-      const inputCost = (chargedInputTokens * 2.5) / 1_000_000; // $2.50 per 1M tokens (gpt-4o)
-      const outputCost = (outputTokens * 10.0) / 1_000_000; // $10.00 per 1M tokens (gpt-4o)
-      const totalCost = inputCost + outputCost;
+      const inputCost = (chargedInputTokens * 0.25) / 1_000_000; // $0.25 per 1M tokens (gpt-5-mini)
+      const cachedInputCost = (cachedInputTokens * 0.025) / 1_000_000; // $0.025 per 1M tokens (gpt-5-mini)
+      const outputCost = (outputTokens * 2.0) / 1_000_000; // $2.00 per 1M tokens (gpt-5-mini)
+      const totalCost = inputCost + cachedInputCost + outputCost;
 
       logger.info({ sessionCount: sessions.length }, "Fetched chat logs");
 
@@ -80,9 +81,12 @@ export const GET = createApiHandler(
           const sessionChargedInputTokens =
             sessionInputTokens - sessionCachedTokens;
           const sessionInputCost =
-            (sessionChargedInputTokens * 2.5) / 1_000_000; // $2.50 per 1M tokens (gpt-4o)
-          const sessionOutputCost = (sessionOutputTokens * 10.0) / 1_000_000; // $10.00 per 1M tokens (gpt-4o)
-          const sessionTotalCost = sessionInputCost + sessionOutputCost;
+            (sessionChargedInputTokens * 0.25) / 1_000_000; // $0.25 per 1M tokens (gpt-5-mini)
+          const sessionCachedInputCost =
+            (sessionCachedTokens * 0.025) / 1_000_000; // $0.025 per 1M tokens (gpt-5-mini)
+          const sessionOutputCost = (sessionOutputTokens * 2.0) / 1_000_000; // $2.00 per 1M tokens (gpt-5-mini)
+          const sessionTotalCost =
+            sessionInputCost + sessionCachedInputCost + sessionOutputCost;
 
           return {
             id: session.id,
@@ -105,6 +109,7 @@ export const GET = createApiHandler(
           promptTokens: Number.parseInt(stats.prompt_tokens, 10) || 0,
           completionTokens: Number.parseInt(stats.completion_tokens, 10) || 0,
           inputCost,
+          cachedInputCost,
           outputCost,
           totalCost,
         },
