@@ -41,12 +41,10 @@ export const POST = createApiHandler(
     const latestConversationState =
       updatedConversationState || conversationState;
 
-    // Store the conversation state in Redis async
-    try {
-      updateConversationState(id, latestConversationState);
-    } catch (error) {
+    // Store the conversation state in Redis (non-blocking)
+    updateConversationState(id, latestConversationState).catch((error) => {
       logger.warn({ error }, "Failed to update conversation state");
-    }
+    });
 
     // Using the new messages and conversation state, update conversation stream.
     const response = await processConversationStream(
