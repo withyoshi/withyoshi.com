@@ -91,7 +91,7 @@ export async function processConversationStream(
 
   // Create the streaming response with metadata
   const streamResult = streamText({
-    model: openai("gpt-4o-mini"),
+    model: openai("gpt-4o"),
     system: staticSystemPrompt,
     messages: [
       // Dynamic conversation state context - uncached.

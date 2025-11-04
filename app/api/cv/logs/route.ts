@@ -62,8 +62,8 @@ export const GET = createApiHandler(
         Number.parseInt(stats.cached_input_tokens, 10) || 0;
 
       const chargedInputTokens = inputTokens - cachedInputTokens;
-      const inputCost = (chargedInputTokens * 0.15) / 1_000_000; // $0.15 per 1M tokens
-      const outputCost = (outputTokens * 0.6) / 1_000_000; // $0.60 per 1M tokens
+      const inputCost = (chargedInputTokens * 2.5) / 1_000_000; // $2.50 per 1M tokens (gpt-4o)
+      const outputCost = (outputTokens * 10.0) / 1_000_000; // $10.00 per 1M tokens (gpt-4o)
       const totalCost = inputCost + outputCost;
 
       logger.info({ sessionCount: sessions.length }, "Fetched chat logs");
@@ -80,8 +80,8 @@ export const GET = createApiHandler(
           const sessionChargedInputTokens =
             sessionInputTokens - sessionCachedTokens;
           const sessionInputCost =
-            (sessionChargedInputTokens * 0.15) / 1_000_000;
-          const sessionOutputCost = (sessionOutputTokens * 0.6) / 1_000_000;
+            (sessionChargedInputTokens * 2.5) / 1_000_000; // $2.50 per 1M tokens (gpt-4o)
+          const sessionOutputCost = (sessionOutputTokens * 10.0) / 1_000_000; // $10.00 per 1M tokens (gpt-4o)
           const sessionTotalCost = sessionInputCost + sessionOutputCost;
 
           return {

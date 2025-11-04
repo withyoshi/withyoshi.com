@@ -33,11 +33,15 @@ type ChatboxContextValue = {
   addMessage: (text: string) => void;
   conversationState: {
     userName: string | null;
+    userIntro: string | null;
+    contact: string | null;
     userType: "pro" | "vip" | null;
   };
   setConversationState: React.Dispatch<
     React.SetStateAction<{
       userName: string | null;
+      userIntro: string | null;
+      contact: string | null;
       userType: "pro" | "vip" | null;
     }>
   >;
@@ -55,6 +59,8 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
   const [showFirstTimeTooltip, setShowFirstTimeTooltip] = useState(true);
   const [conversationState, setConversationState] = useState({
     userName: null as string | null,
+    userIntro: null as string | null,
+    contact: null as string | null,
     userType: null as "pro" | "vip" | null,
   });
   const [queuedMessages, setQueuedMessages] = useState<ChatMessage[]>([]);
@@ -77,9 +83,10 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
     const lastMessage = messages.at(-1);
     if (lastMessage && (lastMessage as any).metadata?.conversationState) {
       const fullState = (lastMessage as any).metadata.conversationState;
-      // Only expose userName and userType to frontend
       setConversationState({
         userName: fullState.userName ?? null,
+        userIntro: fullState.userIntro ?? null,
+        contact: fullState.contact ?? null,
         userType: fullState.userType ?? null,
       });
     }
