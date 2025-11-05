@@ -24,6 +24,8 @@ type ChatboxContextValue = {
   setError: React.Dispatch<React.SetStateAction<string | null>>;
   showFirstTimeTooltip: boolean;
   setShowFirstTimeTooltip: React.Dispatch<React.SetStateAction<boolean>>;
+  isInputFocused: boolean;
+  setIsInputFocused: React.Dispatch<React.SetStateAction<boolean>>;
   messages: any[];
   sendMessage: (params: { text: string }) => void;
   status: string;
@@ -58,6 +60,7 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showFirstTimeTooltip, setShowFirstTimeTooltip] = useState(true);
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const [conversationState, setConversationState] = useState({
     userName: null as string | null,
     userIntro: null as string | null,
@@ -346,6 +349,8 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       setError,
       showFirstTimeTooltip,
       setShowFirstTimeTooltip,
+      isInputFocused,
+      setIsInputFocused,
       messages: filteredMessages as any[],
       sendMessage,
       status,
@@ -363,6 +368,7 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
       input,
       error,
       showFirstTimeTooltip,
+      isInputFocused,
       filteredMessages,
       sendMessage,
       status,

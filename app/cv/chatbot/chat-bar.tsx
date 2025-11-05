@@ -19,8 +19,10 @@ export function ChatBar({ className }: ChatBarProps) {
     setInput,
     isOpen,
     addMessage,
+    setIsInputFocused,
   } = useContext(ChatboxContext);
   const inputRef = useRef<HTMLInputElement>(null);
+  const tipboxVisibleBeforeFocusRef = useRef<boolean>(true);
 
   useEffect(() => {
     if (!isOpen) {
@@ -29,6 +31,59 @@ export function ChatBar({ className }: ChatBarProps) {
     const id = setTimeout(() => inputRef.current?.focus(), 0);
     return () => clearTimeout(id);
   }, [isOpen]);
+
+  // Handle window resize to update tipbox visibility
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 480;
+      const isFocused = document.activeElement === inputRef.current;
+
+      if (isMobile && isFocused) {
+        // On mobile with input focused, hide tipbox
+        tipboxVisibleBeforeFocusRef.current = isTipboxVisible;
+        if (isTipboxVisible) {
+          setTipboxVisible(false);
+        }
+      } else if (
+        !isMobile &&
+        isFocused &&
+        tipboxVisibleBeforeFocusRef.current
+      ) {
+        // On desktop with input focused, restore tipbox if it was hidden on mobile
+        setTipboxVisible(true);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isTipboxVisible, setTipboxVisible]);
+
+  const handleFocus = () => {
+    setIsInputFocused(true);
+    // On mobile, hide tipbox when input is focused
+    if (typeof window !== "undefined" && window.innerWidth < 480) {
+      tipboxVisibleBeforeFocusRef.current = isTipboxVisible;
+      if (isTipboxVisible) {
+        setTipboxVisible(false);
+      }
+    }
+  };
+
+  const handleBlur = () => {
+    setIsInputFocused(false);
+    // On mobile, restore tipbox visibility when input is blurred
+    if (
+      typeof window !== "undefined" &&
+      window.innerWidth < 480 &&
+      tipboxVisibleBeforeFocusRef.current
+    ) {
+      setTipboxVisible(true);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +117,9 @@ export function ChatBar({ className }: ChatBarProps) {
           <div className="relative flex flex-1">
             <input
               className="flex-1 rounded-sm border border-gray-400/50 bg-white/75 pr-11 pl-2.5 text-gray-900 text-sm placeholder-gray-400 outline-none transition-all focus:border-mint-400 focus:bg-white/100 focus:ring-2 focus:ring-mint-400/40"
+              onBlur={handleBlur}
               onChange={(e) => setInput(e.target.value)}
+              onFocus={handleFocus}
               placeholder="Ask Yoyo anything..."
               ref={inputRef}
               value={input}
