@@ -50,7 +50,12 @@ export const systemPrompt = [
  * Generates conversation state context for the system prompt
  */
 export function generateConversationStateContext(
-  conversationState: ConversationState = {}
+  conversationState: ConversationState = {
+    userName: "",
+    userIntro: "",
+    contact: "",
+    userType: null,
+  }
 ): string {
   return `\n## CONVERSATION STATE START\n${JSON.stringify(conversationState)}\n## CONVERSATION STATE END`;
 }
