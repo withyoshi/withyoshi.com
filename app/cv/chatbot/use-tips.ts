@@ -7,6 +7,7 @@ const tipsDataset: Record<string, string[]> = {
   free: [
     "Where does he live?",
     "How is this chatbot built?",
+    "Who is Yoshi?",
     "What projects has he built?",
     "React or Vue?",
     "JavaScript on TypeScript?",
