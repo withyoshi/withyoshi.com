@@ -13,7 +13,7 @@
     "export": "next build && next export",
     "format": "biome format --verbose --write .",
     "format:check": "biome format --verbose .",
-    "encrypt-prompt-data": "node scripts/encrypt-prompt-data.js",
+    "encrypt-prompt-data": "node scripts/encrypt-prompt-data.js && biome check --unsafe --fix --verbose",
     "shutdown": "pkill -f \"next dev\" && pkill -f \"next-server\"",
     "test:rag": "npx tsx scripts/test-retriever.ts",
     "test:rag:quick": "npx tsx scripts/test-retriever.ts --quick",
