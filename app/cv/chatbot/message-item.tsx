@@ -17,6 +17,30 @@ const markdownComponents: Components = {
   ),
 };
 
+// Markdown components for assistant messages with code block styling
+const assistantMarkdownComponents: Components = {
+  ...markdownComponents,
+  code: ({ node, className, children, ...props }) => {
+    const isInline = !className?.includes("language-");
+    if (isInline) {
+      return (
+        <code
+          {...props}
+          className="px-1 py-0.5 rounded-sm font-semibold text-xs bg-gray-300/50"
+        >
+          {children}
+        </code>
+      );
+    }
+    // For code blocks (not inline), use default styling
+    return (
+      <code {...props} className={className}>
+        {children}
+      </code>
+    );
+  },
+};
+
 export type ChatMessage = {
   id: string;
   role: "user" | "assistant" | string;
@@ -131,7 +155,7 @@ function MessageItemAssistant({
     >
       <MessageHeaderAssistant />
       <div className="break-words [&>ul]:list-disc [&>ol]:list-decimal [&>ul,ol>li]:ml-4 [&>ul,ol>li+li]:mt-1 max-w-none [&>*+*]:mt-1">
-        <ReactMarkdown components={markdownComponents}>
+        <ReactMarkdown components={assistantMarkdownComponents}>
           {displayedContent}
         </ReactMarkdown>
       </div>
