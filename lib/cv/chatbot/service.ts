@@ -62,6 +62,18 @@ export async function analyzeConversationState(
       temperature: 0,
     });
 
+    // Manually check and set userType to "vip" if all fields are non-empty
+    if (
+      extractedConversationState.userName &&
+      extractedConversationState.userIntro &&
+      extractedConversationState.contact &&
+      extractedConversationState.userName.trim() !== "" &&
+      extractedConversationState.userIntro.trim() !== "" &&
+      extractedConversationState.contact.trim() !== ""
+    ) {
+      extractedConversationState.userType = "vip";
+    }
+
     log.info({ extractedConversationState }, "Conversation state extracted");
 
     return extractedConversationState;
