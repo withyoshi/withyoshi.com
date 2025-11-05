@@ -2,22 +2,28 @@
 
 import { useEffect, useRef, useState } from "react";
 
+type TypewriterOptions = {
+  wordsPerChunk?: number;
+  delay?: number;
+  enabled?: boolean;
+  key?: string;
+};
+
 /**
  * Hook that creates a typewriter effect by revealing words progressively
  * @param text - The full text to type out
- * @param wordsPerChunk - Number of words to reveal at a time (default: 2)
- * @param delay - Delay between chunks in milliseconds (default: 50)
- * @param enabled - Whether the typewriter effect is enabled (default: true)
- * @param key - Optional key to reset the typewriter (e.g., message ID)
+ * @param options - Configuration options for the typewriter effect
+ * @param options.wordsPerChunk - Number of words to reveal at a time (default: 2)
+ * @param options.delay - Delay between chunks in milliseconds (default: 50)
+ * @param options.enabled - Whether the typewriter effect is enabled (default: true)
+ * @param options.key - Optional key to reset the typewriter (e.g., message ID)
  * @returns The currently displayed text
  */
 export function useTypewriter(
   text: string,
-  wordsPerChunk = 2,
-  delay = 50,
-  enabled = true,
-  key?: string
+  options: TypewriterOptions = {}
 ): string {
+  const { wordsPerChunk = 2, delay = 50, enabled = true, key } = options;
   const [displayedText, setDisplayedText] = useState("");
   const previousKeyRef = useRef<string | undefined>(undefined);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);

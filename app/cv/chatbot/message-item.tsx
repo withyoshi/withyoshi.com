@@ -118,13 +118,12 @@ function MessageItemAssistant({
 }) {
   // Apply typewriter effect - always enabled for assistant messages
   // The effect will restart when messageId changes (new message), but continue smoothly during content updates
-  const displayedContent = useTypewriter(
-    content,
-    2, // 2 words at a time
-    50, // 50ms delay between chunks
-    true, // Always enabled
-    messageId // Key to reset only on new messages
-  );
+  const displayedContent = useTypewriter(content, {
+    wordsPerChunk: 2, // 2 words at a time
+    delay: 50, // 50ms delay between chunks
+    enabled: true, // Always enabled
+    key: messageId, // Key to reset only on new messages
+  });
 
   return (
     <div
