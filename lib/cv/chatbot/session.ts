@@ -17,7 +17,12 @@ export interface ChatSession {
 export async function createChatSession(chatId: string): Promise<ChatSession> {
   const chatSession: ChatSession = {
     id: chatId,
-    conversationState: {},
+    conversationState: {
+      userName: "",
+      userIntro: "",
+      contact: "",
+      userType: null,
+    },
     createdAt: Date.now(),
     lastActivity: Date.now(),
   };

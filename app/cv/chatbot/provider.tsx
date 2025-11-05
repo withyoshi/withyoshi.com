@@ -34,16 +34,16 @@ type ChatboxContextValue = {
   removeQueuedMessage: (id: string) => void;
   addMessage: (text: string) => void;
   conversationState: {
-    userName: string | null;
-    userIntro: string | null;
-    contact: string | null;
+    userName: string;
+    userIntro: string;
+    contact: string;
     userType: "pro" | "vip" | null;
   };
   setConversationState: React.Dispatch<
     React.SetStateAction<{
-      userName: string | null;
-      userIntro: string | null;
-      contact: string | null;
+      userName: string;
+      userIntro: string;
+      contact: string;
       userType: "pro" | "vip" | null;
     }>
   >;
@@ -62,9 +62,9 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
   const [showFirstTimeTooltip, setShowFirstTimeTooltip] = useState(true);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [conversationState, setConversationState] = useState({
-    userName: null as string | null,
-    userIntro: null as string | null,
-    contact: null as string | null,
+    userName: "",
+    userIntro: "",
+    contact: "",
     userType: null as "pro" | "vip" | null,
   });
   const [queuedMessages, setQueuedMessages] = useState<ChatMessage[]>([]);
@@ -93,9 +93,9 @@ export function ChatboxProvider({ children }: { children: React.ReactNode }) {
     if (lastMessage && (lastMessage as any).metadata?.conversationState) {
       const fullState = (lastMessage as any).metadata.conversationState;
       setConversationState({
-        userName: fullState.userName ?? null,
-        userIntro: fullState.userIntro ?? null,
-        contact: fullState.contact ?? null,
+        userName: fullState.userName ?? "",
+        userIntro: fullState.userIntro ?? "",
+        contact: fullState.contact ?? "",
         userType: fullState.userType ?? null,
       });
     }

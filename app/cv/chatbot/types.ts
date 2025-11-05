@@ -1,6 +1,6 @@
 export type ConversationState = {
-  userName: string | null;
-  userIntro: string | null;
-  contact: string | null;
+  userName: string;
+  userIntro: string;
+  contact: string;
   userType: "pro" | "vip" | null;
 };

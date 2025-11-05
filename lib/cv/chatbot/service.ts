@@ -56,7 +56,7 @@ export async function analyzeConversationState(
 
   try {
     const { object: extractedConversationState } = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-2.5-flash-lite"),
       schema: ConversationStateSchema,
       messages: messagesWithSystem,
       temperature: 0,

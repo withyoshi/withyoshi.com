@@ -9,31 +9,28 @@ import { decrypt, generateConversationStateContext } from "./prompt";
 export const ConversationStateSchema = z.object({
   userName: z
     .string()
-    .nullable()
-    .optional()
+    .default("")
     .describe(
-      "User's personal name as explicitly shared. Must be a personal identifier, not job titles, roles, or company names. Extract only when user explicitly shares their own name."
+      "User's personal name as explicitly shared. Must be a personal identifier, not job titles, roles, or company names. Extract only when user explicitly shares their own name. Use empty string if not provided."
     ),
   userIntro: z
     .string()
-    .nullable()
-    .optional()
+    .default("")
     .describe(
-      "User's introduction including their background, profession, what they do, what they like, their purpose of chatting, or which company they work from. Information should be accumulated/appended throughout the conversation."
+      "User's introduction including their background, profession, what they do, what they like, their purpose of chatting, or which company they work from. Information should be accumulated/appended throughout the conversation. Use empty string if not provided."
     ),
   contact: z
     .string()
-    .nullable()
-    .optional()
+    .default("")
     .describe(
-      "User's contact method: email addresses, phone numbers, LinkedIn URLs, website links, or social media profiles. Multiple contact methods can be appended and accumulated throughout the conversation."
+      "User's contact method: email addresses, phone numbers, LinkedIn URLs, website links, or social media profiles. Multiple contact methods can be appended and accumulated throughout the conversation. Use empty string if not provided."
     ),
   userType: z
     .enum(["pro", "vip"])
     .nullable()
     .optional()
     .describe(
-      "User's access level automatically derived from provided fields: 'pro' when userName is provided (but userIntro or contact is missing), 'vip' when userName, userIntro, and contact are all provided. null/undefined = GUEST (no name provided)."
+      "User's access level automatically derived from provided fields: 'pro' when userName is not empty (but userIntro or contact is empty), 'vip' when userName, userIntro, and contact are all non-empty. null/undefined = GUEST (userName is empty)."
     ),
   lastActivity: z
     .number()
