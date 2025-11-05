@@ -39,6 +39,11 @@ const assistantMarkdownComponents: Components = {
       </code>
     );
   },
+  pre: ({ node, children, ...props }) => (
+    <pre {...props} className="break-all whitespace-pre-wrap">
+      {children}
+    </pre>
+  ),
 };
 
 export type ChatMessage = {
