@@ -67,6 +67,27 @@ export function MessageList(props: ChatbotMessageProps) {
     }
   }, [messages, scrollToBottom]);
 
+  // Scroll to bottom when visual viewport resizes (e.g., mobile keyboard appears)
+  // Only on mobile devices (width < 480px)
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.visualViewport) {
+      return;
+    }
+
+    const handleResize = () => {
+      // Only scroll if window width is less than 480px
+      if (window.innerWidth < 480) {
+        scrollToBottom();
+      }
+    };
+
+    window.visualViewport.addEventListener("resize", handleResize);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleResize);
+    };
+  }, [scrollToBottom]);
+
   return (
     <div
       className="no-scrollbar relative z-20 max-h-screen overflow-y-auto overscroll-contain px-4 pt-4 sm:max-h-[75vh] [&>*:nth-last-child(2)]:m-0"
