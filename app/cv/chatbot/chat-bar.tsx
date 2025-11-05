@@ -28,6 +28,10 @@ export function ChatBar({ className }: ChatBarProps) {
     if (!isOpen) {
       return;
     }
+    // Don't auto-focus on mobile (< 480px)
+    if (typeof window !== "undefined" && window.innerWidth < 480) {
+      return;
+    }
     const id = setTimeout(() => inputRef.current?.focus(), 0);
     return () => clearTimeout(id);
   }, [isOpen]);
