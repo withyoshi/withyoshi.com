@@ -3,7 +3,7 @@ import VisualViewportProvider from "@/components/lib/visual-viewport-provider";
 import { PhoneModalProvider } from "./contexts/phone-modal-context";
 
 // CV page constants for reusability
-const title = "Yan Sern's Resume";
+const title = "Yan Sern's Resume - Full Stack Software Engineer";
 const description =
   "Full-stack software engineer with 20+ years of experience spanning product development, AI integration, systems scaling, and data engineering.";
 
