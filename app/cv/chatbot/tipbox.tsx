@@ -1,6 +1,9 @@
 "use client";
 
-import { faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
+import {
+  faLightbulb,
+  faWandMagicSparkles,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AnimatePresence, motion } from "framer-motion";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
@@ -304,6 +307,9 @@ export function Tipbox() {
     setHasSeenProVipInfo(true);
     addMessage("What is PRO & VIP?");
   };
+  const handleTopicIdeas = () => {
+    addMessage("Give me a list of topics I can talk about with you?");
+  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -342,6 +348,13 @@ export function Tipbox() {
               </TipPill>
             </motion.div>
           )}
+
+          <motion.div key="topic-ideas" layout {...buttonAnimation}>
+            <TipPill onClick={handleTopicIdeas}>
+              <span>Topic Ideas</span>
+              <FontAwesomeIcon icon={faLightbulb} />
+            </TipPill>
+          </motion.div>
 
           {totalUnusedItems >= categories.length * ITEMS_PER_CATEGORY && (
             <motion.div key="show-more" layout {...buttonAnimation}>
