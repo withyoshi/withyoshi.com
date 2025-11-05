@@ -88,6 +88,9 @@ async function runTest(
   const issues: string[] = [];
 
   const conversationState: ConversationState = {
+    userName: "",
+    userIntro: "",
+    contact: "",
     userType: testCase.userType,
   };
 
