@@ -159,7 +159,7 @@ function MessageItemAssistant({
       className={`${className} border-t-1 border-t-white min-w-0 flex-col bg-[linear-gradient(90deg,theme(colors.white/0.8),theme(colors.white/0.4))] text-left`}
     >
       <MessageHeaderAssistant />
-      <div className="break-words [&>ul]:list-disc [&>ol]:list-decimal [&>ul,ol>li]:ml-4 [&>ul,ol>li+li]:mt-1 max-w-none [&>*+*]:mt-1">
+      <div className="break-words [&_ul]:list-disc [&_ol]:list-decimal [&_ul_li]:ml-4 [&_ol_li]:ml-4 [&_ul_li+li]:mt-1 [&_ol_li+li]:mt-1 max-w-none [&>*+*]:mt-1">
         <ReactMarkdown components={assistantMarkdownComponents}>
           {displayedContent}
         </ReactMarkdown>
