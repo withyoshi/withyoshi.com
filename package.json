@@ -18,7 +18,11 @@
     "test:rag": "npx tsx scripts/test-retriever.ts",
     "test:rag:quick": "npx tsx scripts/test-retriever.ts --quick",
     "test:rag:verbose": "npx tsx scripts/test-retriever.ts --verbose",
-    "setup-rag": "npx tsx scripts/setup-rag.ts"
+    "setup-rag": "npx tsx scripts/setup-rag.ts",
+    "migrate:blob-to-postgres": "npx tsx scripts/migrate-blob-to-postgres.ts",
+    "migrate:blob-to-postgres:dry-run": "npx tsx scripts/migrate-blob-to-postgres.ts --dry-run",
+    "cleanup:local-sessions": "npx tsx scripts/remove-local-test-sessions.ts",
+    "cleanup:local-sessions:dry-run": "npx tsx scripts/remove-local-test-sessions.ts --dry-run"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.28",

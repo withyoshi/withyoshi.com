@@ -10,10 +10,7 @@ import {
   getOrCreateChatSession,
   updateConversationState,
 } from "@/lib/cv/chatbot/session";
-import {
-  storeChatSession,
-  uploadChatTranscript,
-} from "@/lib/cv/chatbot/storage";
+import { storeChatSession } from "@/lib/cv/chatbot/storage";
 
 export const POST = createApiHandler(
   "CvChatbotAPI",
@@ -68,9 +65,8 @@ export const POST = createApiHandler(
           logger.info({ ...logData, responseMessage }, "Chat stream finished");
         }
 
-        // Upload transcript and store chat session data
+        // Store chat session data (including messages) directly in PostgreSQL
         try {
-          await uploadChatTranscript(chatSession.id, finishedMessages);
           const storedSession = await storeChatSession({
             chatSession,
             messages: finishedMessages,
@@ -79,7 +75,10 @@ export const POST = createApiHandler(
           });
 
           if (storedSession) {
-            logger.info({ storedSession }, "Chat session stored successfully");
+            logger.info(
+              { storedSession, messageCount: finishedMessages.length },
+              "Chat session stored successfully in PostgreSQL"
+            );
           }
         } catch (error) {
           logger.error({ error }, "Failed to store chat session");

@@ -1,5 +1,5 @@
 -- CV Chatbot Sessions Schema (current)
--- Stores metadata per chat session; full transcripts live in Vercel Blob.
+-- Stores metadata and full chat transcripts per session in PostgreSQL.
 
 -- Fresh definition
 DROP TABLE IF EXISTS cv_chat_sessions;
@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS cv_chat_sessions (
   total_usage JSONB NOT NULL DEFAULT '{}'::jsonb,
   conversation_state JSONB NOT NULL DEFAULT '{}'::jsonb,
   ip_location JSONB NOT NULL DEFAULT '{}'::jsonb,
+  messages JSONB NOT NULL DEFAULT '[]'::jsonb,
 
   CONSTRAINT summary_len CHECK (char_length(summary) <= 2048)
 );
@@ -38,3 +39,5 @@ CREATE INDEX IF NOT EXISTS idx_cv_chat_sessions_total_usage_gin
   ON cv_chat_sessions USING GIN (total_usage);
 CREATE INDEX IF NOT EXISTS idx_cv_chat_sessions_ip_location_gin
   ON cv_chat_sessions USING GIN (ip_location);
+CREATE INDEX IF NOT EXISTS idx_cv_chat_sessions_messages_gin
+  ON cv_chat_sessions USING GIN (messages);

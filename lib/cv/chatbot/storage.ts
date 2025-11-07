@@ -1,4 +1,3 @@
-import { put } from "@vercel/blob";
 import { getIPLocation } from "@/lib/net/ip-info";
 import { createLogger } from "@/lib/utils/log";
 import type { ChatSession } from "./session";
@@ -16,6 +15,7 @@ export interface ChatSessionRecord {
   total_usage: Record<string, unknown>;
   conversation_state: Record<string, unknown>;
   ip_location: Record<string, unknown>;
+  messages: any[];
 }
 
 export interface StoreChatSessionParams {
@@ -88,9 +88,8 @@ export async function storeChatSession({
       total_usage: totalUsage,
       conversation_state: chatSession.conversationState,
       ip_location: ipLocation || {},
+      messages,
     };
-
-    // Ensure DB schema uses TEXT for `id` (see lib/db/schema.sql)
 
     // Upsert into Postgres by chat_session_id
     const { neon } = (await import("@neondatabase/serverless")) as any;
@@ -106,21 +105,24 @@ export async function storeChatSession({
         summary,
         total_usage,
         conversation_state,
-        ip_location
+        ip_location,
+        messages
       ) VALUES (
         ${sessionData.id},
         ${sessionData.created_at},
         ${sessionData.summary},
         ${sessionData.total_usage},
         ${sessionData.conversation_state},
-        ${sessionData.ip_location}
+        ${sessionData.ip_location},
+        ${JSON.stringify(sessionData.messages)}::jsonb
       )
       ON CONFLICT (id)
       DO UPDATE SET
         summary = EXCLUDED.summary,
         total_usage = EXCLUDED.total_usage,
         conversation_state = EXCLUDED.conversation_state,
-        ip_location = EXCLUDED.ip_location
+        ip_location = EXCLUDED.ip_location,
+        messages = EXCLUDED.messages
       RETURNING *;
     `;
 
@@ -138,28 +140,4 @@ export async function storeChatSession({
     log.error({ error }, "Failed to store chat session");
     return null;
   }
-}
-
-/**
- * Upload chat messages to blob storage
- * Returns the public blob URL
- */
-export async function uploadChatTranscript(
-  chatSessionId: string,
-  messages: any[]
-): Promise<string> {
-  const log = logger.child({ routine: "uploadChatTranscript", chatSessionId });
-
-  const path = `cv-chat-logs/chat-${chatSessionId}.json`;
-  const body = JSON.stringify({ chatSessionId, messages }, null, 2);
-
-  const result = await put(path, body, {
-    access: "public",
-    contentType: "application/json; charset=utf-8",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-  });
-
-  log.info({ url: result.url, path }, "Uploaded transcript");
-  return result.url;
 }
