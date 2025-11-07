@@ -84,7 +84,7 @@ export default function CVLayout({
     <PhoneModalProvider>
       <VisualViewportProvider>
         <section className="min-h-screen bg-gray-100">
-          <main className="container mx-auto max-w-screen-xl overflow-hidden sm:p-8">
+          <main className="container mx-auto max-w-screen-xl overflow-hidden">
             {children}
           </main>
         </section>

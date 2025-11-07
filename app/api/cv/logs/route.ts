@@ -28,7 +28,10 @@ export const GET = createApiHandler(
           total_usage,
           conversation_state,
           ip_location,
-          ((conversation_state->>'lastActivity')::bigint / 1000) - EXTRACT(EPOCH FROM created_at) as duration_seconds
+          COALESCE(
+            ((conversation_state->>'lastActivity')::bigint / 1000) - EXTRACT(EPOCH FROM created_at),
+            0
+          ) as duration_seconds
         FROM cv_chat_sessions
         ORDER BY created_at DESC
         LIMIT 100
@@ -55,49 +58,74 @@ export const GET = createApiHandler(
         completion_tokens: 0,
       };
 
-      // Calculate costs (GPT-5-mini pricing)
-      const inputTokens = Number.parseInt(stats.prompt_tokens, 10) || 0;
-      const outputTokens = Number.parseInt(stats.completion_tokens, 10) || 0;
+      // Calculate costs (Gemini Flash 2.5 pricing)
+      const inputTokens =
+        Number.parseInt(String(stats.prompt_tokens || 0), 10) || 0;
+      const outputTokens =
+        Number.parseInt(String(stats.completion_tokens || 0), 10) || 0;
       const cachedInputTokens =
-        Number.parseInt(stats.cached_input_tokens, 10) || 0;
+        Number.parseInt(String(stats.cached_input_tokens || 0), 10) || 0;
 
-      const chargedInputTokens = inputTokens - cachedInputTokens;
-      const inputCost = (chargedInputTokens * 0.25) / 1_000_000; // $0.25 per 1M tokens (gpt-5-mini)
-      const cachedInputCost = (cachedInputTokens * 0.025) / 1_000_000; // $0.025 per 1M tokens (gpt-5-mini)
-      const outputCost = (outputTokens * 2.0) / 1_000_000; // $2.00 per 1M tokens (gpt-5-mini)
-      const totalCost = inputCost + cachedInputCost + outputCost;
+      const chargedInputTokens = Math.max(0, inputTokens - cachedInputTokens);
+      const inputCost = (chargedInputTokens * 0.1) / 1_000_000; // $0.10 per 1M tokens (Gemini Flash 2.5)
+      const cachedInputCost = (cachedInputTokens * 0.1) / 1_000_000; // $0.10 per 1M tokens (Gemini Flash 2.5)
+      const outputCost = (outputTokens * 0.4) / 1_000_000; // $0.40 per 1M tokens (Gemini Flash 2.5)
+      const totalCost =
+        (Number.isFinite(inputCost) ? inputCost : 0) +
+        (Number.isFinite(cachedInputCost) ? cachedInputCost : 0) +
+        (Number.isFinite(outputCost) ? outputCost : 0);
 
       logger.info({ sessionCount: sessions.length }, "Fetched chat logs");
 
       return Response.json({
         sessions: sessions.map((session: any) => {
           // Calculate cost for this session
-          const sessionInputTokens = session.total_usage?.promptTokens || 0;
-          const sessionOutputTokens =
-            session.total_usage?.completionTokens || 0;
-          const sessionCachedTokens =
-            session.total_usage?.cachedInputTokens || 0;
+          const sessionInputTokens = Number(
+            session.total_usage?.promptTokens || 0
+          );
+          const sessionOutputTokens = Number(
+            session.total_usage?.completionTokens || 0
+          );
+          const sessionCachedTokens = Number(
+            session.total_usage?.cachedInputTokens || 0
+          );
 
-          const sessionChargedInputTokens =
-            sessionInputTokens - sessionCachedTokens;
-          const sessionInputCost =
-            (sessionChargedInputTokens * 0.25) / 1_000_000; // $0.25 per 1M tokens (gpt-5-mini)
-          const sessionCachedInputCost =
-            (sessionCachedTokens * 0.025) / 1_000_000; // $0.025 per 1M tokens (gpt-5-mini)
-          const sessionOutputCost = (sessionOutputTokens * 2.0) / 1_000_000; // $2.00 per 1M tokens (gpt-5-mini)
+          const sessionChargedInputTokens = Math.max(
+            0,
+            sessionInputTokens - sessionCachedTokens
+          );
+          const sessionInputCost = Number.isFinite(sessionChargedInputTokens)
+            ? (sessionChargedInputTokens * 0.1) / 1_000_000
+            : 0; // $0.10 per 1M tokens (Gemini Flash 2.5)
+          const sessionCachedInputCost = Number.isFinite(sessionCachedTokens)
+            ? (sessionCachedTokens * 0.1) / 1_000_000
+            : 0; // $0.10 per 1M tokens (Gemini Flash 2.5)
+          const sessionOutputCost = Number.isFinite(sessionOutputTokens)
+            ? (sessionOutputTokens * 0.4) / 1_000_000
+            : 0; // $0.40 per 1M tokens (Gemini Flash 2.5)
           const sessionTotalCost =
-            sessionInputCost + sessionCachedInputCost + sessionOutputCost;
+            (Number.isFinite(sessionInputCost) ? sessionInputCost : 0) +
+            (Number.isFinite(sessionCachedInputCost)
+              ? sessionCachedInputCost
+              : 0) +
+            (Number.isFinite(sessionOutputCost) ? sessionOutputCost : 0);
+
+          // Handle duration - ensure it's a valid number
+          const durationSeconds = Number(session.duration_seconds);
+          const validDuration = Number.isFinite(durationSeconds)
+            ? Math.max(0, durationSeconds)
+            : 0;
 
           return {
             id: session.id,
             date: session.created_at,
             userName: session.conversation_state?.userName || "Anonymous",
-            duration: Math.round(session.duration_seconds || 0),
-            totalTokens: session.total_usage?.totalTokens || 0,
+            duration: Math.round(validDuration),
+            totalTokens: Number(session.total_usage?.totalTokens) || 0,
             ip: session.ip_location?.ip || "Unknown",
             country: session.ip_location?.country || "Unknown",
             summary: session.summary || "",
-            cost: sessionTotalCost,
+            cost: Number.isFinite(sessionTotalCost) ? sessionTotalCost : 0,
           };
         }),
         globalStats: {
@@ -118,6 +146,50 @@ export const GET = createApiHandler(
       logger.error({ error }, "Failed to fetch chat logs");
       return Response.json(
         { error: "Failed to fetch chat logs" },
+        { status: 500 }
+      );
+    }
+  }
+);
+
+export const DELETE = createApiHandler(
+  "CvLogsBulkDeleteAPI",
+  [withAuth(process.env.ADMIN_AUTH_KEY || "")],
+  async (request: NextRequest, context: any) => {
+    const { logger } = context;
+
+    try {
+      const body = await request.json();
+      const { ids } = body;
+
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return Response.json(
+          { error: "Invalid request: ids must be a non-empty array" },
+          { status: 400 }
+        );
+      }
+
+      // Connect to PostgreSQL
+      const { neon } = (await import("@neondatabase/serverless")) as any;
+      const connectionString = process.env.POSTGRES_URL as string | undefined;
+      if (!connectionString) {
+        throw new Error("Missing POSTGRES_URL for Neon connection");
+      }
+      const sql = neon(connectionString);
+
+      // Delete multiple sessions
+      await sql`
+        DELETE FROM cv_chat_sessions
+        WHERE id = ANY(${ids})
+      `;
+
+      logger.info({ count: ids.length }, "Bulk deleted chat sessions");
+
+      return Response.json({ success: true, deletedCount: ids.length });
+    } catch (error) {
+      logger.error({ error }, "Failed to bulk delete chat sessions");
+      return Response.json(
+        { error: "Failed to bulk delete chat sessions" },
         { status: 500 }
       );
     }

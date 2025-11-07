@@ -84,16 +84,22 @@ function ProBadge() {
   );
 }
 
-function MessageHeaderUser() {
-  const { conversationState } = useContext(ChatboxContext);
+function MessageHeaderUser({
+  conversationState,
+}: {
+  conversationState?: ConversationState;
+}) {
+  const context = useContext(ChatboxContext);
+  const state = conversationState || context?.conversationState;
+
   return (
     <div className="flex min-w-0 items-start gap-1">
       <span className="min-w-0 truncate font-semibold">
-        {conversationState.userName || "Mystery Visitor"}
+        {state?.userName || "Mystery Visitor"}
       </span>
-      {conversationState.userType === "vip" ? (
+      {state?.userType === "vip" ? (
         <VipBadge />
-      ) : conversationState.userType === "pro" ? (
+      ) : state?.userType === "pro" ? (
         <ProBadge />
       ) : null}
     </div>
@@ -120,15 +126,17 @@ function MessageHeaderAssistant() {
 function MessageItemUser({
   content,
   className,
+  conversationState,
 }: {
   content: string;
   className: string;
+  conversationState?: ConversationState;
 }) {
   return (
     <div
       className={`${className} border-t-1 border-t-mint-100 ml-auto min-w-0 flex-col text-left text-white bg-[linear-gradient(0deg,theme(colors.mint.600),theme(colors.mint.600/0.8))]`}
     >
-      <MessageHeaderUser />
+      <MessageHeaderUser conversationState={conversationState} />
       <div className="max-w-none">
         <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
       </div>
@@ -140,17 +148,18 @@ function MessageItemAssistant({
   content,
   className,
   messageId,
+  enableTypewriter = true,
 }: {
   content: string;
   className: string;
   messageId?: string;
+  enableTypewriter?: boolean;
 }) {
-  // Apply typewriter effect - always enabled for assistant messages
-  // The effect will restart when messageId changes (new message), but continue smoothly during content updates
+  // Apply typewriter effect - can be disabled for logs/replay views
   const displayedContent = useTypewriter(content, {
     wordsPerChunk: 2, // 2 words at a time
     delay: 50, // 50ms delay between chunks
-    enabled: true, // Always enabled
+    enabled: enableTypewriter, // Can be disabled
     key: messageId, // Key to reset only on new messages
   });
 
@@ -172,27 +181,35 @@ function MessageItemQueued({
   message,
   content,
   className,
+  conversationState,
 }: {
   message: ChatMessage;
   content: string;
   className: string;
+  conversationState?: ConversationState;
 }) {
-  const { removeQueuedMessage } = useContext(ChatboxContext);
+  const context = useContext(ChatboxContext);
+  const removeQueuedMessage = context?.removeQueuedMessage;
 
   return (
     <div
       className={`${className} ml-auto flex-row-reverse items-center gap-4 border border-mint-600 bg-transparent text-mint-600`}
     >
-      <button
-        aria-label="Remove queued message"
-        className="relative aspect-square h-8 w-8 cursor-pointer rounded-full border-1 border-mint-600 p-1 text-mint-600/80 hover:bg-mint-600/50 hover:text-white focus:outline-none"
-        onClick={() => removeQueuedMessage(message.id)}
-        type="button"
-      >
-        <FontAwesomeIcon className="-top-0.5 relative h-4 w-4" icon={faXmark} />
-      </button>
+      {removeQueuedMessage && (
+        <button
+          aria-label="Remove queued message"
+          className="relative aspect-square h-8 w-8 cursor-pointer rounded-full border-1 border-mint-600 p-1 text-mint-600/80 hover:bg-mint-600/50 hover:text-white focus:outline-none"
+          onClick={() => removeQueuedMessage(message.id)}
+          type="button"
+        >
+          <FontAwesomeIcon
+            className="-top-0.5 relative h-4 w-4"
+            icon={faXmark}
+          />
+        </button>
+      )}
       <div className="flex min-w-0 flex-1 flex-col text-left">
-        <MessageHeaderUser />
+        <MessageHeaderUser conversationState={conversationState} />
         <div className="max-w-none [&>p]:my-0 [&>strong]:font-bold [&>strong]:text-white">
           <ReactMarkdown components={markdownComponents}>
             {content}
@@ -236,10 +253,14 @@ export function MessageItem({
   message,
   error,
   loading,
+  conversationState,
+  enableTypewriter = true,
 }: {
   message?: ChatMessage;
   error?: string;
   loading?: boolean;
+  conversationState?: ConversationState;
+  enableTypewriter?: boolean;
 }) {
   const className =
     "relative z-20 flex w-fit max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm";
@@ -278,14 +299,20 @@ export function MessageItem({
         <MessageItemQueued
           className={className}
           content={content}
+          conversationState={conversationState}
           message={message}
         />
       ) : isUser ? (
-        <MessageItemUser className={className} content={content} />
+        <MessageItemUser
+          className={className}
+          content={content}
+          conversationState={conversationState}
+        />
       ) : (
         <MessageItemAssistant
           className={className}
           content={content}
+          enableTypewriter={enableTypewriter}
           messageId={message.id}
         />
       )}
