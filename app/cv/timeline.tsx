@@ -184,7 +184,7 @@ const Timeline = ({ className }: TimelineProps) => {
             WordPress.com.
           </p>
           <ul>
-            <li>Scaled to serve over 100 million blog subscribers.</li>
+            <li>Scaled to serve millions of blog subscribers.</li>
             <li>Built paid tiers and monetization features.</li>
             <li>
               Built tracking analytics that handle millions of real-time events
