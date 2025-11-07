@@ -28,6 +28,7 @@ export function MessageList(props: ChatbotMessageProps) {
     useContext(ChatboxContext);
 
   const messageListRef = useRef<HTMLDivElement>(null);
+  const hasUserIntentionallyScrolledUpRef = useRef(false);
 
   const scrollToBottomDebounced = useMemo(
     () =>
@@ -35,6 +36,14 @@ export function MessageList(props: ChatbotMessageProps) {
         () => {
           const container = messageListRef.current;
           if (!container) {
+            return;
+          }
+          // Early return if user has scrolled up and message is still generating
+          if (
+            hasUserIntentionallyScrolledUpRef.current &&
+            status !== "ready" &&
+            status !== "idle"
+          ) {
             return;
           }
           container.scrollTo({
@@ -45,7 +54,7 @@ export function MessageList(props: ChatbotMessageProps) {
         50,
         { leading: true, trailing: true }
       ),
-    []
+    [status]
   );
 
   const scrollToBottom = useCallback(() => {
@@ -59,6 +68,40 @@ export function MessageList(props: ChatbotMessageProps) {
       scrollToBottomRef.current = null;
     };
   }, [scrollToBottom, scrollToBottomRef]);
+
+  // Reset scroll flag when message generation stops (status becomes "ready")
+  useEffect(() => {
+    if (status === "ready" || status === "idle") {
+      hasUserIntentionallyScrolledUpRef.current = false;
+    }
+  }, [status]);
+
+  // Detect when user intentionally scrolls up
+  useEffect(() => {
+    const container = messageListRef.current;
+    if (!container) {
+      return;
+    }
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 60; // 60px threshold
+
+      // If user scrolls back to bottom, reset the flag
+      if (isNearBottom) {
+        hasUserIntentionallyScrolledUpRef.current = false;
+      } else {
+        // If user scrolls away from bottom, mark as intentionally scrolled up
+        hasUserIntentionallyScrolledUpRef.current = true;
+      }
+    };
+
+    container.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
