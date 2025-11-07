@@ -15,10 +15,11 @@
 
 // Load environment variables from .env.local
 import { config } from "dotenv";
+
 config({ path: ".env.local" });
 
-import { head } from "@vercel/blob";
 import { neon } from "@neondatabase/serverless";
+import { head } from "@vercel/blob";
 
 interface BlobTranscript {
   chatSessionId: string;
@@ -82,10 +83,10 @@ async function main() {
       const blobPath = `cv-chat-logs/chat-${sessionId}.json`;
 
       // Check if blob exists
-      let blobInfo;
+      let blobInfo: Awaited<ReturnType<typeof head>> | undefined;
       try {
         blobInfo = await head(blobPath);
-      } catch (error) {
+      } catch (_error) {
         // Blob doesn't exist, skip this session
         console.log(
           `${progress} ⚠️  Skipping ${sessionId} (blob not found in Vercel Blob)`
@@ -95,9 +96,7 @@ async function main() {
       }
 
       if (!blobInfo) {
-        console.log(
-          `${progress} ⚠️  Skipping ${sessionId} (blob not found)`
-        );
+        console.log(`${progress} ⚠️  Skipping ${sessionId} (blob not found)`);
         skippedCount++;
         continue;
       }
@@ -111,7 +110,7 @@ async function main() {
       const transcript: BlobTranscript = await response.json();
 
       // Validate transcript structure
-      if (!transcript.chatSessionId || !Array.isArray(transcript.messages)) {
+      if (!(transcript.chatSessionId && Array.isArray(transcript.messages))) {
         throw new Error("Invalid transcript format");
       }
 
@@ -159,7 +158,7 @@ async function main() {
   }
 
   // Step 3: Summary
-  console.log("\n" + "=".repeat(60));
+  console.log(`\n${"=".repeat(60)}`);
   if (isDryRun) {
     console.log("📊 Migration Summary (DRY RUN)");
   } else {
@@ -177,13 +176,15 @@ async function main() {
 
   if (errors.length > 0) {
     console.log("\n❌ Errors encountered:");
-    errors.forEach(({ sessionId, error }) => {
+    for (const { sessionId, error } of errors) {
       console.log(`   - ${sessionId}: ${error}`);
-    });
+    }
   }
 
   if (isDryRun) {
-    console.log("\n✨ Dry run complete! Run without --dry-run to apply changes.");
+    console.log(
+      "\n✨ Dry run complete! Run without --dry-run to apply changes."
+    );
   } else {
     console.log("\n✨ Migration complete!");
   }

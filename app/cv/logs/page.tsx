@@ -213,6 +213,7 @@ export default function CvLogsPage() {
   };
 
   const handleDeleteSession = async (sessionId: string) => {
+    // biome-ignore lint/suspicious/noAlert: confirm is appropriate for delete actions
     if (!confirm("Are you sure you want to delete this session?")) {
       return;
     }
@@ -256,6 +257,7 @@ export default function CvLogsPage() {
     }
 
     if (
+      // biome-ignore lint/suspicious/noAlert: confirm is appropriate for delete actions
       !confirm(
         `Are you sure you want to delete ${selectedIds.size} session(s)?`
       )

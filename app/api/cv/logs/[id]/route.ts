@@ -67,13 +67,13 @@ export const GET = createApiHandler(
         sessionInputTokens - sessionCachedTokens
       );
       const sessionInputCost = Number.isFinite(sessionChargedInputTokens)
-        ? (sessionChargedInputTokens * 0.10) / 1_000_000
+        ? (sessionChargedInputTokens * 0.1) / 1_000_000
         : 0; // $0.10 per 1M tokens (Gemini Flash 2.5)
       const sessionCachedInputCost = Number.isFinite(sessionCachedTokens)
-        ? (sessionCachedTokens * 0.10) / 1_000_000
+        ? (sessionCachedTokens * 0.1) / 1_000_000
         : 0; // $0.10 per 1M tokens (Gemini Flash 2.5)
       const sessionOutputCost = Number.isFinite(sessionOutputTokens)
-        ? (sessionOutputTokens * 0.40) / 1_000_000
+        ? (sessionOutputTokens * 0.4) / 1_000_000
         : 0; // $0.40 per 1M tokens (Gemini Flash 2.5)
       const sessionTotalCost =
         (Number.isFinite(sessionInputCost) ? sessionInputCost : 0) +

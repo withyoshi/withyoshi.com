@@ -12,6 +12,7 @@
 
 // Load environment variables from .env.local
 import { config } from "dotenv";
+
 config({ path: ".env.local" });
 
 import { neon } from "@neondatabase/serverless";
@@ -37,11 +38,11 @@ async function main() {
   try {
     // Step 1: Count sessions with IP "::1"
     console.log("📊 Checking for local test sessions (IP: ::1)...");
-    const countResult = await sql<{ count: string }>`
+    const countResult = (await sql`
       SELECT COUNT(*) as count
       FROM cv_chat_sessions
       WHERE ip_location->>'ip' = '::1'
-    `;
+    `) as Array<{ count: string }>;
 
     const count = Number.parseInt(countResult[0]?.count || "0", 10);
 
@@ -55,16 +56,16 @@ async function main() {
     // Step 2: Show some sample sessions (optional preview)
     if (count > 0 && count <= 10) {
       console.log("📋 Sessions to be removed:");
-      const samples = await sql<{
-        id: string;
-        created_at: string;
-        summary: string;
-      }>`
+      const samples = (await sql`
         SELECT id, created_at, summary
         FROM cv_chat_sessions
         WHERE ip_location->>'ip' = '::1'
         ORDER BY created_at DESC
-      `;
+      `) as Array<{
+        id: string;
+        created_at: string;
+        summary: string;
+      }>;
 
       samples.forEach((session, index) => {
         const date = new Date(session.created_at).toLocaleString();
@@ -78,20 +79,18 @@ async function main() {
       });
       console.log();
     } else if (count > 10) {
-      console.log(
-        `   (Showing first 5 of ${count} sessions for preview)\n`
-      );
-      const samples = await sql<{
-        id: string;
-        created_at: string;
-        summary: string;
-      }>`
+      console.log(`   (Showing first 5 of ${count} sessions for preview)\n`);
+      const samples = (await sql`
         SELECT id, created_at, summary
         FROM cv_chat_sessions
         WHERE ip_location->>'ip' = '::1'
         ORDER BY created_at DESC
         LIMIT 5
-      `;
+      `) as Array<{
+        id: string;
+        created_at: string;
+        summary: string;
+      }>;
 
       samples.forEach((session, index) => {
         const date = new Date(session.created_at).toLocaleString();
@@ -112,11 +111,11 @@ async function main() {
       console.log("   Run without --dry-run to actually delete them");
     } else {
       console.log("🗑️  Deleting local test sessions...");
-      const deleteResult = await sql<{ count: string }>`
+      const deleteResult = (await sql`
         DELETE FROM cv_chat_sessions
         WHERE ip_location->>'ip' = '::1'
         RETURNING id
-      `;
+      `) as Array<{ id: string }>;
 
       const deletedCount = deleteResult.length;
       console.log(`✅ Successfully deleted ${deletedCount} session(s)\n`);
@@ -127,10 +126,10 @@ async function main() {
     console.log("📊 Cleanup Summary");
     console.log("=".repeat(60));
     console.log(`📝 Sessions found: ${count}`);
-    if (!isDryRun) {
-      console.log(`✅ Sessions deleted: ${count}`);
-    } else {
+    if (isDryRun) {
       console.log(`🔍 Dry run: ${count} session(s) would be deleted`);
+    } else {
+      console.log(`✅ Sessions deleted: ${count}`);
     }
     console.log("\n✨ Cleanup complete!");
   } catch (error) {
